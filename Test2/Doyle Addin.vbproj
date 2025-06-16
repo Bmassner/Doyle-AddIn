@@ -35,6 +35,7 @@
     <RegisterForComInterop>false</RegisterForComInterop>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <OutputPath>C:\ProgramData\Autodesk\Inventor Addins\Test2</OutputPath>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DocumentationFile>.xml</DocumentationFile>
@@ -44,9 +45,17 @@
     <RegisterForComInterop>false</RegisterForComInterop>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <OutputPath>C:\ProgramData\Autodesk\Inventor Addins\Test2</OutputPath>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
     <EnableDefaultItems>false</EnableDefaultItems>
+    <ImportedNamespaces>ADODB=False,Docnet.Core=False,MSForms=False,Scripting=False,stdole=False,VBA=False,VBIDE=False,WUApiLib=False,Inventor=False,Microsoft.VisualBasic=True,System=True,System.Collections=True,System.Collections.Generic=True,System.Diagnostics=True,System.Linq=True,System.Xml.Linq=True,System.Threading.Tasks=True,Doyle Addin=True</ImportedNamespaces>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <PackageReadmeFile>Readme.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/Bmassner/Doyle-AddIn.git</RepositoryUrl>
+    <PackageId>DoyleAddin</PackageId>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <NuGetAudit>False</NuGetAudit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Update="System">
@@ -55,16 +64,111 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="dxfUpdate.vb" />
+    <Compile Include="Genius Integration\Class Modules\aiBoxData.vb" />
+    <Compile Include="Genius Integration\Class Modules\aiPropLink.vb" />
+    <Compile Include="Genius Integration\Class Modules\aiPropSetter.vb" />
+    <Compile Include="Genius Integration\Class Modules\dcPopulator.vb" />
+    <Compile Include="Genius Integration\Class Modules\dcSplitter.vb" />
+    <Compile Include="Genius Integration\Class Modules\fmIfcMatlQty01.vb" />
+    <Compile Include="Genius Integration\Class Modules\fmIfcTest04A.vb" />
+    <Compile Include="Genius Integration\Class Modules\fmIfcTest05A.vb" />
+    <Compile Include="Genius Integration\Class Modules\gnsIfcAiDoc.vb" />
+    <Compile Include="Genius Integration\Class Modules\gnsIfcAiPart_V0_1.vb" />
+    <Compile Include="Genius Integration\Class Modules\gnsIfcAiPart_V0_2.vb" />
+    <Compile Include="Genius Integration\Class Modules\ifcAiProperty.vb" />
+    <Compile Include="Genius Integration\Class Modules\ifcDatum.vb" />
+    <Compile Include="Genius Integration\Class Modules\iLogicIfc.vb" />
+    <Compile Include="Genius Integration\Class Modules\kyPick.vb" />
+    <Compile Include="Genius Integration\Class Modules\kyPickAiAssyMember.vb" />
+    <Compile Include="Genius Integration\Class Modules\kyPickAiDocContentCtr.vb" />
+    <Compile Include="Genius Integration\Class Modules\kyPickAiDocPurchased.vb" />
+    <Compile Include="Genius Integration\Class Modules\kyPickAiDocWithRM.vb" />
+    <Compile Include="Genius Integration\Class Modules\kyPickAiPartMember.vb" />
+    <Compile Include="Genius Integration\Class Modules\kyPickAiPartVsAssy.vb" />
+    <Compile Include="Genius Integration\Class Modules\kyPickAiSheetMetal.vb" />
+    <Compile Include="Genius Integration\Class Modules\kyPickAiShMtl4sure.vb" />
+    <Compile Include="Genius Integration\Class Modules\kyPickInGenius.vb" />
+    <Compile Include="Genius Integration\Class Modules\wkgCls0.vb" />
+    <Compile Include="Genius Integration\Forms\fmEmpty.Designer.vb" />
+    <Compile Include="Genius Integration\Forms\fmEmpty.vb" />
+    <Compile Include="Genius Integration\Forms\fmGetList.Designer.vb" />
+    <Compile Include="Genius Integration\Forms\fmGetList.vb" />
+    <Compile Include="Genius Integration\Forms\fmMatlQty.Designer.vb" />
+    <Compile Include="Genius Integration\Forms\fmMatlQty.vb" />
+    <Compile Include="Genius Integration\Forms\FmSelectorList.Designer.vb" />
+    <Compile Include="Genius Integration\Forms\FmSelectorList.vb" />
+    <Compile Include="Genius Integration\Forms\fmSelectorV2.Designer.vb" />
+    <Compile Include="Genius Integration\Forms\fmSelectorV2.vb" />
+    <Compile Include="Genius Integration\Forms\fmTest0.Designer.vb" />
+    <Compile Include="Genius Integration\Forms\fmTest0.vb" />
+    <Compile Include="Genius Integration\Forms\fmTest04.Designer.vb" />
+    <Compile Include="Genius Integration\Forms\fmTest04.vb" />
+    <Compile Include="Genius Integration\Forms\fmTest05.Designer.vb" />
+    <Compile Include="Genius Integration\Forms\fmTest05.vb" />
+    <Compile Include="Genius Integration\Forms\fmTest1.Designer.vb" />
+    <Compile Include="Genius Integration\Forms\fmTest1.vb" />
+    <Compile Include="Genius Integration\Forms\fmTest2.Designer.vb" />
+    <Compile Include="Genius Integration\Forms\fmTest2.vb" />
+    <Compile Include="Genius Integration\Moduels\app.vb" />
+    <Compile Include="Genius Integration\Moduels\AssyComponentsCollector.vb" />
+    <Compile Include="Genius Integration\Moduels\dvl0.vb" />
+    <Compile Include="Genius Integration\Moduels\dvl1.vb" />
+    <Compile Include="Genius Integration\Moduels\dvl2.vb" />
+    <Compile Include="Genius Integration\Moduels\dvl4.vb" />
+    <Compile Include="Genius Integration\Moduels\dvlAiNameValMap.vb" />
+    <Compile Include="Genius Integration\Moduels\dvlBomView.vb" />
+    <Compile Include="Genius Integration\Moduels\dvlContentCenterCheck.vb" />
+    <Compile Include="Genius Integration\Moduels\dvlDict0.vb" />
+    <Compile Include="Genius Integration\Moduels\dvlGnsIfc201904.vb" />
+    <Compile Include="Genius Integration\Moduels\dvlIModel.vb" />
+    <Compile Include="Genius Integration\Moduels\dvlObjMakers.vb" />
+    <Compile Include="Genius Integration\Moduels\dvlVault.vb" />
+    <Compile Include="Genius Integration\Moduels\lib0.vb" />
+    <Compile Include="Genius Integration\Moduels\lib1.vb" />
+    <Compile Include="Genius Integration\Moduels\libAddIns4inventor.vb" />
+    <Compile Include="Genius Integration\Moduels\libCastIfcDatum.vb" />
+    <Compile Include="Genius Integration\Moduels\libCastOb.vb" />
+    <Compile Include="Genius Integration\Moduels\libClipboardAPI.vb" />
+    <Compile Include="Genius Integration\Moduels\libClipboardWin10.vb" />
+    <Compile Include="Genius Integration\Moduels\libCutTimeFlatPtn.vb" />
+    <Compile Include="Genius Integration\Moduels\libDcGeneral.vb" />
+    <Compile Include="Genius Integration\Moduels\libDict.vb" />
+    <Compile Include="Genius Integration\Moduels\libFmSelectors.vb" />
+    <Compile Include="Genius Integration\Moduels\libFSys.vb" />
+    <Compile Include="Genius Integration\Moduels\libSQLinVB.vb" />
+    <Compile Include="Genius Integration\Moduels\libVbCodeXport.vb" />
+    <Compile Include="Genius Integration\Moduels\mod0.vb" />
+    <Compile Include="Genius Integration\Moduels\mod1.vb" />
+    <Compile Include="Genius Integration\Moduels\mod3.vb" />
+    <Compile Include="Genius Integration\Moduels\modAiVba.vb" />
+    <Compile Include="Genius Integration\Moduels\modDcFilters.vb" />
+    <Compile Include="Genius Integration\Moduels\modGPUpdateAT.vb" />
+    <Compile Include="Genius Integration\Moduels\modGPUpdateATrev.vb" />
+    <Compile Include="Genius Integration\Moduels\modMacros.vb" />
+    <Compile Include="Genius Integration\Moduels\Module1.vb" />
+    <Compile Include="Genius Integration\Moduels\sql0.vb" />
+    <Compile Include="Genius Integration\Moduels\sql1.vb" />
+    <Compile Include="Genius Integration\Moduels\src0.vb" />
+    <Compile Include="Genius Integration\Moduels\zzCsv000.vb" />
+    <Compile Include="GlobalsHelpers.vb" />
+    <Compile Include="My Project\Resources.Designer.vb">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="PDFToJPG.vb" />
+    <Compile Include="PictureConverter.vb" />
     <Compile Include="printUpdate.vb" />
     <Compile Include="StandardAddInServer.vb" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.vb" />
-    <Compile Include="UserTest.vb" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="x64\Docnet.Core.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="My Project\Application.myapp" />
-    <None Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DoylePlugin.manifest" />
@@ -72,6 +176,13 @@
   <ItemGroup>
     <None Include="Autodesk.DoyleAddin.Inventor.addin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="x64\pdfium.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -101,6 +212,106 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </COMReference>
+    <COMReference Include="MSForms">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>2</VersionMajor>
+      <Guid>8761f4ed-e4b5-4cce-b19b-66f1409df09f</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Vbe.Interop.Forms">
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>2</VersionMajor>
+      <Guid>0d452ee1-e08f-101a-852e-02608c4d0bb4</Guid>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="VBIDE">
+      <VersionMinor>3</VersionMinor>
+      <VersionMajor>5</VersionMajor>
+      <Guid>0002e157-0000-0000-c000-000000000046</Guid>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="ADODB">
+      <VersionMinor>8</VersionMinor>
+      <VersionMajor>2</VersionMajor>
+      <Guid>2a75196c-d9eb-4129-b803-931327f72d5c</Guid>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="WUApiLib">
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>2</VersionMajor>
+      <Guid>b596cc9f-56e5-419e-a622-e01bb457431e</Guid>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Scripting">
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>1</VersionMajor>
+      <Guid>420b2830-e718-11cf-893d-00a0c9054228</Guid>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="VBA">
+      <VersionMinor>2</VersionMinor>
+      <VersionMajor>4</VersionMajor>
+      <Lcid>9</Lcid>
+      <Guid>000204ef-0000-0000-c000-000000000046</Guid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DXFUpdateIconLarge.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DXFUpdateIconSmall.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\PrintUpdateIconSmall.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\PrintUpdateIconLarge.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Genius Integration\Forms\fmEmpty.resx" />
+    <EmbeddedResource Include="Genius Integration\Forms\fmGetList.resx" />
+    <EmbeddedResource Include="Genius Integration\Forms\fmMatlQty.resx" />
+    <EmbeddedResource Include="Genius Integration\Forms\FmSelectorList.resx" />
+    <EmbeddedResource Include="Genius Integration\Forms\fmSelectorV2.resx" />
+    <EmbeddedResource Include="Genius Integration\Forms\fmTest0.resx" />
+    <EmbeddedResource Include="Genius Integration\Forms\fmTest04.resx" />
+    <EmbeddedResource Include="Genius Integration\Forms\fmTest05.resx" />
+    <EmbeddedResource Include="Genius Integration\Forms\fmTest1.resx" />
+    <EmbeddedResource Include="Genius Integration\Forms\fmTest2.resx" />
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Autodesk.Inventor.Interop">
@@ -108,5 +319,22 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <Private>True</Private>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="ADODB" />
+    <Import Include="Docnet.Core" />
+    <Import Include="MSForms" />
+    <Import Include="Scripting" />
+    <Import Include="stdole" />
+    <Import Include="VBA" />
+    <Import Include="VBIDE" />
+    <Import Include="WUApiLib" />
+	  <Import Include="Inventor" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Docnet.Core" Version="2.7.0-alpha.1">
+      <IncludeAssets></IncludeAssets>
+      <GeneratePathProperty>False</GeneratePathProperty>
+    </PackageReference>
   </ItemGroup>
 </Project>

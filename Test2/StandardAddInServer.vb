@@ -1,12 +1,5 @@
-Imports System.Drawing.Printing
-Imports System.Reflection.Metadata
 Imports System.Runtime.InteropServices
-Imports System.Windows.Forms
-Imports System.Windows.Forms.Design.AxImporter
-Imports Inventor
-Imports Microsoft.Win32
-Imports Windows.Foundation.Collections
-Imports Windows.UI
+
 
 Namespace DoyleAddin
     <ProgIdAttribute("Test2.StandardAddInServer"),
@@ -14,9 +7,9 @@ Namespace DoyleAddin
     Public Class StandardAddInServer
         Implements Inventor.ApplicationAddInServer
 
-        Private WithEvents m_uiEvents As UserInterfaceEvents
-        Private WithEvents m_sampleButton As ButtonDefinition
-        Private WithEvents m_sampleButton2 As ButtonDefinition
+        Private WithEvents UiEvents As UserInterfaceEvents
+        Private WithEvents DXFUpdate As ButtonDefinition
+        Private WithEvents PrintUpdate As ButtonDefinition
 
 #Region "ApplicationAddInServer Members"
 
@@ -24,25 +17,34 @@ Namespace DoyleAddin
         ' to the Inventor Application object. The FirstTime flag indicates if the AddIn is loaded for
         ' the first time. However, with the introduction of the ribbon this argument is always true.
         Public Sub Activate(ByVal addInSiteObject As Inventor.ApplicationAddInSite, ByVal firstTime As Boolean) Implements Inventor.ApplicationAddInServer.Activate
-            ' Initialize AddIn members.
-            g_inventorApplication = addInSiteObject.Application
 
-            ' Connect to the user-interface events to handle a ribbon reset.
-            m_uiEvents = g_inventorApplication.UserInterfaceManager.UserInterfaceEvents
+            ' Initialize AddIn members.
+            ThisApplication = addInSiteObject.Application
+
+            ' Get a reference to the UserInterfaceManager object. 
+            Dim UIManager As Inventor.UserInterfaceManager = ThisApplication.UserInterfaceManager
+
+            ' Get a reference to the ControlDefinitions object. 
+            Dim controlDefs As ControlDefinitions = ThisApplication.CommandManager.ControlDefinitions
 
             ' TODO: Add button definitions.
 
             ' Sample to illustrate creating a button definition.
-            'Dim largeIcon As stdole.IPictureDisp = PictureDispConverter.ToIPictureDisp(My.Resources.YourBigImage)
-            'Dim smallIcon As stdole.IPictureDisp = PictureDispConverter.ToIPictureDisp(My.Resources.YourSmallImage)
-            Dim controlDefs As Inventor.ControlDefinitions = g_inventorApplication.CommandManager.ControlDefinitions
-            m_sampleButton = controlDefs.AddButtonDefinition("DXF Update", "dxfUpdate", CommandTypesEnum.kShapeEditCmdType, AddInClientID)
-            m_sampleButton2 = controlDefs.AddButtonDefinition("Print Update", "printUpdate", CommandTypesEnum.kShapeEditCmdType, AddInClientID)
+            Dim PrintUpdateIconLarge As stdole.IPictureDisp = PictureConverter.ImageToPictureDisp(My.Resources.PrintUpdateIconLarge)
+            Dim PrintUpdateIconSmall As stdole.IPictureDisp = PictureConverter.ImageToPictureDisp(My.Resources.PrintUpdateIconSmall)
+            Dim DXFUpdateIconSmall As stdole.IPictureDisp = PictureConverter.ImageToPictureDisp(My.Resources.DXFUpdateIconSmall)
+            Dim DXFUpdateIconLarge As stdole.IPictureDisp = PictureConverter.ImageToPictureDisp(My.Resources.DXFUpdateIconLarge)
+            DXFUpdate = controlDefs.AddButtonDefinition("DXF Update", "dxfUpdate", CommandTypesEnum.kShapeEditCmdType, AddInClientID, , , DXFUpdateIconSmall, DXFUpdateIconLarge)
+            PrintUpdate = controlDefs.AddButtonDefinition("Print Update", "printUpdate", CommandTypesEnum.kShapeEditCmdType, AddInClientID, , , PrintUpdateIconSmall, PrintUpdateIconLarge)
 
             ' Add to the user interface, if it's the first time.
             If firstTime Then
                 AddToUserInterface()
             End If
+
+            ' Connect to the user-interface events to handle a ribbon reset.
+            UiEvents = ThisApplication.UserInterfaceManager.UserInterfaceEvents
+
         End Sub
 
         ' This method is called by Inventor when the AddIn is unloaded. The AddIn will be
@@ -52,8 +54,8 @@ Namespace DoyleAddin
             ' TODO:  Add ApplicationAddInServer.Deactivate implementation
 
             ' Release objects.
-            m_uiEvents = Nothing
-            g_inventorApplication = Nothing
+            UiEvents = Nothing
+            ThisApplication = Nothing
 
             System.GC.Collect()
             System.GC.WaitForPendingFinalizers()
@@ -84,7 +86,7 @@ Namespace DoyleAddin
             '** Sample to illustrate creating a button on a new panel of the Tools tab of the Part ribbon.
 
             '' Get the part ribbon.
-            Dim partRibbon As Ribbon = g_inventorApplication.UserInterfaceManager.Ribbons.Item("Part")
+            Dim partRibbon As Ribbon = ThisApplication.UserInterfaceManager.Ribbons.Item("Part")
 
             '' Get the "Tools" tab.
             Dim toolsTab As RibbonTab = partRibbon.RibbonTabs.Item("id_TabSheetMetal")
@@ -93,32 +95,28 @@ Namespace DoyleAddin
             Dim customPanel As RibbonPanel = toolsTab.RibbonPanels.Add("Add-Ins", "dxfUpdate", AddInClientID)
 
             '' Add a button.
-            customPanel.CommandControls.AddButton(m_sampleButton)
+            customPanel.CommandControls.AddButton(DXFUpdate)
 
-            partRibbon = g_inventorApplication.UserInterfaceManager.Ribbons.Item("Drawing")
+            partRibbon = ThisApplication.UserInterfaceManager.Ribbons.Item("Drawing")
             toolsTab = partRibbon.RibbonTabs.Item("id_TabPlaceViews")
             customPanel = toolsTab.RibbonPanels.Add("Add-Ins", "printUpdate", AddInClientID)
-            customPanel.CommandControls.AddButton(m_sampleButton2)
+            customPanel.CommandControls.AddButton(PrintUpdate)
 
         End Sub
 
-        Private Sub m_uiEvents_OnResetRibbonInterface(Context As NameValueMap) Handles m_uiEvents.OnResetRibbonInterface
+        Private Sub UiEvents_OnResetRibbonInterface(Context As NameValueMap) Handles UiEvents.OnResetRibbonInterface
             ' The ribbon was reset, so add back the add-ins user-interface.
             AddToUserInterface()
         End Sub
 
         ' Sample handler for the button.
-        Private Sub m_sampleButton_OnExecute(Context As NameValueMap) Handles m_sampleButton.OnExecute
-
+        Private Shared Sub DXFUpdate_OnExecute(Context As NameValueMap) Handles DXFUpdate.OnExecute
             Call Sub() runDxfUpdate()
             'Call Sub() userName()
-
         End Sub
 
-        Private Sub m_sampleButton2_OnExecute(Context As NameValueMap) Handles m_sampleButton2.OnExecute
-
+        Private Shared Sub PrintUpdate_OnExecute(Context As NameValueMap) Handles PrintUpdate.OnExecute
             Call Sub() RunPrintUpdate()
-
         End Sub
 #End Region
 
@@ -127,8 +125,6 @@ End Namespace
 
 
 Public Module Globals
-    ' Inventor application object.
-    Public g_inventorApplication As Inventor.Application
 
 #Region "Function to get the add-in client ID."
     ' This function uses reflection to get the GuidAttribute associated with the add-in.
@@ -151,7 +147,7 @@ Public Module Globals
     ' This is primarily used for parenting a dialog to the Inventor window.
     '
     ' For example:
-    ' myForm.Show(New WindowWrapper(g_inventorApplication.MainFrameHWND))
+    ' myForm.Show(New WindowWrapper(ThisApplication.MainFrameHWND))
     '
     Public Class WindowWrapper
         Implements System.Windows.Forms.IWin32Window
@@ -166,72 +162,7 @@ Public Module Globals
             End Get
         End Property
 
-        Private _hwnd As IntPtr
-    End Class
-#End Region
-
-#Region "Image Converter"
-    ' Class used to convert bitmaps and icons from their .Net native types into
-    ' an IPictureDisp object which is what the Inventor API requires. A typical
-    ' usage is shown below where MyIcon is a bitmap or icon that's available
-    ' as a resource of the project.
-    '
-    ' Dim smallIcon As stdole.IPictureDisp = PictureDispConverter.ToIPictureDisp(My.Resources.MyIcon)
-
-    Public NotInheritable Class PictureDispConverter
-        <DllImport("OleAut32.dll", EntryPoint:="OleCreatePictureIndirect", ExactSpelling:=True, PreserveSig:=False)> _
-        Private Shared Function OleCreatePictureIndirect( _
-            <MarshalAs(UnmanagedType.AsAny)> ByVal picdesc As Object, _
-            ByRef iid As Guid, _
-            <MarshalAs(UnmanagedType.Bool)> ByVal fOwn As Boolean) As stdole.IPictureDisp
-        End Function
-
-        Shared iPictureDispGuid As Guid = GetType(stdole.IPictureDisp).GUID
-
-        Private NotInheritable Class PICTDESC
-            Private Sub New()
-            End Sub
-
-            'Picture Types
-            Public Const PICTYPE_BITMAP As Short = 1
-            Public Const PICTYPE_ICON As Short = 3
-
-            <StructLayout(LayoutKind.Sequential)> _
-            Public Class Icon
-                Friend cbSizeOfStruct As Integer = Marshal.SizeOf(GetType(PICTDESC.Icon))
-                Friend picType As Integer = PICTDESC.PICTYPE_ICON
-                Friend hicon As IntPtr = IntPtr.Zero
-                Friend unused1 As Integer
-                Friend unused2 As Integer
-
-                Friend Sub New(ByVal icon As System.Drawing.Icon)
-                    Me.hicon = icon.ToBitmap().GetHicon()
-                End Sub
-            End Class
-
-            <StructLayout(LayoutKind.Sequential)> _
-            Public Class Bitmap
-                Friend cbSizeOfStruct As Integer = Marshal.SizeOf(GetType(PICTDESC.Bitmap))
-                Friend picType As Integer = PICTDESC.PICTYPE_BITMAP
-                Friend hbitmap As IntPtr = IntPtr.Zero
-                Friend hpal As IntPtr = IntPtr.Zero
-                Friend unused As Integer
-
-                Friend Sub New(ByVal bitmap As System.Drawing.Bitmap)
-                    Me.hbitmap = bitmap.GetHbitmap()
-                End Sub
-            End Class
-        End Class
-
-        Public Shared Function ToIPictureDisp(ByVal icon As System.Drawing.Icon) As stdole.IPictureDisp
-            Dim pictIcon As New PICTDESC.Icon(icon)
-            Return OleCreatePictureIndirect(pictIcon, iPictureDispGuid, True)
-        End Function
-
-        Public Shared Function ToIPictureDisp(ByVal bmp As System.Drawing.Bitmap) As stdole.IPictureDisp
-            Dim pictBmp As New PICTDESC.Bitmap(bmp)
-            Return OleCreatePictureIndirect(pictBmp, iPictureDispGuid, True)
-        End Function
+        Private ReadOnly _hwnd As IntPtr
     End Class
 #End Region
 
