@@ -1,5 +1,5 @@
 Module dvl0
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Public Function d0g0f0(
     cd As Inventor.SheetMetalComponentDefinition,
     Optional dc As Scripting.Dictionary = Nothing
@@ -215,7 +215,7 @@ Module dvl0
         Dim vw As Inventor.View
 
         rt = Nothing
-        For Each vw In InventorApp.Views
+        For Each vw In ThisApplication.Views
             If vw.Document Is rf Then rt = vw
         Next
         d0g1f0 = rt
@@ -339,7 +339,7 @@ Module dvl0
         Dim mx As Inventor.Point
         Dim mn As Inventor.Point
 
-        With InventorApp.TransientGeometry
+        With ThisApplication.TransientGeometry
             rt = .CreateBox()
             With RefBox
                 mx = .MaxPoint
@@ -642,7 +642,7 @@ Module dvl0
         Dim ky As Object
 
         With dcAiDocComponents(
-        InventorApp.ActiveDocument, , 0
+        ThisApplication.ActiveDocument, , 0
     )
             For Each ky In .Keys
                 Debug.Print(ky)
@@ -703,7 +703,7 @@ Module dvl0
         End With
         d0g2f4 = rt
     End Function
-    'Debug.Print(Join(d0g2f4(dcAiDocComponents(InventorApp.ActiveDocument)).Items, vbCrLf)
+    'Debug.Print(Join(d0g2f4(dcAiDocComponents(ThisApplication.ActiveDocument)).Items, vbCrLf)
 
     Public Function d0g2f6(
     dc As Scripting.Dictionary, pn As String,
@@ -746,7 +746,7 @@ Module dvl0
         End With
         d0g2f6 = rt
     End Function
-    'Debug.Print(Join(d0g2f6(dcAiDocComponents(InventorApp.ActiveDocument)).Items, vbCrLf)
+    'Debug.Print(Join(d0g2f6(dcAiDocComponents(ThisApplication.ActiveDocument)).Items, vbCrLf)
 
     Public Function d0g2f5(dc As Scripting.Dictionary) As Scripting.Dictionary
         '
@@ -824,7 +824,7 @@ Module dvl0
         Dim mt As Inventor.AssemblyDocument
 
         rt = New Scripting.Dictionary
-        With InventorApp.ActiveMaterialLibrary
+        With ThisApplication.ActiveMaterialLibrary
             For Each mt In .MaterialAss
                 rt.Add(mt.DisplayName, mt)
             Next
@@ -1089,7 +1089,7 @@ Module dvl0
         ''  parts in Genius from those
         ''  not there yet. I don't think
         ''  this one was working quite
-        ''  right yet. New kyPick system
+        ''  right yet. New KyPick system
         ''  should handle this properly,
         ''  now, in any case.
         Dim ky As Object
@@ -1225,12 +1225,12 @@ Module dvl0
         If WantOut < 0 Or WantOut > 1 Then
             dcAiPartDocsWithRMv0 = dcAiPartDocsWithRMv0(dcIn, 1)
         Else
-            'With nuSplitter().WithSel(New kyPickAiDocWithRM)
-            With New kyPickAiDocWithRM
-                rt(0) = .dcIn()
-                rt(1) = .dcOut()
+            'With nuSplitter().WithSel(New KyPickAiDocWithRM)
+            With New KyPickAiDocWithRM
+                rt(0) = .DcIn()
+                rt(1) = .DcOut()
                 For Each ky In dcIn.Keys
-                    With .dcFor(dcIn.Item(ky))
+                    With .DcFor(dcIn.Item(ky))
                         If .Exists(ky) Then
                             Stop
                         Else
@@ -1254,7 +1254,7 @@ Module dvl0
             kyScanned = pkr.AfterScanning(dcIn)
         End If
     End Function
-    'Debug.Print(txDumpLs(kyScanned(dcAiDocComponents(aiDocActive()), New kyPickAiPartVsAssy).dcIn().Keys)
+    'Debug.Print(txDumpLs(kyScanned(dcAiDocComponents(aiDocActive()), New KyPickAiPartVsAssy).dcIn().Keys)
 
     Public Function dcAiDocsPicked(
     dcIn As Scripting.Dictionary,
@@ -1286,15 +1286,15 @@ Module dvl0
         End If
     End Function
     'Debug.Print(txDumpLs(dcAiDocsPicked(dcAiDocComponents(aiDocActive()), 1).Keys)
-    'Debug.Print(txDumpLs(dcAiDocsPicked(dcAiDocComponents(aiDocActive()), New kyPickAiDocContentCtr, 0).Keys)
+    'Debug.Print(txDumpLs(dcAiDocsPicked(dcAiDocComponents(aiDocActive()), New KyPickAiDocContentCtr, 0).Keys)
 
     Public Function dcAiPartDocsWithRM(
     dcIn As Scripting.Dictionary,
     Optional WantOut As Long = 0
 ) As Scripting.Dictionary
         dcAiPartDocsWithRM = dcAiDocsPicked(dcAiDocsPicked(dcIn,
-        New kyPickAiPartVsAssy, 0),
-        New kyPickAiDocWithRM, WantOut)
+        New KyPickAiPartVsAssy, 0),
+        New KyPickAiDocWithRM, WantOut)
     End Function
     'Debug.Print(txDumpLs(dcAiPartDocsWithRM(dcAiDocComponents(aiDocActive()), 1).Keys)
 
@@ -1350,7 +1350,7 @@ Module dvl0
         '     for prior description
         '
         Dim rt As Scripting.Dictionary
-        'Dim pkGns As kyPick
+        'Dim pkGns As KyPick
         Dim pkBuy As KyPick
         Dim pkPrt As KyPick
         Dim pkCtC As KyPick
@@ -1366,7 +1366,7 @@ Module dvl0
         ''  separate items already in Genius
         ''  from those not yet in
         ' pkGns = nuPicker( _
-        '    New kyPickInGenius _
+        '    New KyPickInGenius _
         ').AfterScanning(dcIn)
         ''  NOTE: no further processing
         ''  implemented on this yet
@@ -1378,7 +1378,7 @@ Module dvl0
         '     with "out" Dictionary replacing
         '     main for Part/Assy separation.
         pkBuy = nuPicker(
-        New kyPickAiDocPurchased
+        New KyPickAiDocPurchased
     ).AfterScanning(dcIn)
 
         With pkBuy
@@ -1386,7 +1386,7 @@ Module dvl0
 
             ''  separate parts from assemblies
             pkPrt = nuPicker(
-            New kyPickAiPartVsAssy
+            New KyPickAiPartVsAssy
         ).AfterScanning(.DcOut)
         End With
 
@@ -1396,7 +1396,7 @@ Module dvl0
             ''  isolate Content Center
             ''  parts from the rest
             pkCtC = nuPicker(
-            New kyPickAiDocContentCtr
+            New KyPickAiDocContentCtr
         ).AfterScanning(.DcIn)
         End With
 
@@ -1406,7 +1406,7 @@ Module dvl0
             ''  separate (potential) sheet
             ''  metal parts from non-sheet
             pkSht = nuPicker(
-            New kyPickAiSheetMetal
+            New KyPickAiSheetMetal
         ).AfterScanning(.DcOut)
         End With
 
@@ -1482,7 +1482,7 @@ Module dvl0
         Dim md As Inventor.Document
         Dim fp As String
 
-        'Dim pkGns As kyPick
+        'Dim pkGns As KyPick
         Dim pkBuy As KyPick
         Dim pkPrt As KyPick
         Dim pkCtC As KyPick
@@ -1504,7 +1504,7 @@ Module dvl0
         ''  separate items already in Genius
         ''  from those not yet in
         ' pkGns = nuPicker( _
-        '    New kyPickInGenius _
+        '    New KyPickInGenius _
         ').AfterScanning(dcIn)
         ''  NOTE: no further processing
         ''  implemented on this yet
@@ -1516,7 +1516,7 @@ Module dvl0
         '     with "out" Dictionary replacing
         '     main for Part/Assy separation.
         pkBuy = nuPicker(
-        New kyPickAiDocPurchased
+        New KyPickAiDocPurchased
     ).AfterScanning(dcIn)
 
         With pkBuy
@@ -1524,7 +1524,7 @@ Module dvl0
 
             ''  separate parts from assemblies
             pkPrt = nuPicker(
-            New kyPickAiPartVsAssy
+            New KyPickAiPartVsAssy
         ).AfterScanning(.DcOut)
         End With
 
@@ -1538,7 +1538,7 @@ Module dvl0
             ''  isolate Content Center
             ''  parts from the rest
             pkCtC = nuPicker(
-            New kyPickAiDocContentCtr
+            New KyPickAiDocContentCtr
         ).AfterScanning(.DcIn)
         End With
 
@@ -1586,7 +1586,7 @@ Module dvl0
             ''  separate iPart members
             ''  from stand-alone parts
             pkIpt = nuPicker(
-            New kyPickAiPartMember
+            New KyPickAiPartMember
         ).AfterScanning(.DcOut)
         End With
 
@@ -1634,7 +1634,7 @@ Module dvl0
             ''  separate (potential) sheet
             ''  metal parts from non-sheet
             pkSht = nuPicker(
-            New kyPickAiSheetMetal
+            New KyPickAiSheetMetal
         ).AfterScanning(.DcOut)
         End With
 
@@ -1699,7 +1699,7 @@ Module dvl0
         ''  separate purchased items
         ''  from those to be made
         pkBuy = nuPicker(
-        New kyPickAiDocPurchased
+        New KyPickAiDocPurchased
     ).AfterScanning(dcIn)
         ''  NOTE: no further processing
         ''  implemented on this yet
@@ -1710,14 +1710,14 @@ Module dvl0
 
         ''  separate parts from assemblies
         ' pkPvA = nuPicker( _
-        '    New kyPickAiPartVsAssy _
+        '    New KyPickAiPartVsAssy _
         ').AfterScanning(dcIn)
         ''rt.Add("ASSY", dck pkPvA.dcOut
 
         ''  isolate Content Center
         ''  parts from the rest
         ' pkCtC = nuPicker( _
-        '    New kyPickAiDocContentCtr _
+        '    New KyPickAiDocContentCtr _
         ').AfterScanning(pkPvA.dcIn)
         ''rt.Add("HDWR", pkCtC.dcIn
 
@@ -1725,7 +1725,7 @@ Module dvl0
         ''  sheet metal parts
         ''  from non-sheet
         ' pkSht = nuPicker( _
-        '    New kyPickAiSheetMetal _
+        '    New KyPickAiSheetMetal _
         ').AfterScanning(pkCtC.dcOut)
         'rt.Add("SHTM", pkSht.dcIn
         'rt.Add("BSTK", pkSht.dcOut
@@ -1748,7 +1748,7 @@ Module dvl0
         Dim pkSht As KyPick
         Dim pkMbe As KyPick
         Dim pkGns As KyPick
-        'Dim pk___ As kyPick
+        'Dim pk___ As KyPick
 
         rt = New Scripting.Dictionary
         pkGns = nuPicker(
@@ -1756,27 +1756,27 @@ Module dvl0
     ).AfterScanning(dcIn)
 
         pkBuy = nuPicker(
-        New kyPickAiDocPurchased
+        New KyPickAiDocPurchased
     ).AfterScanning(dcIn)
 
         With pkBuy
             rt.Add("PRCH", .DcIn)
             pkPrt = nuPicker(
-            New kyPickAiPartVsAssy
+            New KyPickAiPartVsAssy
         ).AfterScanning(.DcOut)
         End With
 
         With pkPrt
             rt.Add("ASSY", .DcOut)
             pkCtC = nuPicker(
-            New kyPickAiDocContentCtr
+            New KyPickAiDocContentCtr
         ).AfterScanning(.DcIn)
         End With
 
         With pkCtC
             rt.Add("HDWR", .DcIn)
             pkSht = nuPicker(
-            New kyPickAiSheetMetal
+            New KyPickAiSheetMetal
         ).AfterScanning(.DcOut)
         End With
 
@@ -1880,7 +1880,7 @@ Module dvl0
         rt = pn & Join(dc.Keys, pn)
 
         With nuPicker(
-        New kyPickAiPartVsAssy
+        New KyPickAiPartVsAssy
     ).AfterScanning(dc)
             With .DcOut
                 For Each ky In .Keys
@@ -2091,12 +2091,12 @@ Module dvl0
         Dim bp As String
 
         If ad Is Nothing Then
-            d0g9f0 = d0g9f0(InventorApp.ActiveDocument, pn)
+            d0g9f0 = d0g9f0(ThisApplication.ActiveDocument, pn)
         ElseIf Len(pn) < 1 Then
             d0g9f0 = d0g9f0(ad, d0g9f3(ad))
         Else
             bp = "C:\Doyle_Vault\Designs\Misc\andrewT\"
-            vw = ad.Views.Item(1) 'InventorApp.ActiveView
+            vw = ad.Views.Item(1) 'ThisApplication.ActiveView
             cm = vw.Camera
 
             With vw
@@ -2219,7 +2219,7 @@ Module dvl0
         Dim rp As VbMsgBoxResult
         Dim nm As String
 
-        With InventorApp
+        With ThisApplication
             If .ActiveDocumentType = DocumentTypeEnum.kPartDocumentObject _
         Or .ActiveDocumentType = DocumentTypeEnum.kAssemblyDocumentObject _
         Then

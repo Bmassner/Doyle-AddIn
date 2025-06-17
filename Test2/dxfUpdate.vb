@@ -1,11 +1,6 @@
-﻿Imports System.Text
-Imports Inventor
+﻿Module dxfUpdate
 
-Module dxfUpdate
-
-    Sub runDxfUpdate()
-
-        Dim invApp As Inventor.Application = Nothing
+    Sub runDxfUpdate(ThisApplication As Inventor.Application)
         Dim oPartDoc As PartDocument = ThisApplication.ActiveDocument
         Dim oDef As SheetMetalComponentDefinition = oPartDoc.ComponentDefinition
         Dim oFactory As iPartFactory = oDef.iPartFactory

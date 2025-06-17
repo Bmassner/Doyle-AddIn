@@ -9,7 +9,7 @@ Module dvlAiNameValMap
     '     their addition to or implementation in
     '     Class Module dcPopulator
     '
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Public Function dc2aiNameValMap(dc As Scripting.Dictionary,
     Optional mp As Inventor.NameValueMap = Nothing
 ) As Inventor.NameValueMap
@@ -20,7 +20,7 @@ Module dvlAiNameValMap
         Dim ck As VbMsgBoxResult
 
         If mp Is Nothing Then
-            With InventorApp.TransientObjects
+            With ThisApplication.TransientObjects
                 rt = dc2aiNameValMap(
             dc, .CreateNameValueMap
         )   'NameValueMap cannot
@@ -187,7 +187,7 @@ Module dvlAiNameValMap
     Optional message As Inventor.Document = Nothing
 ) As Inventor.NameValueMap
         If message Is Nothing Then
-            With InventorApp.TransientObjects
+            With ThisApplication.TransientObjects
                 nuAiNameValMap = .CreateNameValueMap
             End With
         Else

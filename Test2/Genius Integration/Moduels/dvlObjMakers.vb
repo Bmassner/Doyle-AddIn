@@ -1,7 +1,7 @@
 Module dvlObjMakers
 
     Private Const txVersion As String = "dvlObjMakers REV[2022.03.16.0930]"
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Public Function nu_wkgCls0(
     Optional AiDoc As Inventor.Document = Nothing
 ) As wkgCls0
@@ -59,7 +59,7 @@ Module dvlObjMakers
     Public Function newFmTest0() As FmTest0
         newFmTest0 = New FmTest0
     End Function
-    'Debug.Print(newFmTest0().ft0g0f0(aiDocument(InventorApp.ActiveDocument).Thumbnail)
+    'Debug.Print(newFmTest0().ft0g0f0(aiDocument(ThisApplication.ActiveDocument).Thumbnail)
 
     Public Function newFmTest1() As FmTest1
         newFmTest1 = New FmTest1
@@ -90,7 +90,7 @@ Module dvlObjMakers
 
         With newFmTest1()
             If .AskAbout(
-            InventorApp.Documents.ItemByName(nm)
+            ThisApplication.Documents.ItemByName(nm)
         ) = vbYes Then
                 With .ItemData
                     For Each ky In .Keys

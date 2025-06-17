@@ -1,82 +1,51 @@
 Module Module1
-    Dim inventorApp As Inventor.Application
-    Public Function dcCutTimePerimeter(ad As Inventor.Document,
-    Optional dc As Scripting.Dictionary = Nothing,
-    Optional incTop As Long = 0
-) As Scripting.Dictionary
-        Dim rt As Scripting.Dictionary
-        Dim ActiveDoc As Inventor.Document
-        Dim PartDoc As Inventor.Document
+    Dim ThisApplication As Inventor.Application
+    Public Function dcCutTimePerimeter(ad As Inventor.Document, ThisApplication As Inventor.Application,
+                                       Optional dc As Scripting.Dictionary = Nothing,
+                                       Optional incTop As Long = 0) As Scripting.Dictionary
+        Dim rt As New Scripting.Dictionary
+        Dim oDoc As Inventor.Document
         Dim ky As Object
 
-        'If dc Is Nothing Then
-        ' dcCutTimePerimeter = dcCutTimePerimeter(
-        'ad(), New Scripting.Dictionary, incTop
-        ')
-        'Else
-        rt = New Scripting.Dictionary
+        For Each ky In dcAiDocComponents(ad, If(dc Is Nothing, New Scripting.Dictionary, dc), incTop).Keys
+            oDoc = aiDocument(dcAiDocComponents(ad, dc, incTop).Item(ky))
+            ' Add perimeter calculation or other logic here as needed
+            ' Example: rt.Add oDoc.Propertys.Item(GnDesign).Item(PnPartNum).Text, fpPerimeterInch(ThisApplication, oDoc)
+        Next
 
-        With dcAiDocComponents(ad, dc, incTop)
-            For Each ky In .Keys
-                PartDoc = aiDocument(.Item(ky))
-                rt.Add_
-                PartDoc.Propertys.Item(
-                        gnDesign).Item(
-                        pnPartNum).Text()
-                fpPerimeterInch(PartDoc) _
-                ', aiPropVal(aiPropShtMetalThickness(PartDoc), -1)
-                ''
-            Next
-        End With
-
-        dcCutTimePerimeter = rt
-        'End If
+        Return rt
     End Function
-    'Debug.Print(dumpLsKeyVal(dcCutTimePerimeter(InventorApp.ActiveDocument))
+    'Debug.Print(dumpLsKeyVal(dcCutTimePerimeter(ThisApplication.ActiveDocument))
 
-    Public Function mdl1g0f0() As Long
-        Dim dc As Scripting.Dictionary
+    Public Function mdl1g0f0(ThisApplication As Inventor.Application) As Long
+        Dim dc As Scripting.Dictionary = dcAssyDocComponents(ThisApplication.Documents.ItemByName(
+            "C:\Doyle_Vault\Designs\Misc\andrewT\02\02-weldmentStd-01.iam"))
         Dim ky As Object
         Dim ad As Inventor.Document
-        'Dim PropertySet As Inventor.Property
         Dim InvProperty As Inventor.Property
 
-        dc = dcAssyDocComponents(InventorApp.Documents.ItemByName(
-        "C:\Doyle_Vault\Designs\Misc\andrewT\02\02-weldmentStd-01.iam"
-    ))
-        With dc
-            For Each ky In .Keys
-                ad = aiDocument(.Item(ky))
-                With dcGeniusProps(ad)
-                    If .Exists(pnRawMaterial) Then
-                        InvProperty = ad.Propertys(gnCustom).Item(pnRawMaterial)
-                        With InvProperty
-                            Debug.Print(.Text)
-                            If .Text Like "FM-*" Then
-                                With New FmTest1
-                                    If .AskAbout(ad) = vbYes Then
-                                        With .ItemData
-                                            '
-                                            Stop
-                                            InvProperty.Text = .Item(pnRawMaterial)
-                                        End With
-                                    End If
-                                End With
+        For Each ky In dc.Keys
+            ad = aiDocument(dc.Item(ky))
+            With dcGeniusProps(ad)
+                If .Exists(PnRawMaterial) Then
+                    InvProperty = ad.Propertys(GnCustom).Item(PnRawMaterial)
+                    If InvProperty.Text Like "FM-*" Then
+                        With New FmTest1
+                            If .AskAbout(ad) = vbYes Then
+                                InvProperty.Text = .ItemData.Item(PnRawMaterial)
                             End If
                         End With
-                        'Stop
-                    Else
-                        'Stop
                     End If
-                End With
-            Next
-        End With
+                End If
+            End With
+        Next
+        Return 0
     End Function
     'Debug.Print(cnGnsDoyle.Execute("select I.ItemID, I.Thickness, I.Item, I.Description1 from vgMfiItems as I where I.Family='DSHEET'").GetString
 
     Public Function mdl1g1f0() As Long
         With New FmTest1
-            .AskAbout(InventorApp.ActiveDocument)
+            .AskAbout(ThisApplication.ActiveDocument)
         End With
     End Function
 
@@ -116,30 +85,24 @@ Module Module1
     ' The following is a basic example of accessing Parameters,
     ' such as dimensions, from an Inventor Part Document.
     Public Function mdl1g1f1() As Long
-        With aiDocPart(InventorApp.ActiveDocument)
-            'aiDocPart casts an Inventor Part Document
-            'from its general Document reference, if valid.
+        With aiDocPart(ThisApplication.ActiveDocument)
             With .ComponentDefinition.Parameters.Item("Thickness")
                 Debug.Print("Thickness parameter exposed as property: " & .ExposedAsProperty)
                 Debug.Print("Thickness parameter text: " & .Text)
             End With
         End With
+        Return 0
     End Function
     ' This example was written as a quick one-off to see how
     ' an Inventor Parameter like the Thickness ting for
     ' Sheet Metal Parts might have its "Export" status
     ' modified programmatically.
 
-    Public Function aiPropVal(
-    InvProperty As Inventor.Property,
-    Optional ifNot As Object = ""
-) As Object
+    Public Function aiPropVal(InvProperty As Inventor.Property, Optional ifNot As Object = "") As Object
         If InvProperty Is Nothing Then
-            aiPropVal = ifNot
+            Return ifNot
         Else
-            aiPropVal = aiPropValAux(
-            InvProperty.Text, ifNot
-        )
+            Return aiPropValAux(InvProperty.Text, ifNot)
         End If
     End Function
     ' This example was written as a quick one-off to see how
@@ -147,24 +110,17 @@ Module Module1
     ' Sheet Metal Parts might have its "Export" status
     ' modified programmatically.
 
-    Public Function aiPropValAux(
-    vl As Object, Optional ifNot As Object = ""
-) As Object
+    Public Function aiPropValAux(vl As Object, Optional ifNot As Object = "") As Object
         If vl IsNot Nothing AndAlso vl.GetType.IsClass Then
-            If vl Is Nothing Then
-                aiPropValAux = ifNot
+            If TypeOf vl Is stdole.StdPicture Then
+                Debug.Print("") ' Breakpoint Landing
+                Return "<stdole.StdPicture>"
             Else
-                If TypeOf vl Is stdole.StdPicture Then 'IPictureDisp
-                    aiPropValAux = "<stdole.StdPicture>"
-                    Debug.Print("") 'Breakpoint Landing
-                Else
-                    Stop 'and see what we need to do
-                    aiPropValAux = "<Object:" & TypeName(vl) & ">"
-                End If
+                Stop 'and see what we need to do
+                Return "<Object:" & TypeName(vl) & ">"
             End If
-        Else
-            ' vl is not an object
         End If
+        Return ifNot
     End Function
 
     Public Function aiPropGnsItmFamily(
@@ -174,7 +130,7 @@ Module Module1
             aiPropGnsItmFamily = Nothing
         Else
             aiPropGnsItmFamily = AiDoc.Propertys(
-            gnDesign).Item(pnFamily
+            GnDesign).Item(PnFamily
         )
         End If
     End Function
@@ -186,9 +142,9 @@ Module Module1
             aiPropShtMetalThickness = Nothing
         Else
             With adPart
-                If .SubType = guidSheetMetal Then
+                If .SubType = GuidSheetMetal Then
                     If smThicknessExposed(.ComponentDefinition) Then
-                        aiPropShtMetalThickness = .Propertys(gnCustom).Item(pnThickness)
+                        aiPropShtMetalThickness = .Propertys(GnCustom).Item(PnThickness)
                     Else
                         aiPropShtMetalThickness = Nothing
                     End If
@@ -202,9 +158,9 @@ Module Module1
     Public Function smThicknessExposed(
     smDef As Inventor.SheetMetalComponentDefinition
 ) As Long
-        If smDef.Parameters.IsExpressionValid(pnThickness, "in") Then
+        If smDef.Parameters.IsExpressionValid(PnThickness, "in") Then
             smThicknessExposed = parExposed(
-        smDef.Parameters(pnThickness), 1
+        smDef.Parameters(PnThickness), 1
     )
             'With smDef.Parameters(pnThickness)
             'If Not .ExposedAsProperty Then
@@ -274,7 +230,7 @@ Module Module1
         Dim wk As Object
 
         ' rt = New Scripting.Dictionary
-        PropertySet = ad.Propertys.Item(gnCustom)
+        PropertySet = ad.Propertys.Item(GnCustom)
 
         If dc Is Nothing Then
             dcGnsPropsListed = dcGnsPropsListed(
@@ -303,9 +259,9 @@ Module Module1
                     '    , "SPEC04", "SPEC05", "SPEC06" _
                     '    , "SPEC07", "SPEC08", "SPEC16" _
                     ''
-                    Dim PartDoc As Inventor.Document
+                    Dim oDoc As Inventor.Document
                     InvProperty = aiGetProp(PropertySet, CStr(ky), mkNf)
-                    wk = PartDoc
+                    wk = oDoc
 
                     If InvProperty Is Nothing Then 'check
                         'if supposed to return Nothings
@@ -363,7 +319,7 @@ Module Module1
         '     Added pnThickness to list
         '     of Properties to return.
         '
-        dcGnsPropsPart = dcGnsPropsListed(ad, {pnMass, pnArea, pnWidth, pnLength, pnThickness, pnRawMaterial, pnRmQty, pnRmUnit}, dc, ifNone)
+        dcGnsPropsPart = dcGnsPropsListed(ad, {PnMass, PnArea, PnWidth, PnLength, PnThickness, PnRawMaterial, PnRmQty, PnRmUnit}, dc, ifNone)
     End Function
 
     Public Function dcGnsPropsAssy(ad As Inventor.Document,
@@ -375,7 +331,7 @@ Module Module1
         'Dim Property As Inventor.Property
         'Dim ky As Object
 
-        dcGnsPropsAssy = dcGnsPropsListed(ad, New String() {pnMass, "SPEC01", "SPEC02", "SPEC03", "SPEC04", "SPEC05", "SPEC06", "SPEC07", "SPEC08", "SPEC16"}, dc, ifNone)
+        dcGnsPropsAssy = dcGnsPropsListed(ad, New String() {PnMass, "SPEC01", "SPEC02", "SPEC03", "SPEC04", "SPEC05", "SPEC06", "SPEC07", "SPEC08", "SPEC16"}, dc, ifNone)
         ' rt = New Scripting.Dictionary
         ' PropertySet = ad.Propertys.Item(gnCustom)
 
@@ -485,7 +441,7 @@ Module Module1
         Dim mx As Long
         Dim dx As Long
 
-        With InventorApp.CommandManager.ControlDefinitions
+        With ThisApplication.CommandManager.ControlDefinitions
             mx = .Count
             For dx = 1 To mx
                 With .Item(dx)
@@ -542,8 +498,8 @@ Module Module1
         End With
         mdl1g5f1 = rt
     End Function
-    'Debug.Print(txDumpLs(mdl1g5f1(InventorApp.ActiveDocument).Keys)
-    'Debug.Print(txDumpLs(dcOb(mdl1g5f1(InventorApp.ActiveDocument).Item("")).Keys)
+    'Debug.Print(txDumpLs(mdl1g5f1(ThisApplication.ActiveDocument).Keys)
+    'Debug.Print(txDumpLs(dcOb(mdl1g5f1(ThisApplication.ActiveDocument).Item("")).Keys)
 
     Public Function mdl1g5f2(ad As Inventor.Document) As Scripting.Dictionary
         ' The purpose of this function is to return a Dictionary
@@ -596,7 +552,7 @@ Module Module1
         rt = New Scripting.Dictionary
         For Each oc In ad.ComponentDefinition.Occurrences
             sd = oc.Definition.Document 'aiDocument()
-            pn = sd.Propertys.Item(gnDesign).Item(pnPartNum).Text
+            pn = sd.Propertys.Item(GnDesign).Item(PnPartNum).Text
             With rt
                 If .Exists(pn) Then
                     gp = dcAiDocsByFullDocName(sd, .Item(pn))
@@ -609,7 +565,7 @@ Module Module1
         Next
         mdl1g5f3 = rt
     End Function
-    'Debug.Print(txDumpLs(mdl1g5f3(InventorApp.ActiveDocument).Keys)
+    'Debug.Print(txDumpLs(mdl1g5f3(ThisApplication.ActiveDocument).Keys)
 
     Public Function mdl1g5f4(dc As Scripting.Dictionary) As Scripting.Dictionary
         ' Transform keys from supplied Dictionary
@@ -631,7 +587,7 @@ Module Module1
         End With
         mdl1g5f4 = rt
     End Function
-    'Debug.Print(txDumpLs(mdl1g5f4(mdl1g5f3(InventorApp.ActiveDocument)).Keys)
+    'Debug.Print(txDumpLs(mdl1g5f4(mdl1g5f3(ThisApplication.ActiveDocument)).Keys)
 
     Public Function dcAiDocsByFullDocName(
     ad As Inventor.Document,
@@ -673,7 +629,7 @@ Module Module1
         rt = New Scripting.Dictionary
         For Each oc In ad.ComponentDefinition.Occurrences
             sd = oc.Definition.Document
-            pn = sd.Propertys.Item(gnDesign).Item(pnPartNum).Text
+            pn = sd.Propertys.Item(GnDesign).Item(PnPartNum).Text
             With rt
                 If .Exists(pn) Then
                     If sd Is .Item(pn) Then 'we're okay
@@ -688,7 +644,7 @@ Module Module1
         Next
         dcAssyDocsByPtNum = rt
     End Function
-    'Debug.Print(txDumpLs(dcAssyDocsByPtNum(InventorApp.ActiveDocument).Keys)
+    'Debug.Print(txDumpLs(dcAssyDocsByPtNum(ThisApplication.ActiveDocument).Keys)
 
     Public Function dcAiDocsByCompList(dc As Scripting.Dictionary) As Scripting.Dictionary
         ' Derived from mdl1g5f4
@@ -713,9 +669,9 @@ Module Module1
                          ), sd)
                     ElseIf .DocumentType = DocumentTypeEnum.kPartDocumentObject Then
                         'Stop
-                        With dcAiPropsIn(sd.Propertys.Item(gnCustom))
-                            If .Exists(pnRawMaterial) Then
-                                dl = Trim$(aiProperty(.Item(pnRawMaterial)).Text)
+                        With dcAiPropsIn(sd.Propertys.Item(GnCustom))
+                            If .Exists(PnRawMaterial) Then
+                                dl = Trim$(aiProperty(.Item(PnRawMaterial)).Text)
                                 If Len(dl) = 0 Then
                                     dl = "NO_RAW_STOCK" & vbTab & "<No Raw Stock Declared>"
                                 Else
@@ -746,8 +702,8 @@ Module Module1
         End With
         dcAiDocsByCompList = rt
     End Function
-    'Debug.Print(txDumpLs(dcAiDocsByCompList(dcAssyDocsByPtNum(InventorApp.ActiveDocument)).Keys)
-    'send2clipBd txDumpLs(dcAiDocsByCompList(dcAssyDocsByPtNum(InventorApp.ActiveDocument)).Keys)
+    'Debug.Print(txDumpLs(dcAiDocsByCompList(dcAssyDocsByPtNum(ThisApplication.ActiveDocument)).Keys)
+    'send2clipBd txDumpLs(dcAiDocsByCompList(dcAssyDocsByPtNum(ThisApplication.ActiveDocument)).Keys)
 
     Public Function rsWinUpdHist() As ADODB.Record
         ' Windows Update History
@@ -787,19 +743,18 @@ Module Module1
                 .Append("Description", DataTypeEnum.adVarChar, 1024)
                 .Append("Date", DataTypeEnum.adDBDate)
             End With
-            .Open
+            .Open()
         End With
         rsNewWinUpdHist = rt
     End Function
 
-    Public Function rsShtMtlCutPars(
+    Public Function rsShtMtlCutPars(ThisApplication As Inventor.Application,
     ad As Inventor.Document,
     Optional incTop As Long = 0
 ) As ADODB.Record
         ' Windows Update History
         Dim rt As ADODB.Record
-        Dim ActiveDoc As Inventor.Document
-        Dim PartDoc As Inventor.Document
+        Dim oDoc As Inventor.Document
         Dim ls As Object
         Dim ky As Object
 
@@ -808,13 +763,13 @@ Module Module1
 
         With dcAiDocComponents(ad, , incTop)
             For Each ky In .Keys
-                PartDoc = aiDocument(.Item(ky))
-                With PartDoc.Propertys.Item(gnDesign)
+                oDoc = aiDocument(.Item(ky))
+                With oDoc.Propertys.Item(GnDesign)
                     rt.AddNew(ls, {
-                    .Item(pnPartNum).Text,
-                    .Item(pnDesc).Text,
-                    aiPropVal(aiPropShtMetalThickness(aiDocPart(PartDoc)), -1),
-                    fpPerimeterInch(PartDoc)
+                    .Item(PnPartNum).Text,
+                    .Item(PnDesc).Text,
+                    aiPropVal(aiPropShtMetalThickness(aiDocPart(oDoc)), -1),
+                    fpPerimeterInch(oDoc, ThisApplication)
                 })
                 End With
             Next
@@ -823,8 +778,8 @@ Module Module1
 
         rsShtMtlCutPars = rt
     End Function
-    'send2clipBd rsShtMtlCutPars(InventorApp.ActiveDocument, 1).GetString(adClipString, , "|")
-    'send2clipBd rsShtMtlCutPars(InventorApp.ActiveDocument, 1).GetString(adClipString, , vbTab)
+    'send2clipBd rsShtMtlCutPars(ThisApplication.ActiveDocument, 1).GetString(adClipString, , "|")
+    'send2clipBd rsShtMtlCutPars(ThisApplication.ActiveDocument, 1).GetString(adClipString, , vbTab)
 
     Public Function rsNewShtMtlCutPars() As ADODB.Record
         Dim rt As ADODB.Record

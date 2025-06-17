@@ -1,9 +1,6 @@
-Imports System.Runtime.CompilerServices
-
 Module modGPUpdateAT
-    Dim inventorApp As Inventor.Application
-    Public Function dcGeniusPropsPartRev20180530(
-    invDoc As Inventor.PartDocument,
+    Public Function dcGeniusPropsPartRev20180530(ThisApplication As Inventor.Application,
+    oDoc As Inventor.PartDocument,
     Optional dc As Scripting.Dictionary = Nothing
 ) As Scripting.Dictionary
         '
@@ -26,14 +23,6 @@ Module modGPUpdateAT
         Dim prPartNum As Inventor.Property 'pnPartNum
         Dim prFamily As Inventor.Property
         '
-        ' REV[2023.05.23.1134]
-        ' introduce break between built-in
-        ' and user-defined properties to
-        ' better distinguish the two groups
-        '
-        ' also move ADDED note (above)
-        ' before prPartNum to pull
-        ' the two built-ins together
         '
         Dim prRawMatl As Inventor.Property 'pnRawMaterial
         Dim prRmUnit As Inventor.Property 'pnRmUnit
@@ -60,12 +49,12 @@ Module modGPUpdateAT
         If dc Is Nothing Then
             dcGeniusPropsPartRev20180530 =
         dcGeniusPropsPartRev20180530(
-            invDoc, New Scripting.Dictionary
+            oDoc, New Scripting.Dictionary
         )
         Else
             rt = dc
 
-            With invDoc
+            With oDoc
                 ' REV[2022.05.06.1113] (lines 102-112)
                 If .ComponentDefinition.IsContentMember Then
                     'Stop
@@ -73,8 +62,8 @@ Module modGPUpdateAT
 
                 ' Get Property s
                 With .Propertys
-                    aiPropsUser = .Item(gnCustom)
-                    aiPropsDesign = .Item(gnDesign)
+                    aiPropsUser = .Item(GnCustom)
+                    aiPropsDesign = .Item(GnDesign)
                 End With
 
                 ' Get Custom Properties...
@@ -127,11 +116,11 @@ Module modGPUpdateAT
                 ' Part Number and Family properties
                 ' are from Design, NOT Custom 
                 prPartNum = aiGetProp(
-                aiPropsDesign, pnPartNum)
+                aiPropsDesign, PnPartNum)
                 'ADDED 2021.03.11
                 pnModel = prPartNum.Text
                 prFamily = aiGetProp(
-                aiPropsDesign, pnFamily)
+                aiPropsDesign, PnFamily)
                 ' REV[2022.05.05.1551] (lines 179-185)
                 nmFamily = famVsGenius(pnModel, prFamily.Text)
 
@@ -145,8 +134,8 @@ Module modGPUpdateAT
                     With .MassProperties
                         ' REV[2021.11.12] (lines 233-241)
                         On Error Resume Next
-                        rt = dcWithProp(aiPropsUser, pnMass,
-                        System.Math.Round(cvMassKg2LbM * .Mass, 4), rt
+                        rt = dcWithProp(aiPropsUser, PnMass,
+                        System.Math.Round(CvMassKg2LbM * .Mass, 4), rt
                     )
                         If Err.Number Then
                             ' (removed lines 247-260)
@@ -171,13 +160,13 @@ Module modGPUpdateAT
                 ) > 0 Then
                         ' REV[2022.06.29.1416] (lines 277-281)
                         ck = vbYes
-                    ElseIf InStr(1, invDoc.FullFileName,
+                    ElseIf InStr(1, oDoc.FullFileName,
                     "\Doyle_Vault\Designs\purchased\"
                 ) + InStr(1, "|D-HDWR|D-PTO|D-PTS|R-PTO|R-PTS|D-BAR|DSHEET|",
                     "|" & nmFamily & "|"
                 ) > 0 Then
                         ' REV[2022.05.06.1118] (lines 288-299)
-                        ck = newFmTest2().AskAbout(invDoc, ,
+                        ck = newFmTest2().AskAbout(oDoc, ,
                         "Is this a Purchased Part?" _
                         & vbCrLf & "(Cancel to debug)"
                     )
@@ -244,9 +233,9 @@ Module modGPUpdateAT
                     ' search on REV tag above to find original location
                     ' source there remains in commented form, pending removal
                     '
-                    prRawMatl = aiGetProp(aiPropsUser, pnRawMaterial, 1)
-                    prRmUnit = aiGetProp(aiPropsUser, pnRmUnit, 1)
-                    prRmQty = aiGetProp(aiPropsUser, pnRmQty, 1)
+                    prRawMatl = aiGetProp(aiPropsUser, PnRawMaterial, 1)
+                    prRmUnit = aiGetProp(aiPropsUser, PnRmUnit, 1)
+                    prRmQty = aiGetProp(aiPropsUser, PnRmQty, 1)
 
                     ' ...and their initial Values
                     If prRawMatl Is Nothing Then
@@ -286,11 +275,11 @@ Module modGPUpdateAT
                     pnStock = prRawMatl.Text
                     ' REV[2022.02.08.1304] (lines 375-396)
                     dcIn = DcFromAdoRS(CnGnsDoyle().Execute(
-                    sqlOf_GnsPartMatl(pnModel)
+                    SqlOf_GnsPartMatl(ThisApplication, pnModel)
                 ))
                     ' (removed lines 400-402)
                     If dcIn.Count > 0 Then 'Genius found something
-                        With dcOb(dcRecSetDcDx4json(dcIn).Item(pnRawMaterial))
+                        With dcOb(dcRecSetDcDx4json(dcIn).Item(PnRawMaterial))
                             ' REV[2022.01.28.1336] (lines 405-413)
                             If .Count > 0 Then 'Genius found something
                                 If Len(pnStock) > 0 Then
@@ -377,7 +366,7 @@ Module modGPUpdateAT
                         End If : End With
 
                     '----------------------------------------------------'
-                    If .SubType = guidSheetMetal Then 'for SheetMetal ---'
+                    If .SubType = GuidSheetMetal Then 'for SheetMetal ---'
                         '----------------------------------------------------'
                         ' NOTE[2018-05-31] (602-608)
                         ' REV[2022.01.28.0903] (609-614)
@@ -423,15 +412,15 @@ Module modGPUpdateAT
                             ' re-enabling user prompt (see below)
                             ' REV[2023.04.24.0928]
                             ' overhauling -- see below
-                            If dcFP.Exists(pnThickness) Then
+                            If dcFP.Exists(PnThickness) Then
                                 ' REV[2023.04.24.0929]
                                 ' switched assignment of projected
                                 ' sheet metal item directly to txTmp
                                 ' instead of using it as a placeholder
                                 ' for pnStock. that way, only one
                                 ' assignment is required at this stage
-                                txTmp = ptNumShtMetal(invDoc.ComponentDefinition) 'pnStock
-                                'pnStock = ptNumShtMetal(invDoc.ComponentDefinition)
+                                txTmp = ptNumShtMetal(oDoc.ComponentDefinition) 'pnStock
+                                'pnStock = ptNumShtMetal(oDoc.ComponentDefinition)
 
                                 ' NOTE[2022.05.31.1158] (lines 653-662)
                                 If Len(pnStock) = 0 Then
@@ -459,7 +448,7 @@ Module modGPUpdateAT
                                     ' were in the wrong order in the prompt
                                     ' REV[2023.04.21.1526] disabled AGAIN
                                     ' and changed check [REV:1527] below
-                                    ck = newFmTest2().AskAbout(invDoc,
+                                    ck = newFmTest2().AskAbout(oDoc,
                                     "Suggest Material change from" _
                                     & vbCrLf & pnStock & " to" _
                                     & vbCrLf & txTmp & " for",
@@ -480,7 +469,7 @@ Module modGPUpdateAT
                                     'Stop
                                 End If
                                 txTmp = ""
-                                dcFP.Add(pnRawMaterial, pnStock)
+                                dcFP.Add(PnRawMaterial, pnStock)
                                 ' (removed lines 668-671)
                             Else 'can't be sure about existing raw stock
                                 'so clear it for now
@@ -501,7 +490,7 @@ Module modGPUpdateAT
                                 If dcFP.Item("mtFamily") = "DSHEET" Then
                                     If dcFP.Exists("OFFTHK") Then
                                         'Stop
-                                        ck = newFmTest2().AskAbout(invDoc,
+                                        ck = newFmTest2().AskAbout(oDoc,
                                         "This Part: ", "might not be sheet metal. " _
                                         & vbCrLf & vbCrLf _
                                         & "Is it in fact sheet metal?"
@@ -588,7 +577,7 @@ Module modGPUpdateAT
                                             ck = vbYes
                                         Else
                                             ' NOTE[2022.01.03] (lines 869-871)
-                                            ck = newFmTest2().AskAbout(invDoc,
+                                            ck = newFmTest2().AskAbout(oDoc,
                                             "Suggest Sheet Metal change" _
                                             & vbCrLf & "from " & prRawMatl.Text _
                                             & vbCrLf & "  to " & pnStock & " for",
@@ -637,7 +626,7 @@ Module modGPUpdateAT
                                 If rt.Exists("OFFTHK") Then
                                     'Stop 'and verify raw material item
                                     ' NOTE[2021.12.13] (lines 902-905)
-                                    ck = newFmTest2().AskAbout(invDoc,
+                                    ck = newFmTest2().AskAbout(oDoc,
                                     "Assigned Raw Material " & prRawMatl.Text _
                                     & vbCrLf & " might be incorrect for ",
                                     "Clear it?"
@@ -691,7 +680,7 @@ Module modGPUpdateAT
                                             'actual Sheet Metal, so just clear this:
                                             pnStock = ""
                                         Else
-                                            pnStock = ptNumShtMetal(invDoc.ComponentDefinition)
+                                            pnStock = ptNumShtMetal(oDoc.ComponentDefinition)
                                             Debug.Print("") 'Breakpoint Landing
                                             ' UPDATE[2021.12.10] (lines 989-993)
                                             ''  ACTION TAKEN[2021.03.11] (lines 994-1003)
@@ -714,12 +703,12 @@ Module modGPUpdateAT
                             If Len(pnStock) = 0 Then
                                 ' UPDATE[2018.05.30] (lines 1053-1062)
                                 With newFmTest1()
-                                    If Not invDoc.ComponentDefinition.Document Is invDoc Then Stop
+                                    If Not oDoc.ComponentDefinition.Document Is oDoc Then Stop
 
                                     bd = nuAiBoxData().UsingInches.SortingDims(
-                                    invDoc.ComponentDefinition.RangeBox
+                                    oDoc.ComponentDefinition.RangeBox
                                 )
-                                    ck = .AskAbout(invDoc,
+                                    ck = .AskAbout(oDoc,
                                     "No Stock Found! Please Review" _
                                     & vbCrLf & vbCrLf & bd.Dump(0)
                                 )
@@ -727,14 +716,14 @@ Module modGPUpdateAT
                                     If ck = vbYes Then
                                         ' UPDATE[2018.05.30] (lines 1075-1077)
                                         With .ItemData
-                                            If .Exists(pnFamily) Then
-                                                nmFamily = .Item(pnFamily)
-                                                Debug.Print(pnFamily & "=" & nmFamily)
+                                            If .Exists(PnFamily) Then
+                                                nmFamily = .Item(PnFamily)
+                                                Debug.Print(PnFamily & "=" & nmFamily)
                                             End If
 
-                                            If .Exists(pnRawMaterial) Then
-                                                pnStock = .Item(pnRawMaterial)
-                                                Debug.Print(pnRawMaterial & "=" & pnStock)
+                                            If .Exists(PnRawMaterial) Then
+                                                pnStock = .Item(PnRawMaterial)
+                                                Debug.Print(PnRawMaterial & "=" & pnStock)
                                             End If
                                         End With
                                         If 0 Then Stop 'Use this for a debugging shim
@@ -845,7 +834,7 @@ Module modGPUpdateAT
                                 ' to check use of fields normally
                                 ' requested in SQL select statement.
                                 '
-                                With CnGnsDoyle().Execute(sqlOf_simpleSelWhere(
+                                With CnGnsDoyle().Execute(SqlOf_simpleSelWhere(
                                 "vgMfiItems", "Family", "Item", pnStock
                             ))
                                     'preceding (disabled) With statement
@@ -904,7 +893,7 @@ Module modGPUpdateAT
                                             Debug.Print(pnModel & "[" _
                                             & qtRawMatl & qtUnit _
                                             & " of " & pnStock & ": " _
-                                            & aiPropsDesign.Item(pnDesc).Text _
+                                            & aiPropsDesign.Item(PnDesc).Text _
                                             & "]") 'prRmQty.Text prRawMatl.Text
                                             Stop 'FULL Stop!
                                             ' NOTE[2022.05.05.1603]
@@ -947,16 +936,16 @@ Module modGPUpdateAT
                                                 ' REV[2022.02.09.0923] (lines 1273-1277)
                                                 If False Then 'go ahead and run old dump
                                                     Debug.Print("X SPAN", "Y SPAN", "Z SPAN")
-                                                    With invDoc.ComponentDefinition.RangeBox
+                                                    With oDoc.ComponentDefinition.RangeBox
                                                         Debug.Print("")
-                                                        System.Math.Round((.MaxPoint.X - .MinPoint.X) / cvLenIn2cm, 4)
-                                                        System.Math.Round((.MaxPoint.Y - .MinPoint.Y) / cvLenIn2cm, 4)
-                                                        System.Math.Round((.MaxPoint.Z - .MinPoint.Z) / cvLenIn2cm, 4)
+                                                        System.Math.Round((.MaxPoint.X - .MinPoint.X) / CvLenIn2cm, 4)
+                                                        System.Math.Round((.MaxPoint.Y - .MinPoint.Y) / CvLenIn2cm, 4)
+                                                        System.Math.Round((.MaxPoint.Z - .MinPoint.Z) / CvLenIn2cm, 4)
                                                     End With
                                                 End If
 
                                                 With nuAiBoxData().UsingInches().UsingBox(
-                                            invDoc.ComponentDefinition.RangeBox
+                                            oDoc.ComponentDefinition.RangeBox
                                         )
                                                     Debug.Print(.Dump(0))
                                                 End With
@@ -964,39 +953,39 @@ Module modGPUpdateAT
 
                                                 ' REV[2022.02.08.1446] (lines 1295-1299)
                                                 Debug.Print("qtRawMatl = ", CStr(qtRawMatl), " 'in model. ")
-                                                If dcIn.Exists(pnRmQty) Then Debug.Print("In Genius: ", CStr(dcIn.Item(pnRmQty)))
+                                                If dcIn.Exists(PnRmQty) Then Debug.Print("In Genius: ", CStr(dcIn.Item(PnRmQty)))
                                                 Debug.Print("")
                                                 Debug.Print("qtUnit = """, qtUnit, """ 'in model. ")
-                                                If dcIn.Exists(pnRmUnit) Then Debug.Print("In Genius: ", CStr(dcIn.Item(pnRmUnit)))
-                                                If dcIn.Item(pnRmUnit) <> "IN" Then Debug.Print(" ( or try IN )")
+                                                If dcIn.Exists(PnRmUnit) Then Debug.Print("In Genius: ", CStr(dcIn.Item(PnRmUnit)))
+                                                If dcIn.Item(PnRmUnit) <> "IN" Then Debug.Print(" ( or try IN )")
                                                 Debug.Print("")
                                                 ' (removed lines 1307-1314)
-                                                With nu_fmIfcMatlQty01().SeeUser(invDoc) '.Result()
-                                                    If .Exists(pnRmQty) Then
+                                                With nu_fmIfcMatlQty01().SeeUser(oDoc) '.Result()
+                                                    If .Exists(PnRmQty) Then
                                                         ' REV[2022.04.04.1404] (lines 1317-1323)
                                                         If CDbl("0" & CStr(qtRawMatl)) _
-                                                 = CDbl(.Item(pnRmQty)) Then 'prRmQty.Text => qtRawMatl
+                                                 = CDbl(.Item(PnRmQty)) Then 'prRmQty.Text => qtRawMatl
                                                             'no change -- don't change
                                                         Else
                                                             'Debug.Print("prRmQty.Text FROM " & prRmQty.Text & " TO " & .Item(pnRmQty)
-                                                            Debug.Print("qtRawMatl FROM " & qtRawMatl & " TO " & .Item(pnRmQty))
+                                                            Debug.Print("qtRawMatl FROM " & qtRawMatl & " TO " & .Item(PnRmQty))
 
                                                             'Stop 'and double-check
                                                             'might still be equivalent
-                                                            qtRawMatl = .Item(pnRmQty) 'prRmQty.Text
+                                                            qtRawMatl = .Item(PnRmQty) 'prRmQty.Text
                                                         End If
                                                     Else
                                                         Stop
                                                     End If
 
-                                                    If .Exists(pnRmUnit) Then
-                                                        If qtUnit = .Item(pnRmUnit) Then
+                                                    If .Exists(PnRmUnit) Then
+                                                        If qtUnit = .Item(PnRmUnit) Then
                                                             'no change -- don't change
                                                         Else
-                                                            Debug.Print("qtUnit FROM " & qtUnit & " TO " & .Item(pnRmUnit))
+                                                            Debug.Print("qtUnit FROM " & qtUnit & " TO " & .Item(PnRmUnit))
                                                             'Stop 'and double-check
                                                             'might still be equivalent
-                                                            qtUnit = .Item(pnRmUnit)
+                                                            qtUnit = .Item(PnRmUnit)
                                                         End If
                                                     Else
                                                         Stop
@@ -1004,7 +993,7 @@ Module modGPUpdateAT
                                                 End With
                                                 ' (removed lines 1352-1358)
                                                 Debug.Print("RAW MATERIAL QUANTITY IS NOW ", CStr(qtRawMatl), qtUnit, ". IF OKAY, CONTINUE.") 'prRmQty.Text
-                                                ck = newFmTest2().AskAbout(invDoc,
+                                                ck = newFmTest2().AskAbout(oDoc,
                                             "Raw Material Quantity is now " _
                                             & CStr(qtRawMatl) & qtUnit & " for",
                                             "If this is okay, click [YES]." _
@@ -1051,7 +1040,7 @@ Module modGPUpdateAT
                                                     ' not that it's likely
                                                     ' to succeed anyway.
                                                     ' '
-                                                    aiDocPart(prRmQty.Parent.Parent.Parent).ComponentDefinition.iPartMember.Row.Item(dcIPartTbCols(aiDocPart(prRmQty.Parent.Parent.Parent).ComponentDefinition.iPartMember.ParentFactory.TableColumns).Item(pnRmQty)).Text = qtRawMatl
+                                                    aiDocPart(prRmQty.Parent.Parent.Parent).ComponentDefinition.iPartMember.Row.Item(dcIPartTbCols(aiDocPart(prRmQty.Parent.Parent.Parent).ComponentDefinition.iPartMember.ParentFactory.TableColumns).Item(PnRmQty)).Text = qtRawMatl
                                                 End If
                                             End If
                                             On Error GoTo 0
@@ -1096,10 +1085,10 @@ Module modGPUpdateAT
                         '--------------------------------------------'
                         ' REV[2022.05.04.1501] (lines 1400-1406)
                         If .DocumentInterests.HasInterest(
-                        guidPipingSgmt
+                        GuidPipingSgmt
                     ) Then 'for Piping'
                             'Stop
-                            ck = newFmTest2().AskAbout(invDoc,
+                            ck = newFmTest2().AskAbout(oDoc,
                             "",
                             Join({"" _
                                 , "appears to be Hose or Tubing," _
@@ -1116,7 +1105,7 @@ Module modGPUpdateAT
                             ElseIf ck = vbYes Then
                                 ' (removed lines 1435-1440)
                                 pnStock = userChoiceFromDc(
-                                DcFrom2Fields(CnGnsDoyle().Execute(sqlOf_GnsTubeHose(
+                                DcFrom2Fields(CnGnsDoyle().Execute(SqlOf_GnsTubeHose(
                                     .ComponentDefinition.Parameters.Item(
                                         "Size_Designation"
                                     ).Text
@@ -1127,7 +1116,7 @@ Module modGPUpdateAT
                                 qtRawMatl = System.Math.Round(Val(Split(qtUnit & " ", " ")(0)), 4)
                                 qtUnit = Split(qtUnit & " ", " ")(1)
 
-                                ck = newFmTest2().AskAbout(invDoc,
+                                ck = newFmTest2().AskAbout(oDoc,
                                     Join({
                                         "Stock Quantity of " _
                                         , qtRawMatl & qtUnit _
@@ -1149,15 +1138,15 @@ Module modGPUpdateAT
                         ' NOTE[2022.05.04.1638] (lines 1477-1487)
                         ' [2018.07.31 by AT] (lines 1488-1498)
                         With newFmTest1()
-                            If Not invDoc.ComponentDefinition.Document Is invDoc Then Stop
+                            If Not oDoc.ComponentDefinition.Document Is oDoc Then Stop
 
                             ' [2018.07.31 by AT] (lines 1502-1511)
                             bd = nuAiBoxData().UsingInches.SortingDims(
-                                    invDoc.ComponentDefinition.RangeBox
+                                    oDoc.ComponentDefinition.RangeBox
                                 )
                             'End With
 
-                            ck = .AskAbout(invDoc,
+                            ck = .AskAbout(oDoc,
                                     "Please Select Stock for Machined Part" _
                                     & vbCrLf & vbCrLf & bd.Dump(0)
                                 )
@@ -1165,14 +1154,14 @@ Module modGPUpdateAT
                             If ck = vbYes Then
                                 ' UPDATE[2018.05.30]: (lines 1523-1525)
                                 With .ItemData
-                                    If .Exists(pnFamily) Then
-                                        nmFamily = .Item(pnFamily)
-                                        Debug.Print(pnFamily & "=" & nmFamily)
+                                    If .Exists(PnFamily) Then
+                                        nmFamily = .Item(PnFamily)
+                                        Debug.Print(PnFamily & "=" & nmFamily)
                                     End If
 
-                                    If .Exists(pnRawMaterial) Then
-                                        pnStock = .Item(pnRawMaterial)
-                                        Debug.Print(pnRawMaterial & "=" & pnStock)
+                                    If .Exists(PnRawMaterial) Then
+                                        pnStock = .Item(PnRawMaterial)
+                                        Debug.Print(PnRawMaterial & "=" & pnStock)
                                     End If
                                 End With
                                 If 0 Then Stop 'Use this for a debugging shim
@@ -1201,7 +1190,7 @@ Module modGPUpdateAT
                             ' for SQL to avoid errors.
                             ' see REV[2022.08.19.1359]
                             ' '
-                            With CnGnsDoyle().Execute(sqlOf_simpleSelWhere(
+                            With CnGnsDoyle().Execute(SqlOf_simpleSelWhere(
                                 "vgMfiItems", "Family", "Item", pnStock
                             ))
                                 ' REV[2022.08.26.1104]
@@ -1240,7 +1229,7 @@ Module modGPUpdateAT
                                         Debug.Print(pnModel & "[" _
                                             & qtRawMatl & qtUnit _
                                             & " of " & pnStock & ": " _
-                                            & aiPropsDesign.item(pnDesc).Text _
+                                            & aiPropsDesign.item(PnDesc).Text _
                                             & "]") 'prRmQty.Text prRawMatl.Text
                                         Stop 'FULL Stop!
                                     ElseIf mtFamily Like "?-PartDoc*" Then
@@ -1321,16 +1310,16 @@ Module modGPUpdateAT
                                     If True Then 'go ahead and run old dump
                                         Debug.Print("X SPAN", "Y SPAN", "Z SPAN")
                                         ' REV[2022.02.09.0904] (lines 1779-1783)
-                                        With invDoc.ComponentDefinition.RangeBox
+                                        With oDoc.ComponentDefinition.RangeBox
                                             Debug.Print("")
-                                            System.Math.Round((.MaxPoint.X - .MinPoint.X) / cvLenIn2cm, 4)
-                                            System.Math.Round((.MaxPoint.Y - .MinPoint.Y) / cvLenIn2cm, 4)
-                                            System.Math.Round((.MaxPoint.Z - .MinPoint.Z) / cvLenIn2cm, 4)
+                                            System.Math.Round((.MaxPoint.X - .MinPoint.X) / CvLenIn2cm, 4)
+                                            System.Math.Round((.MaxPoint.Y - .MinPoint.Y) / CvLenIn2cm, 4)
+                                            System.Math.Round((.MaxPoint.Z - .MinPoint.Z) / CvLenIn2cm, 4)
                                         End With
                                     End If
 
                                     With nuAiBoxData().UsingInches().UsingBox(
-                                            invDoc.ComponentDefinition.RangeBox
+                                            oDoc.ComponentDefinition.RangeBox
                                         )
                                         Debug.Print(.Dump(0))
                                     End With
@@ -1338,41 +1327,41 @@ Module modGPUpdateAT
 
                                     ' REV[2022.02.08.1446] (lines 1799-1803)
                                     Debug.Print("qtRawMatl = ", CStr(qtRawMatl), " 'in model. ")
-                                    If dcIn.Exists(pnRmQty) Then Debug.Print("In Genius: ", CStr(dcIn.Item(pnRmQty)))
+                                    If dcIn.Exists(PnRmQty) Then Debug.Print("In Genius: ", CStr(dcIn.Item(PnRmQty)))
                                     Debug.Print("")
                                     Debug.Print("qtUnit = """, qtUnit, """ 'in model.")
-                                    If dcIn.Exists(pnRmUnit) Then Debug.Print("In Genius: ", CStr(dcIn.Item(pnRmUnit)))
+                                    If dcIn.Exists(PnRmUnit) Then Debug.Print("In Genius: ", CStr(dcIn.Item(PnRmUnit)))
                                     Debug.Print(" ( or try IN )")
 
                                     ' REV[2022.02.08.1525] (lines 1811-1825)
                                     Debug.Print("")
                                     ' REV[2022.03.11.1112] (lines 1827-1830)
-                                    With nu_fmIfcMatlQty01().SeeUser(invDoc) '.Result()
-                                        If .Exists(pnRmQty) Then
+                                    With nu_fmIfcMatlQty01().SeeUser(oDoc) '.Result()
+                                        If .Exists(PnRmQty) Then
                                             ' REV[2022.04.04.1404] (lines 1833-1839)
                                             If CDbl("0" & CStr(qtRawMatl)) _
-                                                 = CDbl(.Item(pnRmQty)) Then 'prRmQty.Text => qtRawMatl
+                                                 = CDbl(.Item(PnRmQty)) Then 'prRmQty.Text => qtRawMatl
                                                 'no change -- don't change
                                             Else
                                                 'Debug.Print("prRmQty.Text FROM " & prRmQty.Text & " TO " & .Item(pnRmQty)
-                                                Debug.Print("qtRawMatl FROM " & qtRawMatl & " TO " & .Item(pnRmQty))
+                                                Debug.Print("qtRawMatl FROM " & qtRawMatl & " TO " & .Item(PnRmQty))
 
                                                 'Stop 'and double-check
                                                 'might still be equivalent
-                                                qtRawMatl = .Item(pnRmQty) 'prRmQty.Text
+                                                qtRawMatl = .Item(PnRmQty) 'prRmQty.Text
                                             End If
                                         Else
                                             Stop
                                         End If
 
-                                        If .Exists(pnRmUnit) Then
-                                            If qtUnit = .Item(pnRmUnit) Then
+                                        If .Exists(PnRmUnit) Then
+                                            If qtUnit = .Item(PnRmUnit) Then
                                                 'no change -- don't change
                                             Else
-                                                Debug.Print("qtUnit FROM " & qtUnit & " TO " & .Item(pnRmUnit))
+                                                Debug.Print("qtUnit FROM " & qtUnit & " TO " & .Item(PnRmUnit))
                                                 'Stop 'and double-check
                                                 'might still be equivalent
-                                                qtUnit = .Item(pnRmUnit)
+                                                qtUnit = .Item(PnRmUnit)
                                             End If
                                         Else
                                             Stop
@@ -1386,7 +1375,7 @@ Module modGPUpdateAT
                                     ' this prompt might not be quite
                                     ' so redundant as presumed
                                     Debug.Print("RAW MATERIAL QUANTITY IS NOW ", CStr(qtRawMatl), qtUnit, ". IF OKAY, CONTINUE.") 'prRmQty.Text
-                                    ck = newFmTest2().AskAbout(invDoc,
+                                    ck = newFmTest2().AskAbout(oDoc,
                                             "Raw Material Quantity is now " _
                                             & CStr(qtRawMatl) & qtUnit & " for",
                                             "If this is okay, click [YES]." _
@@ -1462,7 +1451,7 @@ Module modGPUpdateAT
                                     'Stop 'and check both so we DON'T
                                     'automatically "fix" the RMUNIT value
 
-                                    ck = newFmTest2().AskAbout(invDoc, ,
+                                    ck = newFmTest2().AskAbout(oDoc, ,
                                     "Raw Material " & prRawMatl.Text _
                                     & vbCrLf & "Unit of Measure currently " _
                                     & .Text & vbCrLf & vbCrLf _
@@ -1499,7 +1488,7 @@ Module modGPUpdateAT
                     End If
                 ElseIf bomStruct = BOMStructureEnum.kPhantomBOMStructure Then
                     ' REV[2022.01.17.1135] (lines 1999-2004)
-                    ck = newFmTest2().AskAbout(invDoc,
+                    ck = newFmTest2().AskAbout(oDoc,
                     "For some reason, THIS Item is marked Phantom:",
                     "Is this okay? (Click [NO] OR [CANCEL] if not)"
                 )
@@ -1510,7 +1499,7 @@ Module modGPUpdateAT
                     End If
                 ElseIf bomStruct = BOMStructureEnum.kInseparableBOMStructure Then 'WT#?!?!!
                     'How the HECK does a PART get marked Inseparable?!?
-                    ck = newFmTest2().AskAbout(invDoc, "This Item is marked Inseperable:", Join({"This is likely not correct,", "and should be fixed ASAP.", "Would you like to copy the Part", "Number for later review?", "", vbCrLf & vbCrLf & "([CANCEL] to debug)", " "}))
+                    ck = newFmTest2().AskAbout(oDoc, "This Item is marked Inseperable:", Join({"This is likely not correct,", "and should be fixed ASAP.", "Would you like to copy the Part", "Number for later review?", "", vbCrLf & vbCrLf & "([CANCEL] to debug)", " "}))
                     If ck = vbYes Then
                         'InputBox Join({"Copy this Part Number and paste it into another document or memo for review later."}, vbCrLf), "Copy Part Number " & pnModel, pnModel
                         InputBox(Join({"Copy this Part Number, and paste", "it into another document or memo", "for later review."}, vbCrLf), "Copy Part Number " & pnModel, pnModel)
@@ -1522,7 +1511,7 @@ Module modGPUpdateAT
                     Stop 'really, just STOP!
                 Else
                     ' REV[2022.01.17.1138] (lines 2027-2032)
-                    ck = newFmTest2().AskAbout(invDoc,
+                    ck = newFmTest2().AskAbout(oDoc,
                     "The following Item has an unhandled BOM Structure:",
                     "Skip it? (Click [NO] OR [CANCEL] to review)"
                 )
@@ -1539,7 +1528,7 @@ Module modGPUpdateAT
 
                 ' Get the design tracking property ,
                 ' and update the Cost Center Property
-                If invDoc.ComponentDefinition.IsContentMember Then
+                If oDoc.ComponentDefinition.IsContentMember Then
                     ' Don't muck around with the Family!
                 Else
                     If Len(nmFamily) > 0 Then
@@ -1552,14 +1541,14 @@ Module modGPUpdateAT
                             If Err.Number Then
                                 Debug.Print("CHGFAIL[FAMILY]{'" _
                                 & prFamily.Text & "' -> '" & nmFamily & "'}: " _
-                                & invDoc.DisplayName & " (" & invDoc.FullDocumentName & ")")
+                                & oDoc.DisplayName & " (" & oDoc.FullDocumentName & ")")
                                 If MsgBox(
                                 "Couldn't Change Family" & vbCrLf _
-                                & "for Item " & invDoc.DisplayName & vbCrLf _
-                                & vbCrLf & "(" & invDoc.FullDocumentName & ")" _
+                                & "for Item " & oDoc.DisplayName & vbCrLf _
+                                & vbCrLf & "(" & oDoc.FullDocumentName & ")" _
                                 & vbCrLf & vbCrLf & "Stop to Review?",
                                 vbYesNo Or vbDefaultButton2,
-                                invDoc.DisplayName
+                                oDoc.DisplayName
                             ) = vbYes Then
                                     Stop
                                 End If
@@ -1573,7 +1562,7 @@ Module modGPUpdateAT
                 End If
             End With
 
-            Call iSyncPartFactory(invDoc) 'Backport Properties to iPart Factory
+            Call iSyncPartFactory(oDoc) 'Backport Properties to iPart Factory
             dcGeniusPropsPartRev20180530 = rt
         End If
     End Function
@@ -1888,16 +1877,16 @@ Module modGPUpdateAT
         dcPropVals = rt
     End Function
 
-    Public Function dcGeniusProps(invDoc As Inventor.Document,
+    Public Function dcGeniusProps(oDoc As Inventor.Document,
     Optional dc As Scripting.Dictionary = Nothing
 ) As Scripting.Dictionary
-        With invDoc
+        With oDoc
             '
-            Debug.Print("== Item " & .Propertys(gnDesign).Item(pnPartNum).Text & " <" & .FullDocumentName & ">")
+            Debug.Print("== Item " & .Propertys(GnDesign).Item(PnPartNum).Text & " <" & .FullDocumentName & ">")
             If .DocumentType = DocumentTypeEnum.kPartDocumentObject Then
-                dcGeniusProps = dcGeniusPropsPart(invDoc, dc)
+                dcGeniusProps = dcGeniusPropsPart(oDoc, dc)
             ElseIf .DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
-                dcGeniusProps = dcGeniusPropsAssy(invDoc, dc)
+                dcGeniusProps = dcGeniusPropsAssy(oDoc, dc)
             Else
                 Stop 'cuz we don't know WHAT to do with it
             End If
@@ -1931,8 +1920,8 @@ Module modGPUpdateAT
                 With AiDoc
                     ' Get the custom InvProperty .
                     With .Propertys
-                        aiPropsUser = .Item(gnCustom)
-                        aiPropsDesign = .Item(gnDesign)
+                        aiPropsUser = .Item(GnCustom)
+                        aiPropsDesign = .Item(GnDesign)
                     End With
 
                     ' REV[2022.06.30.1546]
@@ -1940,9 +1929,9 @@ Module modGPUpdateAT
                     ' from dcGeniusPropsPartRev20180530
                     ' along with some related processes.
                     With aiPropsDesign
-                        prPartNum = .Item(pnPartNum)
+                        prPartNum = .Item(PnPartNum)
                         'aiGetProp( aiPropsDesign, pnPartNum)
-                        prFamily = .Item(pnFamily)
+                        prFamily = .Item(PnFamily)
                         'aiGetProp(aiPropsDesign, pnFamily)
                     End With
 
@@ -1996,12 +1985,12 @@ Module modGPUpdateAT
                         ' now it SHOULD be  to a non-blank value
                         nmFamily = famVsGenius(pnModel, nmFamily)
 
-                        rt = dcWithProp(aiPropsDesign, pnFamily, nmFamily, rt)
+                        rt = dcWithProp(aiPropsDesign, PnFamily, nmFamily, rt)
 
                         With .MassProperties
                             On Error Resume Next
                             Err.Clear()
-                            rt = dcWithProp(aiPropsUser, pnMass, System.Math.Round(.Mass * cvMassKg2LbM, 4), rt)
+                            rt = dcWithProp(aiPropsUser, PnMass, System.Math.Round(.Mass * CvMassKg2LbM, 4), rt)
                             If Err.Number Then
                                 Debug.Print(Join({
                                 "NOMASS", AiDoc.FullFileName}, ":"))
@@ -2332,7 +2321,7 @@ Module modGPUpdateAT
                         '     '
                         ' Add area to custom property 
                         ' rt = dcWithProp(aiProp, pnRmQty, dArea * cvArSqCm2SqFt, rt)
-                        rt.Add(pnRmQty, System.Math.Round(dArea * cvArSqCm2SqFt, 4))
+                        rt.Add(PnRmQty, System.Math.Round(dArea * CvArSqCm2SqFt, 4))
                         '
                         ' 0.00107639 = (1ft / 12in/ft / 2.54 cm/in)^2
                         '
@@ -2344,23 +2333,23 @@ Module modGPUpdateAT
                         ' and so it HAS: cvArSqCm2SqFt (noted 2022.01.28)
                         ' REV[2022.01.28.1516]
                         ' add Raw Material Unit Quantity to output
-                        rt.Add(pnRmUnit, "FT2")
+                        rt.Add(PnRmUnit, "FT2")
                         ' Thickness, too:
 
                         ' Add Thickness to returned values
-                        rt.Add(pnThickness, .Thickness.Text / cvLenIn2cm)
+                        rt.Add(PnThickness, .Thickness.Text / CvLenIn2cm)
 
                         ' Add Width to custom property 
                         ' rt = dcWithProp(aiProp, pnWidth, strWidth, rt)
-                        rt.Add(pnWidth, strWidth)
+                        rt.Add(PnWidth, strWidth)
 
                         ' Add Length to custom property 
                         ' rt = dcWithProp(aiProp, pnLength, strLength, rt)
-                        rt.Add(pnLength, strLength)
+                        rt.Add(PnLength, strLength)
 
                         ' Add AreaDescription to custom property 
                         ' rt = dcWithProp(aiProp, pnArea, strArea, rt)
-                        rt.Add(pnArea, strArea)
+                        rt.Add(PnArea, strArea)
 
                         If Len(strDVNs) > 0 Then
                             rt.Add("OFFTHK", strDVNs)
@@ -2387,7 +2376,7 @@ Module modGPUpdateAT
         'End If 'dc Is Nothing
     End Function
 
-    Public Function dcFlatPatProps(
+    Public Function dcFlatPatProps(ThisApplication As Inventor.Application,
     invSheetMetalComp As Inventor.SheetMetalComponentDefinition,
     Optional dc As Scripting.Dictionary = Nothing
 ) As Scripting.Dictionary
@@ -2513,7 +2502,7 @@ Module modGPUpdateAT
                                 'We'll want to do something else instead of the following
                                 'to make sure any document openened by the Unfold operation
                                 'gets closed before we move on.
-                                With InventorApp.Documents.VisibleDocuments
+                                With ThisApplication.Documents.VisibleDocuments
                                     If .Item(.Count) Is invSheetMetalComp.Document Then
                                         .Item(.Count).Close(True)
                                     End If
@@ -2731,7 +2720,7 @@ Module modGPUpdateAT
                         ''  The following section should be moved OUTSIDE this branch!
                         ''
                         With aiDocPart(.Document)
-                            aiProp = .Propertys.Item(gnCustom)
+                            aiProp = .Propertys.Item(GnCustom)
                             'prOffThknss
 
                             ' Convert values into document units.
@@ -2782,7 +2771,7 @@ Module modGPUpdateAT
                         '     assign them to Properties.
                         '     '
                         ' Add area to custom property 
-                        rt = dcWithProp(aiProp, pnRmQty, dArea * cvArSqCm2SqFt, rt)
+                        rt = dcWithProp(aiProp, PnRmQty, dArea * CvArSqCm2SqFt, rt)
                         '
                         ' 0.00107639 = (1ft / 12in/ft / 2.54 cm/in)^2
                         '
@@ -2794,13 +2783,13 @@ Module modGPUpdateAT
                         '
 
                         ' Add Width to custom property 
-                        rt = dcWithProp(aiProp, pnWidth, strWidth, rt)
+                        rt = dcWithProp(aiProp, PnWidth, strWidth, rt)
 
                         ' Add Length to custom property 
-                        rt = dcWithProp(aiProp, pnLength, strLength, rt)
+                        rt = dcWithProp(aiProp, PnLength, strLength, rt)
 
                         ' Add AreaDescription to custom property 
-                        rt = dcWithProp(aiProp, pnArea, strArea, rt)
+                        rt = dcWithProp(aiProp, PnArea, strArea, rt)
 
                         If Len(strDVNs) > 0 Then
                             rt = dcWithProp(aiProp, "OFFTHK", strDVNs, rt)
@@ -2989,8 +2978,8 @@ Module modGPUpdateAT
                 docName = aiDocPart(.Document).FullDocumentName
 
                 invSheetMetalMaterial = aiDocPart(.Document
-            ).Propertys.Item(gnDesign).Item(pnMaterial).Text
-                invSheetMetalThickness = prThickness.Text / cvLenIn2cm 'Internal Units in cm???
+            ).Propertys.Item(GnDesign).Item(PnMaterial).Text
+                invSheetMetalThickness = prThickness.Text / CvLenIn2cm 'Internal Units in cm???
                 'invSheetMetalThickness = .Thickness.Text / cvLenIn2cm 'Internal Units in cm???
                 sqlText = sqlSheetMetal(invSheetMetalMaterial, invSheetMetalThickness)
 
@@ -3238,7 +3227,7 @@ Module modGPUpdateAT
         rt = dcIn
         If AiDoc Is Nothing Then
         Else
-            pn = AiDoc.Propertys.Item(gnDesign).Item(pnPartNum).Text
+            pn = AiDoc.Propertys.Item(GnDesign).Item(PnPartNum).Text
             fn = AiDoc.FullFileName
             With rt
                 If .Exists(pn) Then

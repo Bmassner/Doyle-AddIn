@@ -153,7 +153,7 @@ Class GnsIfcAiDoc
     ' into appropriate procedures.
     '
 
-    Private Function Test01(invDoc As Inventor.PartDocument) As Inventor.BOMStructureEnum
+    Private Function Test01(oDoc As Inventor.PartDocument) As Inventor.BOMStructureEnum
         ' Present Role: Categorize Part Document
         '
         '
@@ -162,7 +162,7 @@ Class GnsIfcAiDoc
         '
         '
 
-        With invDoc
+        With oDoc
             nmFamily = .Propertys(gnDesign).Item(pnFamily).Text
 
             If .ComponentDefinition.IsContentMember Then
@@ -174,7 +174,7 @@ Class GnsIfcAiDoc
                     Stop
                 End If
             Else 'ry to identify other purchased part
-                If InStr(1, invDoc.FullFileName,
+                If InStr(1, oDoc.FullFileName,
                 "\Doyle_Vault\Designs\purchased\"
             ) > 0 Then 'this is PROBABLY a purchased part
                     bomStruct = BOMStructureEnum.kPurchasedBOMStructure
@@ -202,7 +202,7 @@ Class GnsIfcAiDoc
         '
     End Function
 
-    Private Function Test02(invDoc As Inventor.PartDocument) As Inventor.BOMStructureEnum
+    Private Function Test02(oDoc As Inventor.PartDocument) As Inventor.BOMStructureEnum
         ' Present Role: Categorize Part Document
         '
         '
@@ -232,7 +232,7 @@ Class GnsIfcAiDoc
         '    '
         '    '
         '
-        With invDoc
+        With oDoc
             ' Get Property s
             'With .Propertys
             '             aiPropsUser = .Item(gnCustom)
@@ -259,7 +259,7 @@ Class GnsIfcAiDoc
                     Stop
                 End If
             Else 'Try to identify other purchased part
-                If InStr(1, invDoc.FullFileName,
+                If InStr(1, oDoc.FullFileName,
                 "\Doyle_Vault\Designs\purchased\"
             ) > 0 Then
                     'this is PROBABLY a purchased part

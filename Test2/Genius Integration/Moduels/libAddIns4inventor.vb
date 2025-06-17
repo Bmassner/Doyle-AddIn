@@ -1,5 +1,5 @@
 Module libAddIns4inventor
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Public Function DcAddIns4inventor(
     Optional app As Inventor.Application = Nothing
 ) As Scripting.Dictionary
@@ -7,7 +7,7 @@ Module libAddIns4inventor
         Dim adIn As Inventor.ApplicationAddIn
 
         If app Is Nothing Then
-            DcAddIns4inventor = DcAddIns4inventor(inventorApp)
+            DcAddIns4inventor = DcAddIns4inventor(ThisApplication)
         Else
             rt = New Scripting.Dictionary
             For Each adIn In app.ApplicationAddIns

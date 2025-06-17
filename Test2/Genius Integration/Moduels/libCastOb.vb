@@ -1,5 +1,5 @@
 Module libCastOb
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Public Function obOf(vr As Object) As Object
         If TypeOf vr Is Object Then
             obOf = vr
@@ -43,10 +43,10 @@ Module libCastOb
             aiDocument = Nothing
         End If
     End Function
-    'For Each itm In ActiveDocsComponents(InventorApp): Debug.Print(aiDocument(obOf(itm)).FullFileName: Next
+    'For Each itm In ActiveDocsComponents(ThisApplication): Debug.Print(aiDocument(obOf(itm)).FullFileName: Next
 
     Public Function aiDocActive() As Inventor.Document
-        aiDocActive = InventorApp.ActiveDocument
+        aiDocActive = ThisApplication.ActiveDocument
     End Function
 
     Public Function aiDocPart(

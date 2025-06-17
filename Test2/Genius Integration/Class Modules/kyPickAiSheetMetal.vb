@@ -1,42 +1,42 @@
-Class kyPickAiSheetMetal
+Class KyPickAiSheetMetal
 
     Inherits KyPick
 
     Private pk As KyPick
-    Private Const txVersion As String = "kyPickAiSheetMetal v0.0.0.1 [2022.03.08.1332]"
+    Private Const txVersion As String = "KyPickAiSheetMetal v0.0.0.1 [2022.03.08.1332]"
     ' prior Versions
     '     ""
     '
-    ' kyPick Implementation code follows
+    ' KyPick Implementation code follows
     '
 
-    Private Function kyPick_Itself() As KyPick
-        kyPick_Itself = Me
+    Private Function KyPick_Itself() As KyPick
+        KyPick_Itself = Me
     End Function
 
 
-    Private Function kyPick_WithInDc(
+    Private Function KyPick_WithInDc(
     Dict As Scripting.IDictionary
 ) As KyPick
         pk = pk.WithInDc(Dict)
-        kyPick_WithInDc = Me
+        KyPick_WithInDc = Me
     End Function
 
-    Private Function kyPick_WithOutDc(
+    Private Function KyPick_WithOutDc(
     Dict As Scripting.IDictionary
 ) As KyPick
         pk = pk.WithOutDc(Dict)
-        kyPick_WithOutDc = Me
+        KyPick_WithOutDc = Me
     End Function
 
 
-    Private Function kyPick_AfterScanning(
+    Private Function KyPick_AfterScanning(
     dSrc As Scripting.IDictionary
 ) As KyPick
         Dim ky As Object
 
         With dSrc : For Each ky In .Keys
-                With kyPick_DcFor(.Item(ky))
+                With KyPick_DcFor(.Item(ky))
                     If .Exists(ky) Then
                         Stop
                     Else
@@ -44,39 +44,39 @@ Class kyPickAiSheetMetal
                     End If
                 End With
             Next : End With
-        kyPick_AfterScanning = Me
+        KyPick_AfterScanning = Me
     End Function
 
 
-    Private Function kyPick_DcIn() As Scripting.IDictionary
-        kyPick_DcIn = dcIn()
+    Private Function KyPick_DcIn() As Scripting.IDictionary
+        KyPick_DcIn = DcIn()
     End Function
 
-    Private Function kyPick_DcOut() As Scripting.IDictionary
-        kyPick_DcOut = dcOut()
+    Private Function KyPick_DcOut() As Scripting.IDictionary
+        KyPick_DcOut = DcOut()
     End Function
 
 
-    Private Function kyPick_DcFor(
+    Private Function KyPick_DcFor(
     Item As Object
 ) As Scripting.IDictionary
         Dim ob As Inventor.PartDocument '.Document
 
         ob = aiDocPart(aiDocument(obOf(Item)))
         If ob Is Nothing Then
-            kyPick_DcFor = pk.DcFor(0)
+            KyPick_DcFor = pk.DcFor(0)
         Else
-            kyPick_DcFor = g0f1(
+            KyPick_DcFor = g0f1(
             ob.ComponentDefinition
         )
             'If ob.DocumentType =DocumentTypeEnum.kPartDocumentObject Then
             '    If aiDocPart(ob).SubType = guidSheetMetal Then
-            '         kyPick_DcFor = pk.dcFor(ob)
+            '         KyPick_DcFor = pk.dcFor(ob)
             '    Else
-            '         kyPick_DcFor = pk.dcFor(0)
+            '         KyPick_DcFor = pk.dcFor(0)
             '    End If
             'Else
-            '     kyPick_DcFor = pk.dcFor(0)
+            '     KyPick_DcFor = pk.dcFor(0)
             'End If
         End If
     End Function
@@ -90,59 +90,59 @@ Class kyPickAiSheetMetal
     End Sub
     '
     '
-    ' kyPickAiSheetMetal Class
+    ' KyPickAiSheetMetal Class
     ' implementation code follows
     '
 
-    Public Function Itself() As KyPick
+    Public Overloads Function Itself() As KyPick
         Itself = Me
     End Function
 
 
-    Public Function WithInDc(
+    Public Overloads Function WithInDc(
     Dict As Scripting.Dictionary
-) As KyPick
-        WithInDc = kyPick_WithInDc(Dict)
+    ) As KyPick
+        WithInDc = KyPick_WithInDc(Dict)
     End Function
 
-    Public Function WithOutDc(
+    Public Overloads Function WithOutDc(
     Dict As Scripting.Dictionary
-) As KyPick
-        WithOutDc = kyPick_WithOutDc(Dict)
+    ) As KyPick
+        WithOutDc = KyPick_WithOutDc(Dict)
     End Function
 
 
-    Public Function dcIn() As Scripting.Dictionary
-        dcIn = pk.DcIn
+    Public Overloads Function DcIn() As Scripting.Dictionary
+        DcIn = pk.DcIn
     End Function
 
-    Public Function dcOut() As Scripting.Dictionary
-        dcOut = pk.DcOut
+    Public Overloads Function DcOut() As Scripting.Dictionary
+        DcOut = pk.DcOut
     End Function
 
 
-    Public Function AfterScanning(
+    Public Overloads Function AfterScanning(
     dSrc As Scripting.Dictionary
-) As KyPick
-        AfterScanning = kyPick_AfterScanning(dSrc)
+    ) As KyPick
+        AfterScanning = KyPick_AfterScanning(dSrc)
     End Function
 
 
-    Public Function dcFor(Item As Object) As Scripting.IDictionary
-        dcFor = kyPick_DcFor(Item)
+    Public Overloads Function DcFor(Item As Object) As Scripting.IDictionary
+        DcFor = KyPick_DcFor(Item)
     End Function
     '
     '
     ' Internal support code follows
     '
 
-    Private Function g0f0(
+    Private Function G0f0(
     ob As Inventor.PartDocument
 ) As Scripting.Dictionary
         If ob Is Nothing Then
-            g0f0 = pk.DcFor(0)
+            G0f0 = pk.DcFor(0)
         Else
-            g0f0 = g0f1(ob.ComponentDefinition)
+            G0f0 = g0f1(ob.ComponentDefinition)
         End If
     End Function
 

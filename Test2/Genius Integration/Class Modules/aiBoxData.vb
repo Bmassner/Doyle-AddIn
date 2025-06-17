@@ -1,5 +1,5 @@
 Class AiBoxData
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Private Const f01 As String = "#,##0.000"
     'Private Const f02 As String = "#,##0.0000 '"
 
@@ -45,10 +45,10 @@ Class AiBoxData
     Public Function UsingOrBox(
     ThisOne As Inventor.OrientedBox
 ) As AiBoxData
-        bx = InventorApp.TransientGeometry.CreateBox()
+        bx = ThisApplication.TransientGeometry.CreateBox()
 
         With ThisOne
-            bx.Extend(InventorApp.TransientGeometry.CreatePoint(.DirectionOne.Length, .DirectionTwo.Length, .DirectionThree.Length))
+            bx.Extend(ThisApplication.TransientGeometry.CreatePoint(.DirectionOne.Length, .DirectionTwo.Length, .DirectionThree.Length))
         End With
 
         'Me.Box = ThisOne
@@ -217,9 +217,9 @@ Class AiBoxData
 
                 If Form And 2 Then 'add Min, Mid, Max entries
                     dm = SpansOrdered()
-                    .Add("Min", dm(0))
-                    .Add("Mid", dm(1))
-                    .Add("Max", dm(2))
+                    .Add("Min", CType(dm(0), Object))
+                    .Add("Mid", CType(dm(1), Object))
+                    .Add("Max", CType(dm(2), Object))
                 End If
             End With
         End If

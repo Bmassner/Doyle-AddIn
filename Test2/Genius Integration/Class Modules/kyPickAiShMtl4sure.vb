@@ -4,34 +4,34 @@ Class KyPickAiShMtl4sure
     Inherits KyPick
 
     Private pk As KyPick
-    Private Const txVersion As String = "kyPickAiShMtl4sure v0.0.0.1 [2022.03.08.1336]"
+    Private Const txVersion As String = "KyPickAiShMtl4sure v0.0.0.1 [2022.03.08.1336]"
     ' prior Versions
     '     ""
     '
-    ' kyPick Implementation code follows
+    ' KyPick Implementation code follows
     '
 
-    Private Function kyPick_Itself() As KyPick
-        kyPick_Itself = Me
+    Private Function KyPick_Itself() As KyPick
+        KyPick_Itself = Me
     End Function
 
 
-    Private Function kyPick_WithInDc(
+    Private Function KyPick_WithInDc(
     Dict As Scripting.IDictionary
 ) As KyPick
         pk = pk.WithInDc(Dict)
-        kyPick_WithInDc = Me
+        KyPick_WithInDc = Me
     End Function
 
-    Private Function kyPick_WithOutDc(
+    Private Function KyPick_WithOutDc(
     Dict As Scripting.IDictionary
 ) As KyPick
         pk = pk.WithOutDc(Dict)
-        kyPick_WithOutDc = Me
+        KyPick_WithOutDc = Me
     End Function
 
 
-    Private Function kyPick_AfterScanning(
+    Private Function KyPick_AfterScanning(
     dSrc As Scripting.IDictionary
 ) As KyPick
         Dim dcI As Scripting.Dictionary
@@ -45,7 +45,7 @@ Class KyPickAiShMtl4sure
         End With
 
         With dcI : For Each ky In .Keys
-                dCk = kyPick_DcFor(.Item(ky))
+                dCk = KyPick_DcFor(.Item(ky))
                 If dCk Is dcI Then 'should be okay
                     'don't need to do anything here
                     Debug.Print("") 'Breakpoint Landing
@@ -60,29 +60,29 @@ Class KyPickAiShMtl4sure
             Next : End With
         pk = pk.WithInDc(DcKeysMissing(dcI, dcO))
 
-        kyPick_AfterScanning = Me
+        KyPick_AfterScanning = Me
     End Function
 
 
-    Private Function kyPick_DcIn() As Scripting.IDictionary
-        kyPick_DcIn = dcIn()
+    Private Function KyPick_DcIn() As Scripting.IDictionary
+        KyPick_DcIn = DcIn()
     End Function
 
-    Private Function kyPick_DcOut() As Scripting.IDictionary
-        kyPick_DcOut = dcOut()
+    Private Function KyPick_DcOut() As Scripting.IDictionary
+        KyPick_DcOut = DcOut()
     End Function
 
 
-    Private Function kyPick_DcFor(
+    Private Function KyPick_DcFor(
     Item As Object
 ) As Scripting.IDictionary
         Dim ob As Inventor.PartDocument '.Document
 
         ob = aiDocPart(aiDocument(obOf(Item)))
         If ob Is Nothing Then
-            kyPick_DcFor = pk.DcFor(0)
+            KyPick_DcFor = pk.DcFor(0)
         Else
-            kyPick_DcFor = g0f1(
+            KyPick_DcFor = g0f1(
             ob.ComponentDefinition
         )
         End If
@@ -93,50 +93,50 @@ Class KyPickAiShMtl4sure
     '
 
     Private Sub Class_Initialize()
-        pk = New kyPickAiSheetMetal 'kyPick
+        pk = New KyPickAiSheetMetal 'KyPick
     End Sub
     '
     '
-    ' kyPickAiShMtl4sure Class
+    ' KyPickAiShMtl4sure Class
     ' implementation code follows
     '
 
-    Public Function Itself() As KyPick
+    Public Overloads Function Itself() As KyPick
         Itself = Me
     End Function
 
 
-    Public Function WithInDc(
+    Public Overloads Function WithInDc(
     Dict As Scripting.Dictionary
-) As KyPick
-        WithInDc = kyPick_WithInDc(Dict)
+    ) As KyPick
+        WithInDc = KyPick_WithInDc(Dict)
     End Function
 
-    Public Function WithOutDc(
+    Public Overloads Function WithOutDc(
     Dict As Scripting.Dictionary
-) As KyPick
-        WithOutDc = kyPick_WithOutDc(Dict)
+    ) As KyPick
+        WithOutDc = KyPick_WithOutDc(Dict)
     End Function
 
 
-    Public Function dcIn() As Scripting.Dictionary
-        dcIn = pk.DcIn
+    Public Overloads Function DcIn() As Scripting.Dictionary
+        DcIn = pk.DcIn
     End Function
 
-    Public Function dcOut() As Scripting.Dictionary
-        dcOut = pk.DcOut
+    Public Overloads Function DcOut() As Scripting.Dictionary
+        DcOut = pk.DcOut
     End Function
 
 
-    Public Function AfterScanning(
+    Public Overloads Function AfterScanning(
     dSrc As Scripting.Dictionary
-) As KyPick
-        AfterScanning = kyPick_AfterScanning(dSrc)
+    ) As KyPick
+        AfterScanning = KyPick_AfterScanning(dSrc)
     End Function
 
 
-    Public Function dcFor(Item As Object) As Scripting.IDictionary
-        dcFor = kyPick_DcFor(Item)
+    Public Overloads Function DcFor(Item As Object) As Scripting.IDictionary
+        DcFor = KyPick_DcFor(Item)
     End Function
     '
     '

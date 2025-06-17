@@ -51,9 +51,9 @@
             RaiseEvent CloseRequested(CloseMode)
         Else
             ck = MsgBox(Join({
-            "Review any selections",
-            "and select Yes if ready.",
-            "Otherwise, select No.", vbNewLine, vbYesNo, "Close Form?"}))
+    "Review any selections",
+    "and select Yes if ready.",
+    "Otherwise, select No.", vbCrLf, "Yes No", "Close Form?"}))
             If ck = vbYes Then
                 Me.Hide()
             Else

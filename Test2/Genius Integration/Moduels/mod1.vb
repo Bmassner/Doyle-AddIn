@@ -1,5 +1,5 @@
 Module mod1
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Public Function m1g0f0() As Scripting.Dictionary
         Dim rt As Scripting.Dictionary
         Dim ky As Object
@@ -8,7 +8,7 @@ Module mod1
 
         rt = New Scripting.Dictionary
         With dcAiSheetMetal(dcAiDocsByType(
-        dcAssyDocComponents(inventorApp.ActiveDocument)
+        dcAssyDocComponents(ThisApplication.ActiveDocument)
     ))
             gt0 = 0
             eq0 = 0
@@ -56,7 +56,7 @@ Module mod1
 
         rt = New Scripting.Dictionary
         With dcAssyDocComponents(
-        inventorApp.ActiveDocument, , 1
+        ThisApplication.ActiveDocument, , 1
     )
             gt0 = 0
             eq0 = 0
@@ -115,7 +115,7 @@ Module mod1
 
         vc2flatPat = rt
     End Function
-    'Debug.Print(vc2flatPat(aiCompDefShtMetal(aiDocPart(InventorApp.Documents(2)).ComponentDefinition)).Length
+    'Debug.Print(vc2flatPat(aiCompDefShtMetal(aiDocPart(ThisApplication.Documents(2)).ComponentDefinition)).Length
 
     Public Function vcCubicThickness(
     df As Inventor.SheetMetalComponentDefinition
@@ -123,7 +123,7 @@ Module mod1
         Dim hk As Double
 
         hk = df.Thickness.Text
-        With inventorApp.TransientGeometry
+        With ThisApplication.TransientGeometry
             vcCubicThickness = .CreateVector(hk, hk, hk)
         End With
     End Function
@@ -142,8 +142,8 @@ Module mod1
             If .HasFlatPattern Then
                 rt = vcDiaBox(.FlatPattern.RangeBox)
                 'With .Thickness
-                'rt.SubtractVector InventorApp.TransientGeometry.CreateVector(.Text, .Text, .Text)
-                'With InventorApp.TransientGeometry.CreateVector(.Text, .Text, .Text)
+                'rt.SubtractVector ThisApplication.TransientGeometry.CreateVector(.Text, .Text, .Text)
+                'With ThisApplication.TransientGeometry.CreateVector(.Text, .Text, .Text)
                 '.SubtractVector rt
                 'If (.X * .Y * .Z) <> 0 Then
                 'Debug.Print(.X * .Y * .Z
@@ -174,10 +174,10 @@ Module mod1
 
         vcChkFlatPat = rt
     End Function
-    'Debug.Print(vcChkFlatPat(aiCompDefShtMetal(aiDocPart(InventorApp.Documents(2)).ComponentDefinition)).Length
+    'Debug.Print(vcChkFlatPat(aiCompDefShtMetal(aiDocPart(ThisApplication.Documents(2)).ComponentDefinition)).Length
 
     Public Function m1tst0() As Object
-        Debug.Print(iFacAssy(aiCompDefAssy(aiDocAssy(aiCompDefAssy(aiDocAssy(inventorApp.ActiveDocument).ComponentDefinition).Occurrences(1).Definition.Document).ComponentDefinition)))
+        Debug.Print(iFacAssy(aiCompDefAssy(aiDocAssy(aiCompDefAssy(aiDocAssy(ThisApplication.ActiveDocument).ComponentDefinition).Occurrences(1).Definition.Document).ComponentDefinition)))
     End Function
 
     Public Function m1tst1() As Object
@@ -186,9 +186,9 @@ Module mod1
         'Dim bm As Inventor.BOMStructureEnum
 
         For Each ky In Filter(dcAssyCompAndSub(
-        aiDocDefAssy(inventorApp.ActiveDocument).Occurrences
+        aiDocDefAssy(ThisApplication.ActiveDocument).Occurrences
     ).Keys, "(DC)")
-            With aiDocPart(inventorApp.Documents.ItemByName(ky))
+            With aiDocPart(ThisApplication.Documents.ItemByName(ky))
                 InvProperty = .Propertys("Design Tracking Properties").Item("Cost Center")
                 With .ComponentDefinition
                     If .BOMStructure <> BOMStructureEnum.kPurchasedBOMStructure Then
@@ -200,7 +200,7 @@ Module mod1
                 '.ComponentDefinition
                 '.ComponentDefinition.BOMStructure = BOMStructureEnum.kPurchasedBOMStructure) & "|" & ky
             End With
-            'Debug.Print((aiDocPart(InventorApp.Documents.ItemByName((ky))).ComponentDefinition.BOMStructure = BOMStructureEnum.kPurchasedBOMStructure) & "|" & ky
+            'Debug.Print((aiDocPart(ThisApplication.Documents.ItemByName((ky))).ComponentDefinition.BOMStructure = BOMStructureEnum.kPurchasedBOMStructure) & "|" & ky
         Next
     End Function
 
@@ -251,7 +251,7 @@ Module mod1
         Next
         dcAssyComponentsImmediate = rt
     End Function
-    'For Each pn In {pnMass, pnRawMaterial, pnRmQty, pnRmUnit, pnArea, pnLength, pnWidth, pnThickness): Debug.Print(pn & "=" & aiDocument(InventorApp.ActiveDocument).Propertys.Item(gnCustom).Item((pn)).Text: Next
+    'For Each pn In {pnMass, pnRawMaterial, pnRmQty, pnRmUnit, pnArea, pnLength, pnWidth, pnThickness): Debug.Print(pn & "=" & aiDocument(ThisApplication.ActiveDocument).Propertys.Item(gnCustom).Item((pn)).Text: Next
 
     Public Function iSyncPartFactory(PartDesc As Inventor.PartDocument) As Long
         ''
@@ -641,7 +641,7 @@ Module mod1
     End Function
 
     Public Function m1g1f4() As Long
-        m1g1f4 = m1g1f3(aiDocAssy(inventorApp.ActiveDocument))
+        m1g1f4 = m1g1f3(aiDocAssy(ThisApplication.ActiveDocument))
     End Function
 
     Public Function m1g1f5(
@@ -684,7 +684,7 @@ Module mod1
 
     Public Function m1g1f5t0() As String
         m1g1f5t0 = Join(m1g1f5(aiDocPart(
-        aiDocAssy(inventorApp.ActiveDocument
+        aiDocAssy(ThisApplication.ActiveDocument
         ).ComponentDefinition.Occurrences.Item(1
         ).Definition.Document
     )).Keys, vbCrLf)

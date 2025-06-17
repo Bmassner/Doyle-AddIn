@@ -1,9 +1,9 @@
 Module modAiVba
-    Dim InventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Public Function m2g0f0() As Long
         Dim pj As Inventor.InventorVBAProject
 
-        With InventorApp
+        With ThisApplication
             For Each pj In .VBAProjects
                 Debug.Print(pj.VBProject) '.Name
             Next
@@ -12,17 +12,17 @@ Module modAiVba
     End Function
 
     Public Function m2g1f0() As Inventor.InventorVBAProject
-        m2g1f0 = InventorApp.VBAProjects.Item(1)
+        m2g1f0 = ThisApplication.VBAProjects.Item(1)
     End Function
 
     Public Function fnOfDefaultVBAproject() As String
-        fnOfDefaultVBAproject = InventorApp.FileOptions.DefaultVBAProjectFileFullFilename
+        fnOfDefaultVBAproject = ThisApplication.FileOptions.DefaultVBAProjectFileFullFilename
     End Function
 
     Public Function m2g1f2(ob As Inventor.InventorVBAProject) As VBIDE.VBProject
         m2g1f2 = ob.VBProject
     End Function
-    'Debug.Print(m2g1f2(dcInVBAprojects(InventorApp).Item(fnOfDefaultVBAproject)).BuildFileName
+    'Debug.Print(m2g1f2(dcInVBAprojects(ThisApplication).Item(fnOfDefaultVBAproject)).BuildFileName
 
 
     Public Function dcInVBAprojects(ap As Inventor.Application) As Scripting.Dictionary

@@ -106,6 +106,6 @@ Module AssyComponentsCollector
         Next
         strActiveDocsComponents = rt
     End Function
-    'Debug.Print(strActiveDocsComponents(InventorApp)
+    'Debug.Print(strActiveDocsComponents(ThisApplication)
 
 End Module
