@@ -30,8 +30,8 @@ Module dvl1
         End With
 
         d1g4f0 = rt
-        'Debug.Print(dumpLsKeyVal(d1g4f1(d1g4f0(InventorApp.ActiveDocument)), " - ")
-        'send2clipBd ConvertToJson(d1g4f0(InventorApp.ActiveDocument), vbTab)
+        'Debug.Print(dumpLsKeyVal(d1g4f1(d1g4f0(ThisApplication.ActiveDocument)), " - ")
+        'send2clipBd ConvertToJson(d1g4f0(ThisApplication.ActiveDocument), vbTab)
     End Function
 
     Public Function d1g4f1(
@@ -190,7 +190,7 @@ Module dvl1
         Debug.Print(TxDumpLs(dc.Keys))
 
         d1g1f0 = dc.Keys
-        'Debug.Print(txDumpLs(dcRemapByPtNum(dcAiDocComponents(InventorApp.ActiveDocument)).Keys)
+        'Debug.Print(txDumpLs(dcRemapByPtNum(dcAiDocComponents(ThisApplication.ActiveDocument)).Keys)
     End Function
 
     Public Function d1g1f2(PartDesc As Long,

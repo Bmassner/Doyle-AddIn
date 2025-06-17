@@ -8,9 +8,9 @@ Class ifcAiProperty
     Private vlWas As Object
     Private vlNow As Object
 
-    Public Function Connect(
+    Public Overloads Function Connect(
     ToProp As Inventor.Property
-) As IfcDatum
+    ) As IfcDatum
         InvProperty = ToProp
         If ToProp Is Nothing Then
             ' PropertySet = Nothing
@@ -59,9 +59,9 @@ Class ifcAiProperty
     '     AttachedTo = Me
     'End Function
 
-    Public Function MakeValue(
+    Public Overloads Function MakeValue(
     This As Object
-) As IfcDatum
+    ) As IfcDatum
         If TypeOf This Is Object Then
             ' really should NOT support this
             ' but will let stand for now
@@ -84,7 +84,7 @@ Class ifcAiProperty
     '     WithValue = Me
     'End Function
 
-    Public Function Commit() As ifcAiProperty
+    Public Overloads Function Commit() As ifcAiProperty
         'Dim PropertySet As Inventor.Property
         'Dim ck As Object
 
@@ -128,7 +128,7 @@ Class ifcAiProperty
         Commit = Me
     End Function
 
-    Private Function Itself() As IfcDatum
+    Private Overloads Function Itself() As IfcDatum
         Itself = Me
     End Function
     ' replaces disabled function below
@@ -137,9 +137,9 @@ Class ifcAiProperty
     '     Obj = Me
     'End Function
 
-    Private Function Connected(
+    Private Overloads Function Connected(
     Optional ToThis As Inventor.Property = Nothing
-) As Boolean
+    ) As Boolean
         If ToThis Is Nothing Then
             Connected = Not InvProperty Is Nothing
         Else
@@ -147,7 +147,7 @@ Class ifcAiProperty
         End If
     End Function
 
-    Private Function Value() As Object
+    Private Overloads Function Value() As Object
         If TypeOf vlNow Is Object Then
             ' this should NOT ever happen
             ' but just to be robust...

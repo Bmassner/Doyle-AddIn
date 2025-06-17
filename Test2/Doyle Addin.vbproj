@@ -78,16 +78,16 @@
     <Compile Include="Genius Integration\Class Modules\ifcAiProperty.vb" />
     <Compile Include="Genius Integration\Class Modules\ifcDatum.vb" />
     <Compile Include="Genius Integration\Class Modules\iLogicIfc.vb" />
-    <Compile Include="Genius Integration\Class Modules\kyPick.vb" />
-    <Compile Include="Genius Integration\Class Modules\kyPickAiAssyMember.vb" />
-    <Compile Include="Genius Integration\Class Modules\kyPickAiDocContentCtr.vb" />
-    <Compile Include="Genius Integration\Class Modules\kyPickAiDocPurchased.vb" />
-    <Compile Include="Genius Integration\Class Modules\kyPickAiDocWithRM.vb" />
-    <Compile Include="Genius Integration\Class Modules\kyPickAiPartMember.vb" />
-    <Compile Include="Genius Integration\Class Modules\kyPickAiPartVsAssy.vb" />
-    <Compile Include="Genius Integration\Class Modules\kyPickAiSheetMetal.vb" />
-    <Compile Include="Genius Integration\Class Modules\kyPickAiShMtl4sure.vb" />
-    <Compile Include="Genius Integration\Class Modules\kyPickInGenius.vb" />
+    <Compile Include="Genius Integration\Class Modules\KyPick.vb" />
+    <Compile Include="Genius Integration\Class Modules\KyPickAiAssyMember.vb" />
+    <Compile Include="Genius Integration\Class Modules\KyPickAiDocContentCtr.vb" />
+    <Compile Include="Genius Integration\Class Modules\KyPickAiDocPurchased.vb" />
+    <Compile Include="Genius Integration\Class Modules\KyPickAiDocWithRM.vb" />
+    <Compile Include="Genius Integration\Class Modules\KyPickAiPartMember.vb" />
+    <Compile Include="Genius Integration\Class Modules\KyPickAiPartVsAssy.vb" />
+    <Compile Include="Genius Integration\Class Modules\KyPickAiSheetMetal.vb" />
+    <Compile Include="Genius Integration\Class Modules\KyPickAiShMtl4sure.vb" />
+    <Compile Include="Genius Integration\Class Modules\KyPickInGenius.vb" />
     <Compile Include="Genius Integration\Class Modules\wkgCls0.vb" />
     <Compile Include="Genius Integration\Forms\fmEmpty.Designer.vb" />
     <Compile Include="Genius Integration\Forms\fmEmpty.vb" />
@@ -109,7 +109,7 @@
     <Compile Include="Genius Integration\Forms\fmTest1.vb" />
     <Compile Include="Genius Integration\Forms\fmTest2.Designer.vb" />
     <Compile Include="Genius Integration\Forms\fmTest2.vb" />
-    <Compile Include="Genius Integration\Moduels\app.vb" />
+    <Compile Include="Genius Integration\Moduels\GeniusIntegration.vb" />
     <Compile Include="Genius Integration\Moduels\AssyComponentsCollector.vb" />
     <Compile Include="Genius Integration\Moduels\dvl0.vb" />
     <Compile Include="Genius Integration\Moduels\dvl1.vb" />
@@ -124,7 +124,6 @@
     <Compile Include="Genius Integration\Moduels\dvlObjMakers.vb" />
     <Compile Include="Genius Integration\Moduels\dvlVault.vb" />
     <Compile Include="Genius Integration\Moduels\lib0.vb" />
-    <Compile Include="Genius Integration\Moduels\lib1.vb" />
     <Compile Include="Genius Integration\Moduels\libAddIns4inventor.vb" />
     <Compile Include="Genius Integration\Moduels\libCastIfcDatum.vb" />
     <Compile Include="Genius Integration\Moduels\libCastOb.vb" />
@@ -150,7 +149,6 @@
     <Compile Include="Genius Integration\Moduels\sql1.vb" />
     <Compile Include="Genius Integration\Moduels\src0.vb" />
     <Compile Include="Genius Integration\Moduels\zzCsv000.vb" />
-    <Compile Include="GlobalsHelpers.vb" />
     <Compile Include="My Project\Resources.Designer.vb">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -165,7 +163,7 @@
     <Compile Include="AssemblyInfo.vb" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="x64\Docnet.Core.dll">
+    <Content Include="Docnet.Core.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="My Project\Application.myapp" />
@@ -177,9 +175,9 @@
     <None Include="Autodesk.DoyleAddin.Inventor.addin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="x64\pdfium.dll">
+    <Content Include="pdfium.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
     <None Include="Readme.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>

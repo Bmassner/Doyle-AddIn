@@ -1,5 +1,5 @@
 Module modMacros
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Public Function gnsPropAll() As Scripting.Dictionary
         gnsPropAll = nuDcPopulator(
         ).Setting("Part Number", "Item"
@@ -235,7 +235,7 @@ Module modMacros
         Dim nc As Long
 
         With dcAiSheetMetal(dcAiPartDocs(dcAiDocComponents(
-        InventorApp.ActiveDocument
+        ThisApplication.ActiveDocument
     )))
             ct = 0
             xp = 0
@@ -329,7 +329,7 @@ Module modMacros
         Dim ky As Object
         Dim InvProperty As Inventor.Property
 
-        With dcProps4genius(InventorApp.ActiveDocument)
+        With dcProps4genius(ThisApplication.ActiveDocument)
             For Each ky In .Keys
                 With aiProperty(obOf(.Item(ky)))
                     Debug.Print(.Parent.Name & ":" & .Name & "=" & .Text)
@@ -337,7 +337,7 @@ Module modMacros
             Next
         End With
     End Sub
-    'For Each itm In ActiveDocsComponents(InventorApp): Debug.Print(aiDocument(obOf(itm)).FullFileName: Next
+    'For Each itm In ActiveDocsComponents(ThisApplication): Debug.Print(aiDocument(obOf(itm)).FullFileName: Next
 
     Public Sub MakeViewImageFiles()
         Debug.Print(d0g9f0())
@@ -354,7 +354,7 @@ Module modMacros
         Dim bk As Long
 
         oDoc = AskUser4aiDoc(, dcOf_iAll_Factories(
-        InventorApp.Documents.VisibleDocuments(
+        ThisApplication.Documents.VisibleDocuments(
     )))
 
         oDoc = AskUser4aiDoc(
@@ -375,7 +375,7 @@ Module modMacros
                 If bk > 10 Then bk = 10
                 iCount = 0
                 Do
-                    InventorApp.StatusBarText _
+                    ThisApplication.StatusBarText _
                     = CStr(dx) & "/" & CStr(mx) & ": " _
                     & oFactory.TableRows.Item(dx).MemberName
                     'Member File creation
@@ -390,7 +390,7 @@ Module modMacros
 
                 If dx <= mx Then 'iCount = 10
                     oDoc.Close
-                    oDoc = InventorApp.Documents.Open(sFile)
+                    oDoc = ThisApplication.Documents.Open(sFile)
                     oFactory = oDoc.ComponentDefinition.iPartFactory
                     iCount = 0
                 End If

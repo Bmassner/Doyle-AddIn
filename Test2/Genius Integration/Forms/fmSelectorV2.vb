@@ -140,7 +140,7 @@
                     End If
                 End If
             Else
-                ls = LbxPickedStr(Me.lsbSelection, vbNewLine)
+                ls = LbxPickedStr(Me.lsbSelection, vbCrLf)
 
                 'ct = 0
                 'mx = .ListCount - 1
@@ -151,7 +151,7 @@
                 If Len(ls) > 0 Then
                     ck = MsgBox(Join(
                     Split(msOkMain, tagSelected),
-                    vbNewLine & ls & vbNewLine
+                    vbCrLf & ls & vbCrLf
                     ), vbYesNoCancel, msOkHead
                 )
                     If ck = vbYes Then
@@ -212,11 +212,11 @@
         msNoSelMain = Join({
         "Do you wish to cancel?",
         "(Click NO to return to list)" _
-    , vbNewLine})
+    , vbCrLf})
         msOkMain = Join({
         "Current selection is: ", tagSelected,
         "(Click CANCEL to quit with no selection)" _
-    , vbNewLine})
+    , vbCrLf})
         '
     End Sub
 
@@ -235,13 +235,13 @@
         Dim rt As String
 
         rt = ""
-        With Me.WithList(List).SelectIfIn(Defaultvalue)
+        With Me.WithList(List).SelectIfIn(DefaultValue)
             '.lsbSelection.List = lsWorkbooks()
             .Show()
             If .lsbSelection.SelectedItems.Count = 1 Then
                 rt = .lsbSelection.Text
             Else
-                rt = LbxPickedStr(.lsbSelection, vbNewLine)
+                rt = LbxPickedStr(.lsbSelection, vbCrLf)
             End If
         End With
         GetReply = rt

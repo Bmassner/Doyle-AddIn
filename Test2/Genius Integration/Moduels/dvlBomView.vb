@@ -1,5 +1,5 @@
 Module dvlBomView
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Public Function bomViewStruct(
     PartDesc As Inventor.AssemblyDocument
 ) As Inventor.BOMView
@@ -307,7 +307,7 @@ Module dvlBomView
                     With BillRow
                         If .ChildRows Is Nothing Then
                             dc = dBVg1f2(
-                            InventorApp.Documents.ItemByName(
+                            ThisApplication.Documents.ItemByName(
                                 wk.Item("aiDoc")
                             ), wk, dc)
                         Else
@@ -656,7 +656,7 @@ Module dvlBomView
     'With BillRow
     '    If .ChildRows Is Nothing Then
     '         dc = dBVg1f2( _
-    '            InventorApp.Documents.ItemByName( _
+    '            ThisApplication.Documents.ItemByName( _
     '                fd.Item("aiDoc") _
     '            ), fd, dc)
     '    Else

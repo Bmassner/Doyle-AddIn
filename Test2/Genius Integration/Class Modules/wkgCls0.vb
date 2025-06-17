@@ -1,5 +1,5 @@
 Class wkgCls0
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Private dcWkg As Scripting.Dictionary
     Private dcFiled As Scripting.Dictionary
     Private dcIndex As Scripting.Dictionary
@@ -90,7 +90,7 @@ Class wkgCls0
         Dim ky As Object
         Dim ThisDocument As Inventor.Document
         If AiDoc Is Nothing Then
-            Collect(InventorApp.ActiveDocument)
+            Collect(ThisApplication.ActiveDocument)
 
         ElseIf AiDoc Is ThisDocument Then
             'ElseIf AiDoc.DocumentType =DocumentTypeEnum.kAssemblyDocumentObject Then

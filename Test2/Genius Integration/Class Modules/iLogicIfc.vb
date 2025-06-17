@@ -248,7 +248,7 @@ Class iLogicIfc
         'ThisDocument.FullDocumentName))
         ' REV[2023.03.06.1500] FIXED IT!
         ' Instead of passing ThisDocument directly in,
-        ' a new reference to it is pulled from InventorApp,
+        ' a new reference to it is pulled from ThisApplication,
         ' retrieving it from the Documents collection
         ' by its full name. THAT actually WORKS!!!
     End Sub

@@ -1,5 +1,5 @@
 Module mod3
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Public Function d0g2f1b(
     dc As Scripting.Dictionary
 ) As Scripting.Dictionary
@@ -89,7 +89,7 @@ Module mod3
         Dim ad As Inventor.Document
 
         With dcAssyCompAndSub(aiDocAssy(
-        InventorApp.ActiveDocument
+        ThisApplication.ActiveDocument
     ).ComponentDefinition.Occurrences)
             For Each ky In .Keys
                 ad = aiDocument(.Item(ky))
@@ -121,7 +121,7 @@ Module mod3
         End With
         m3g0f1migrate = rt
     End Function
-    'Debug.Print(Join(m3g0f1migrate(dcAssyCompAndSub(aiDocAssy(InventorApp.ActiveDocument).ComponentDefinition.Occurrences)).Keys, vbCrLf)
+    'Debug.Print(Join(m3g0f1migrate(dcAssyCompAndSub(aiDocAssy(ThisApplication.ActiveDocument).ComponentDefinition.Occurrences)).Keys, vbCrLf)
 
     Public Function m3g0f1factories(dc As Scripting.Dictionary) As Scripting.Dictionary
         Dim rt As Scripting.Dictionary
@@ -204,7 +204,7 @@ Module mod3
         Dim tm As Single
         Dim ms As Single
 
-        ad = InventorApp.ActiveDocument
+        ad = ThisApplication.ActiveDocument
         tm = Timer
         rs = CnGnsDoyle().Execute("select Item, Family from vgMfiItems")
         ms = Timer - tm

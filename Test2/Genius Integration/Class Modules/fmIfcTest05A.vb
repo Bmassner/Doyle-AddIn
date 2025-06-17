@@ -2,7 +2,7 @@ Imports System.Windows
 Imports System.Windows.Forms
 
 Class FmIfcTest05A
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Public Event Sent(Signal As VbMsgBoxResult)
     Public Event GroupIs(Now As String)
     Public Event ItemIs(Now As String)
@@ -281,7 +281,7 @@ dcOb(.Item(ky)), itemsFlat, 1
 
                         If Err.Number = 0 Then
                         Else
-                            If inventorApp.Documents.Open(
+                            If ThisApplication.Documents.Open(
                             .FullDocumentName, True
                         ) Is docActive Then
                                 Debug.Print("")  'Breakpoint Landing

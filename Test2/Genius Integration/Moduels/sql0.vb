@@ -1,28 +1,39 @@
 Module sql0
 
-    Public Function sqlTextLocal(
-    nm As String
-) As String
-        sqlTextLocal =
-    sqlTextInProject(
-    nm, VbProjectLocal())
-        'Debug.Print(cnGnsDoyle().Execute(sqlTextLocal("sqlOf_ERC_PTOSIZE")).GetString 'sqlOf_428_MOTORVOLTAGE
+    Public Function SqlTextLocal(nm As String, ThisApplication As Inventor.Application) As String
+        ' Use the global ThisApplication to get the active Inventor document
+        Dim doc As Object
+        If Not IsNothing(ThisApplication) Then
+            doc = ThisApplication.ActiveDocument
+        Else
+            doc = Nothing
+        End If
+
+        ' Defensive: If no document, return empty string
+        If doc Is Nothing Then
+            SqlTextLocal = ""
+            Exit Function
+        End If
+
+        SqlTextLocal = sqlTextInProject(nm, VbProjectLocal(doc))
+        'Debug.Print(CnGnsDoyle().Execute(sqlTextLocal("sqlOf_ERC_PTOSIZE")).GetString)
     End Function
 
-    Public Function sqlOf_() As String
+    Public Function SqlOf_(ThisApplication As Inventor.Application) As String
 #If False Then
-'SQL'
--- SQL STATEMENT
+    'SQL'
+    -- SQL STATEMENT
 
-, --
-'SQL'
+    , --
+    'SQL'
 #End If
-        sqlOf_ = sqlTextLocal(
-        "sqlOf_"
+        SqlOf_ = SqlTextLocal(
+        "sqlOf_",
+        ThisApplication
     )
     End Function
 
-    Public Function sqlOf_simpleSelWhere(
+    Public Function SqlOf_simpleSelWhere(
     FromView As String, GetField As String,
     WhereField As String, Matches As Object
 ) As String
@@ -55,7 +66,7 @@ Module sql0
         '   NOTE: this block MIGHT want
         '   exported to its own function
 
-        sqlOf_simpleSelWhere _
+        SqlOf_simpleSelWhere _
         = " select " & GetField _
         & " from " & FromView _
         & " where " & WhereField _
@@ -63,11 +74,11 @@ Module sql0
     ";"
     End Function
 
-    Public Function sqlOf_gnsMatlSpec1ops() As String
-        sqlOf_gnsMatlSpec1ops = sqlOf_gnsMatlSpec1ops_v0_1()
+    Public Function SqlOf_gnsMatlSpec1ops(ThisApplication As Inventor.Application) As String
+        SqlOf_gnsMatlSpec1ops = SqlOf_gnsMatlSpec1ops_v0_1(ThisApplication)
     End Function
 
-    Public Function sqlOf_gnsMatlSpec1ops_v0_1() As String
+    Public Function SqlOf_gnsMatlSpec1ops_v0_1(ThisApplication As Inventor.Application) As String
 #If False Then
 'SQL'
 -- SQL STATEMENT
@@ -84,16 +95,16 @@ order by CHARINDEX(
 , --
 'SQL'
 #End If
-        sqlOf_gnsMatlSpec1ops_v0_1 = sqlTextLocal(
-        "sqlOf_gnsMatlSpec1ops_v0_1"
+        SqlOf_gnsMatlSpec1ops_v0_1 = SqlTextLocal(
+        "sqlOf_gnsMatlSpec1ops_v0_1", ThisApplication
     )
     End Function
 
-    Public Function sqlOf_MatlSpecXref() As String
-        sqlOf_MatlSpecXref = sqlOf_MatlSpecXref_v0_1()
+    Public Function SqlOf_MatlSpecXref(ThisApplication As Inventor.Application) As String
+        SqlOf_MatlSpecXref = SqlOf_MatlSpecXref_v0_1(ThisApplication)
     End Function
 
-    Public Function sqlOf_MatlSpecXref_v0_1() As String
+    Public Function SqlOf_MatlSpecXref_v0_1(ThisApplication As Inventor.Application) As String
 #If False Then
 'SQL'
 -- SQL STATEMENT
@@ -185,18 +196,18 @@ order by qZ.val, qZ.also
 , --
 'SQL'
 #End If
-        sqlOf_MatlSpecXref_v0_1 = sqlTextLocal(
-        "sqlOf_MatlSpecXref_v0_1"
+        SqlOf_MatlSpecXref_v0_1 = SqlTextLocal(
+        "sqlOf_MatlSpecXref_v0_1", ThisApplication
     )
     End Function
 
-    Public Function sqlOf_GnsPartInfo(
+    Public Function SqlOf_GnsPartInfo(ThisApplication As Inventor.Application,
     Item As String
 ) As String
-        sqlOf_GnsPartInfo = Replace(
-        sqlTextLocal(
-        "sqlOf_GnsPartInfo"
-        ), "%%%", Item
+        SqlOf_GnsPartInfo = Replace(
+        SqlTextLocal(
+        "sqlOf_GnsPartInfo",
+       ThisApplication), "%%%", Item
     )
 #If False Then
 'SQL'
@@ -228,12 +239,12 @@ where i.Item = '%%%'
 #End If
     End Function
 
-    Public Function sqlOf_GnsPartMatl(
+    Public Function SqlOf_GnsPartMatl(ThisApplication As Inventor.Application,
     Item As String
 ) As String
-        sqlOf_GnsPartMatl = Replace(
-        sqlTextLocal(
-        "sqlOf_GnsPartMatl"
+        SqlOf_GnsPartMatl = Replace(
+        SqlTextLocal(
+        "sqlOf_GnsPartMatl", ThisApplication
         ), "%%%", Item
     )
 #If False Then
@@ -254,25 +265,25 @@ where b.Product = '%%%'
 #End If
     End Function
 
-    Public Function sqlOf_GnsMatlOptions(
+    Public Function SqlOf_GnsMatlOptions(ThisApplication As Inventor.Application,
     Matl As String, Dims As Object
 ) As String
-        sqlOf_GnsMatlOptions =
-    sqlOf_GnsMatlOptions_v0_2(
+        SqlOf_GnsMatlOptions =
+    SqlOf_GnsMatlOptions_v0_2(ThisApplication,
         Matl, Dims
     )
     End Function
 
-    Public Function sqlOf_GnsMatlOptions_v0_1(
+    Public Function SqlOf_GnsMatlOptions_v0_1(ThisApplication As Inventor.Application,
     Matl As String, Wdth As Double, Hght As Double,
     Optional Thck As Double = -1,
     Optional Lgth As Double = 0
 ) As String
         ' DON'T try to do anything with this yet!
         ' see notes on where things are
-        sqlOf_GnsMatlOptions_v0_1 =
+        SqlOf_GnsMatlOptions_v0_1 =
     Replace(Replace(Replace(Replace(Replace(
-        sqlTextLocal("sqlOf_GnsMatlOptions_v0_1") _
+        SqlTextLocal("sqlOf_GnsMatlOptions_v0_1", ThisApplication) _
         , "$MTL$", Matl) _
         , "#THK#", "") _
         , "#WID#", "") _
@@ -348,28 +359,28 @@ order by MatchCt desc, dx.Item
 #End If
     End Function
 
-    Public Function sqlOf_GnsMatlOptions_v0_2(
+    Public Function SqlOf_GnsMatlOptions_v0_2(ThisApplication As Inventor.Application,
     Matl As String, Dims As Object
 ) As String
         ' DON'T try to do anything with this yet!
         ' see notes on where things are
         If TypeOf Dims Is Array Then
-            sqlOf_GnsMatlOptions_v0_2 =
+            SqlOf_GnsMatlOptions_v0_2 =
         Replace(Replace(
-            sqlTextLocal("sqlOf_GnsMatlOptions_v0_2") _
+            SqlTextLocal("sqlOf_GnsMatlOptions_v0_2", ThisApplication) _
             , "%%S6%%", Matl) _
             , "%%LS%%", Join(Dims, "), (")) _
             '
         ElseIf IsNumeric(Dims) Then
-            sqlOf_GnsMatlOptions_v0_2 =
-        sqlOf_GnsMatlOptions_v0_2(
+            SqlOf_GnsMatlOptions_v0_2 =
+        SqlOf_GnsMatlOptions_v0_2(ThisApplication,
             Matl, {Dims}
         )
         Else
             Stop 'because this might be an issue
             ' will resort to a sane default for now
-            sqlOf_GnsMatlOptions_v0_2 =
-        sqlOf_GnsMatlOptions_v0_2(
+            SqlOf_GnsMatlOptions_v0_2 =
+        SqlOf_GnsMatlOptions_v0_2(ThisApplication,
             Matl, {0.075}
         ) 'should pick up 14GA sheet metal only
             '  might switch to something better
@@ -441,13 +452,13 @@ order by mt.Specification1
 #End If
     End Function
 
-    Public Function sqlOf_GnsTubeHose(
+    Public Function SqlOf_GnsTubeHose(ThisApplication As Inventor.Application,
     Optional Diam As Double = 0
-) As String
-        sqlOf_GnsTubeHose = sqlOf_GnsTubeHose_v0_1(Diam)
+    ) As String
+        SqlOf_GnsTubeHose = SqlOf_GnsTubeHose_v0_1(ThisApplication, Diam)
     End Function
 
-    Public Function sqlOf_GnsTubeHose_v0_1(
+    Public Function SqlOf_GnsTubeHose_v0_1(ThisApplication As Inventor.Application,
     Optional Diam As Double = 0
 ) As String ', Matl As String, Dims As Object
         ' DON'T try to do anything with this yet!
@@ -462,9 +473,9 @@ order by mt.Specification1
             txDiam = "> 0.0"
         End If
 
-        sqlOf_GnsTubeHose_v0_1 =
-        Replace(sqlTextLocal(
-        "sqlOf_GnsTubeHose_v0_1"
+        SqlOf_GnsTubeHose_v0_1 =
+        Replace(SqlTextLocal(
+        "sqlOf_GnsTubeHose_v0_1", ThisApplication
         ), "%%DI%%", txDiam
     ) '
 #If False Then
@@ -489,10 +500,10 @@ order by i.Diameter
 #End If
     End Function
 
-    Public Function sqlOf_ASDF(Item As String) As String
-        sqlOf_ASDF = Replace(
-        sqlTextLocal(
-        "sqlOf_ASDF"
+    Public Function SqlOf_ASDF(Item As String, ThisApplication As Inventor.Application) As String
+        SqlOf_ASDF = Replace(
+        SqlTextLocal(
+        "sqlOf_ASDF", ThisApplication
         ), "%%%", Item
     )
 #If False Then
@@ -527,7 +538,7 @@ where b.Product = '%%%' -- 01-149
 #End If
     End Function
 
-    Public Function sqlOf_03R4LC09_NOCOND() As String
+    Public Function SqlOf_03R4LC09_NOCOND(ThisApplication As Inventor.Application) As String
 #If False Then
 'SQL'
 -- SQL STATEMENT
@@ -555,12 +566,12 @@ Order by
 , --
 'SQL'
 #End If
-        sqlOf_03R4LC09_NOCOND = sqlTextLocal(
+        SqlOf_03R4LC09_NOCOND = SqlTextLocal(ThisApplication,
         "sqlOf_03R4LC09_NOCOND"
     )
     End Function
 
-    Public Function sqlOf_ERC_PTOSIZE() As String
+    Public Function SqlOf_ERC_PTOSIZE(ThisApplication As Inventor.Application) As String
         'SQL'
         '-- ERC-PTOSIZE
         'select I.Item, I.Description1, I.OptionPrice, I.Specification7
@@ -584,12 +595,12 @@ Order by
         'Order by Description1
         ', --
         'SQL'
-        sqlOf_ERC_PTOSIZE = sqlTextLocal(
+        SqlOf_ERC_PTOSIZE = SqlTextLocal(ThisApplication,
         "sqlOf_ERC_PTOSIZE"
     ) 'vbTextOfProcInDict
     End Function
 
-    Public Function sqlOf_test2() As String
+    Public Function SqlOf_test2(ThisApplication As Inventor.Application) As String
 #If False Then
 'SQL'
 -- ERC-PTOSIZE
@@ -615,7 +626,7 @@ Order by Description1
 , --
 'SQL'
 #End If
-        sqlOf_test2 = sqlTextLocal(
+        SqlOf_test2 = SqlTextLocal(ThisApplication,
         "sqlOf_test2"
     )
         'Debug.Print(cnGnsDoyle().Execute(sqlOf_test2()).GetString

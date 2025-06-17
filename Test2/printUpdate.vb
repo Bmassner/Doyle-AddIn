@@ -1,6 +1,6 @@
 ﻿Module PrintUpdate
 
-    Public Sub RunPrintUpdate()
+    Public Sub RunPrintUpdate(ThisApplication As Inventor.Application)
         ' Check if current document is a drawing, show error if not
         If ThisApplication.ActiveDocument.DocumentType <> Inventor.DocumentTypeEnum.kDrawingDocumentObject Then
             MsgBox("ONLY FOR USE IN DRAWING DOCUMENTS", "Ilogic")

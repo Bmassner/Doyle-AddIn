@@ -1,6 +1,5 @@
 Module dvl2
-    Dim inventorApp As Inventor.Application
-    Public Function dcGnsMatlSpecPairings() As Scripting.Dictionary
+    Public Function dcGnsMatlSpecPairings(ThisApplication As Inventor.Application) As Scripting.Dictionary
         '
         ' dcGnsMatlSpecPairings -- Genius Raw Material Spec Relations
         '     Return a Dictionary of Dictionaries
@@ -21,8 +20,8 @@ Module dvl2
         rt = New Scripting.Dictionary
 
         wk = dcDxFromRecSetDc(DcFromAdoRS(
-        CnGnsDoyle().Execute(sqlOf_MatlSpecXref())
-    ))
+    CnGnsDoyle().Execute(SqlOf_MatlSpecXref(ThisApplication))
+))
         If wk Is Nothing Then
         ElseIf wk.Exists("val") Then
             dcVl = wk.Item("val")
@@ -201,7 +200,7 @@ Module dvl2
         'send2clipBdWin10 ConvertToJson(dcOfDcWithXrefsBrd1st(dcGnsMatlSpecPairings()), vbTab)
     End Function
 
-    Public Function dcGnsMatlSpecPairings4json() As Scripting.Dictionary
+    Public Function dcGnsMatlSpecPairings4json(ThisApplication As Inventor.Application) As Scripting.Dictionary
         '
         ' dcGnsMatlSpecPairings4json -- check on dcGnsMatlSpecPairings
         '
@@ -209,7 +208,7 @@ Module dvl2
         Dim ky As Object
         Dim k2 As Object
 
-        rt = dcGnsMatlSpecPairings()
+        rt = dcGnsMatlSpecPairings(ThisApplication)
 
         With rt : For Each ky In .Keys()
                 '.Item(ky) = Join(dcOb(.Item(ky)).Keys)
@@ -253,7 +252,7 @@ Module dvl2
         dcSpecSubWithAll = rt
     End Function
 
-    Public Function dcSpecFromUser(
+    Public Function dcSpecFromUser(ThisApplication As Inventor.Application
 ) As Scripting.Dictionary
         Dim rt As Scripting.Dictionary
         Dim dc As Scripting.Dictionary
@@ -261,7 +260,7 @@ Module dvl2
         Dim nx As String
 
         rt = New Scripting.Dictionary
-        dc = dcGnsMatlSpecPairings()
+        dc = dcGnsMatlSpecPairings(ThisApplication)
         'Debug.Print(Join(dc.Keys)
 
         Do
@@ -300,9 +299,9 @@ Module dvl2
             rt = dc
 
             With Part
-                With .Propertys.Item(gnDesign)
-                    rt.Add(pnPartNum, .Item(pnPartNum))
-                    rt.Add(pnFamily, .Item(pnFamily))
+                With .Propertys.Item(GnDesign)
+                    rt.Add(PnPartNum, .Item(PnPartNum))
+                    rt.Add(PnFamily, .Item(PnFamily))
                 End With
 
                 'rt.Add("subType", .SubType 'aiSubType
@@ -347,9 +346,9 @@ Module dvl2
             rt = dc
 
             With AiDoc
-                With .Propertys.Item(gnDesign)
-                    rt.Add(pnPartNum, .Item(pnPartNum))
-                    rt.Add(pnFamily, .Item(pnFamily))
+                With .Propertys.Item(GnDesign)
+                    rt.Add(PnPartNum, .Item(PnPartNum))
+                    rt.Add(PnFamily, .Item(PnFamily))
                 End With
 
                 If False Then
@@ -411,8 +410,8 @@ Module dvl2
                         ' unit measurement be tracked and
                         ' kept consistent throughout the
                         ' entire management process.
-                        rt.Add(pnLength, System.Math.Round(.SpanX, 6))
-                        rt.Add(pnWidth, System.Math.Round(.SpanY, 6))
+                        rt.Add(PnLength, System.Math.Round(.SpanX, 6))
+                        rt.Add(PnWidth, System.Math.Round(.SpanY, 6))
                         rt.Add("Height", System.Math.Round(.SpanZ, 6))
                     End With
                 End With
@@ -480,7 +479,7 @@ Module dvl2
             End With
 
             With CpDef
-                tk = .Thickness.Text / cvLenIn2cm
+                tk = .Thickness.Text / CvLenIn2cm
                 ' NOTE conversion to Inches from Centimeters.
                 ' keep in mind we're grabbing Thickness HERE
                 ' and will use Height (below) in an effort
@@ -523,13 +522,13 @@ Module dvl2
                     'to get to ft^2? or do we stick to in^2?
                 Else
                     With rt
-                        If .Exists(pnLength) Then
-                            lg = .Item(pnLength)
+                        If .Exists(PnLength) Then
+                            lg = .Item(PnLength)
                             '.Remove(pnLength
                         End If
 
-                        If .Exists(pnWidth) Then
-                            wd = .Item(pnWidth)
+                        If .Exists(PnWidth) Then
+                            wd = .Item(PnWidth)
                             '.Remove(pnWidth
                         End If
 
@@ -580,16 +579,16 @@ Module dvl2
                 With rt
                     ' first, remove any previous
                     ' dimensional values
-                    If .Exists(pnLength) Then .Remove(pnLength)
-                    If .Exists(pnWidth) Then .Remove(pnWidth)
+                    If .Exists(PnLength) Then .Remove(PnLength)
+                    If .Exists(PnWidth) Then .Remove(PnWidth)
                     If .Exists("Height") Then .Remove("Height")
                     '(not sure this is the best way
                     ' but going to try it for now)
 
-                    .Add(pnThickness, tk)
-                    .Add(pnLength, lg)
-                    .Add(pnWidth, wd)
-                    .Add(pnArea, ar)
+                    .Add(PnThickness, tk)
+                    .Add(PnLength, lg)
+                    .Add(PnWidth, wd)
+                    .Add(PnArea, ar)
                     .Add("Height", ht)
                 End With
             End With
@@ -648,7 +647,7 @@ Module dvl2
         dcFlatPatSpansByVertices = rt
     End Function
 
-    Public Function dcGnsInfoCompDefPart(
+    Public Function dcGnsInfoCompDefPart(ThisApplication As Inventor.Application,
     CpDef As Inventor.PartComponentDefinition,
     Optional dcWkg As Scripting.Dictionary = Nothing
 ) As Scripting.Dictionary
@@ -703,11 +702,11 @@ Module dvl2
         Else
             With CpDef
                 With .MassProperties
-                    ms = System.Math.Round(.Mass * cvMassKg2LbM, 4)
+                    ms = System.Math.Round(.Mass * CvMassKg2LbM, 4)
                     'System.Math.Round( _
-                    InventorApp.kUnitsOfMeasureObject.ConvertUnits.Mass(, "kg", "lb", 4)
+                    ThisApplication.kUnitsOfMeasureObject.ConvertUnits.Mass(, "kg", "lb", 4)
                     ' Apparently, empty parentheses may be
-                    ' placed after both InventorApp
+                    ' placed after both ThisApplication
                     ' and UnitsOfMeasure without error.
                     ' This makes it rather easy to lay out
                     ' code in a nice, compact, and maybe
@@ -733,7 +732,7 @@ Module dvl2
 
             With rt
                 wk = New Scripting.Dictionary
-                For Each ky In {pnLength, pnWidth, "Height"}
+                For Each ky In {PnLength, PnWidth, "Height"}
                     If .Exists(ky) Then
                         wk.Add(ky, System.Math.Round(CDbl(.Item(ky)), 6))
                         '
@@ -843,8 +842,8 @@ Module dvl2
 
                 '.Add(pnRawMaterial, wk
 
-                .Add(pnMass, ms)
-                .Add(pnMaterial, mtName)
+                .Add(PnMass, ms)
+                .Add(PnMaterial, mtName)
                 .Add("SPEC06", s6)
 
                 'If False Then
@@ -878,8 +877,8 @@ Module dvl2
         Else
             With CpDef
                 With .MassProperties
-                    rt.Add(pnMass, System.Math.Round(
-                .Mass * cvMassKg2LbM, 4))
+                    rt.Add(PnMass, System.Math.Round(
+                .Mass * CvMassKg2LbM, 4))
                     '
                     ' see dcGnsInfoCompDefPart
                     ' for alternate
@@ -919,7 +918,7 @@ Module dvl2
         dcGnsInfoCompDefTBD = rt
     End Function
 
-    Public Function dcGnsInfoSQLitem(
+    Public Function dcGnsInfoSQLitem(ThisApplication As Inventor.Application,
     Item As String
 ) As Scripting.Dictionary
         '
@@ -935,7 +934,7 @@ Module dvl2
         With CnGnsDoyle()
             On Error Resume Next
             Err.Clear()
-            rs = .Execute(sqlOf_GnsPartInfo(Item)) 'sqlOf_ASDF
+            rs = .Execute(SqlOf_GnsPartInfo(ThisApplication, Item)) 'sqlOf_ASDF
             If Err.Number = 0 Then
                 rt = DcFromAdoRSrow(rs, "")
                 'With rs
@@ -955,7 +954,7 @@ Module dvl2
                 Stop
             End If
 
-            rs = .Execute(sqlOf_GnsPartMatl(Item)) 'sqlOf_ASDF
+            rs = .Execute(SqlOf_GnsPartMatl(ThisApplication, Item)) 'sqlOf_ASDF
             If Err.Number = 0 Then
                 mt = DcFromAdoRS(rs, "")
                 With mt
@@ -1011,7 +1010,7 @@ Module dvl2
         'Debug.Print(dumpLsKeyVal(d2g3f4(aiDocPart(userChoiceFromDc())), " = ")
     End Function
 
-    Public Function d2g3f5(
+    Public Function d2g3f5(ThisApplication As Inventor.Application,
     AiDoc As Inventor.Document
 ) As Scripting.Dictionary
         '
@@ -1068,7 +1067,7 @@ Module dvl2
         dcVlPr = dcMapAiProps2vals(dcPr) 'dcPt
         With dcVlPr
             For Each ky In {
-            pnThickness, pnWidth, pnLength, pnArea, pnRmQty}
+            PnThickness, PnWidth, PnLength, PnArea, PnRmQty}
                 ' THIS IS A KLUDGE
                 ' to temporarily "fix" an issue with Width,
                 ' Length, and Area values that don't match
@@ -1107,8 +1106,8 @@ Module dvl2
                 End If
             Next
 
-            If .Exists(pnRmQty) Then
-                .Item(pnRmQty) = System.Math.Round(.Item(pnRmQty), 8)
+            If .Exists(PnRmQty) Then
+                .Item(PnRmQty) = System.Math.Round(.Item(PnRmQty), 8)
                 ' THIS is intended to fix a precision discrepancy
                 ' between Inventor, which seems to store material
                 ' quantity with at least twelve digits of precision,
@@ -1116,8 +1115,8 @@ Module dvl2
             End If
         End With
 
-        dcGn = dcGnsInfoSQLitem(
-        dcVlPr.Item(pnPartNum)
+        dcGn = dcGnsInfoSQLitem(ThisApplication,
+        dcVlPr.Item(PnPartNum)
     )
 
         rt = New Scripting.Dictionary
@@ -1205,7 +1204,7 @@ Module dvl2
             Else
                 valIfAiPropElseSelf = InvProperty.Text
             End If
-    Else
+        Else
             valIfAiPropElseSelf = vl
         End If
     End Function
@@ -1235,7 +1234,7 @@ Module dvl2
         End If
     End Function
 
-    Public Function d2g3f7(
+    Public Function d2g3f7(ThisApplication As Inventor.Application,
     AiDoc As Inventor.Document
 ) As Scripting.Dictionary
         '
@@ -1245,7 +1244,7 @@ Module dvl2
         Dim Ky As Object
 
         ' rt = New Scripting.Dictionary
-        With d2g3f5(AiDoc)
+        With d2g3f5(ThisApplication, AiDoc)
             Debug.Print("") 'Breakpoint Landing
             rt =
                dcTreeReKeyedInPlc("src1", "gns",
@@ -1273,7 +1272,7 @@ Module dvl2
         'send2clipBdWin10 ConvertToJson(nuDcPopulator().Setting(Format$(Now, "\[YYYY.MM.DD@HH.NN.SS\]"), d2g3f7(aiDocPart(userChoiceFromDc()))).Dictionary(), vbTab)
     End Function
 
-    Public Function d2g3f8(
+    Public Function d2g3f8(ThisApplication As Inventor.Application,
     Optional AiDoc As Inventor.Document = Nothing
 ) As Scripting.Dictionary
         '
@@ -1284,7 +1283,7 @@ Module dvl2
         Dim ky As Object
 
         If AiDoc Is Nothing Then
-            With InventorApp
+            With ThisApplication
                 If .ActiveDocument Is Nothing Then
                     Stop
                 Else
@@ -1294,12 +1293,12 @@ Module dvl2
         Else
             rt = New Scripting.Dictionary
 
-            With nuPicker(New kyPickAiPartVsAssy
+            With nuPicker(New KyPickAiPartVsAssy
         ).AfterScanning(dcAiDocComponents(AiDoc))
                 '
                 With .DcIn() 'Parts
                     For Each ky In .Keys
-                        rt.Add(ky, d2g3f7(aiDocPart(obOf(.Item(ky)))))
+                        rt.Add(ky, d2g3f7(ThisApplication, aiDocPart(obOf(.Item(ky)))))
                     Next
                 End With
 
@@ -1507,7 +1506,7 @@ Module dvl2
         ' option(s), if supplied
         On Error Resume Next
         Err.Clear()
-                msNoSel = CStr(ifNone)
+        msNoSel = CStr(ifNone)
 
         If Err.Number = 0 Then
             If Len(msNoSel) > 0 Then
@@ -1578,8 +1577,8 @@ Module dvl2
         End If
     End Function
 
-    Public Function dcGnsPrpPtDvl_2021_1112(
-    invDoc As Inventor.PartDocument,
+    Public Function dcGnsPrpPtDvl_2021_1112(ThisApplication As Inventor.Application,
+    oDoc As Inventor.PartDocument,
     Optional dc As Scripting.Dictionary = Nothing
 ) As Scripting.Dictionary
         Dim rt As Scripting.Dictionary
@@ -1609,11 +1608,11 @@ Module dvl2
         rt = New Scripting.Dictionary
         dc01 = New Scripting.Dictionary
 
-        With invDoc
+        With oDoc
             ' Get Property s
             With .Propertys
                 ' aiPropsUser = .Item(gnCustom)
-                aiPropsDesign = .Item(gnDesign)
+                aiPropsDesign = .Item(GnDesign)
             End With
             aiBomType = .ComponentDefinition.BOMStructure
             aiSubType = .SubType
@@ -1622,8 +1621,8 @@ Module dvl2
         ' Get Part Number and Family
         ' Properties from Design 
         With aiPropsDesign
-            prPartNum = .Item(pnPartNum)
-            prFamily = .Item(pnFamily)
+            prPartNum = .Item(PnPartNum)
+            prFamily = .Item(PnFamily)
         End With
 
         ' Get Values of Part Number
@@ -1641,7 +1640,7 @@ Module dvl2
             On Error Resume Next
             Err.Clear()
             rs = .Execute(
-            sqlOf_ASDF(aiPartNum)
+            SqlOf_ASDF(ThisApplication, aiPartNum)
         ) '
             If Err.Number = 0 Then
                 dcVlGn = DcFromAdoRSrow(rs, "")
@@ -1709,7 +1708,7 @@ Module dvl2
         End With
 
         If aiBomType = BOMStructureEnum.kNormalBOMStructure Then
-            If aiSubType = guidSheetMetal Then
+            If aiSubType = GuidSheetMetal Then
                 'try to get flat pattern data here
             End If
         ElseIf aiBomType = BOMStructureEnum.kPurchasedBOMStructure Then
@@ -1738,8 +1737,8 @@ Module dvl2
         dcGnsPrpPtDvl_2021_1112 = rt
     End Function
 
-    Public Function dcGeniusPropsPartRev20180530_broken2(
-    invDoc As Inventor.PartDocument,
+    Public Function dcGeniusPropsPartRev20180530_broken2(ThisApplication As Inventor.Application,
+    oDoc As Inventor.PartDocument,
     Optional dc As Scripting.Dictionary = Nothing
 ) As Scripting.Dictionary
         Dim rt As Scripting.Dictionary
@@ -1815,10 +1814,10 @@ Module dvl2
         If dc Is Nothing Then
             dcGeniusPropsPartRev20180530_broken2 =
         dcGeniusPropsPartRev20180530_broken2(
-            invDoc, New Scripting.Dictionary
+            oDoc, New Scripting.Dictionary
         )
         Else
-            aiBomType = invDoc.ComponentDefinition.BOMStructure
+            aiBomType = oDoc.ComponentDefinition.BOMStructure
             'UPDATE[2021.11.11]
             '     Moved Property  collection
             '     to top of program to permit
@@ -1828,16 +1827,16 @@ Module dvl2
             '     along with the Values of
             '     of Design Properties.
 
-            With invDoc
+            With oDoc
                 With .Propertys
-                    aiPropsDesign = .Item(gnDesign)
-                    aiPropsUser = .Item(gnCustom)
+                    aiPropsDesign = .Item(GnDesign)
+                    aiPropsUser = .Item(GnCustom)
                 End With
 
                 aiBomType = .ComponentDefinition.BOMStructure
 
                 If aiBomType = BOMStructureEnum.kNormalBOMStructure Then
-                    If .SubType = guidSheetMetal Then
+                    If .SubType = GuidSheetMetal Then
                     End If
                 End If
             End With
@@ -1846,17 +1845,17 @@ Module dvl2
             ' are from Design, NOT Custom 
             With aiPropsDesign 'we know they're present
                 'so we can grab them directly
-                prPartNum = .Item(pnPartNum)
-                prFamily = .Item(pnFamily)
+                prPartNum = .Item(PnPartNum)
+                prFamily = .Item(PnFamily)
             End With
             aiPartNum = prPartNum.Text
             aiPartFam = prFamily.Text
 
-            dcProp = dcGnsPropsPart(invDoc, , 0) 'dcAiPropsIn
+            dcProp = dcGnsPropsPart(oDoc, , 0) 'dcAiPropsIn
             dcVlPr = New Scripting.Dictionary
             With dcProp
-                .Add(pnPartNum, prPartNum)
-                .Add(pnFamily, prFamily)
+                .Add(PnPartNum, prPartNum)
+                .Add(PnFamily, prFamily)
 
                 For Each ky In .Keys
                     InvProperty = aiProperty(.Item(ky))
@@ -1865,29 +1864,29 @@ Module dvl2
                     Else
                         dcVlPr.Add(ky, InvProperty.Text)
                     End If
-    Next
+                Next
 
-    If .Exists(pnRawMaterial) Then
-                    prRawMatl = .Item(pnRawMaterial)
+                If .Exists(PnRawMaterial) Then
+                    prRawMatl = .Item(PnRawMaterial)
                     aiMatlNum = prRawMatl.Text
                 Else
                     aiMatlNum = ""
                 End If
 
-    If .Exists(pnRmUnit) Then
-                    prRmUnit = .Item(pnRmUnit)
+                If .Exists(PnRmUnit) Then
+                    prRmUnit = .Item(PnRmUnit)
                     aiQtyUnit = prRmUnit.Text
                 Else
                     aiQtyUnit = ""
                 End If
 
-    If .Exists(pnRmUnit) Then
-                    prRmQty = .Item(pnRmQty)
+                If .Exists(PnRmUnit) Then
+                    prRmQty = .Item(PnRmQty)
                     aiMatlQty = prRmQty.Text
                 Else
                     aiMatlQty = 0
                 End If
-    End With
+            End With
             Debug.Print("=== Check Existing Model Genius Properties ===")
             Debug.Print(DumpLsKeyVal(dcVlPr, "="))
             Debug.Print("")
@@ -1900,20 +1899,20 @@ Module dvl2
             '     The only difference is, that version
             '     does NOT apply Genius Property col-
             '     lection to the supplied Dictionary dc.
-            rt = dcGnsPropsPart(invDoc, dc, 0) 'dcAiPropsIn
+            rt = dcGnsPropsPart(oDoc, dc, 0) 'dcAiPropsIn
             dcVlAi = New Scripting.Dictionary
             With rt
-    .Add(pnPartNum, prPartNum)
-    .Add(pnFamily, prFamily)
+                .Add(PnPartNum, prPartNum)
+                .Add(PnFamily, prFamily)
 
-    For Each ky In .Keys
+                For Each ky In .Keys
                     InvProperty = aiProperty(.Item(ky))
                     If InvProperty Is Nothing Then
                         Stop
                     Else
                         dcVlAi.Add(ky, InvProperty.Text)
                     End If
-    Next
+                Next
                 InvProperty = Nothing
             End With
             '     Ultimately, processes which populate
@@ -1940,7 +1939,7 @@ Module dvl2
                 On Error Resume Next
                 Err.Clear()
                 rs = .Execute(
-                sqlOf_ASDF(aiPartNum)
+                SqlOf_ASDF(ThisApplication, aiPartNum)
             ) '
                 If Err.Number = 0 Then
                     dcVlGn = DcFromAdoRSrow(rs, "")
@@ -2015,7 +2014,7 @@ Module dvl2
             Debug.Print("================")
             Stop
 
-            With invDoc
+            With oDoc
                 'UPDATE[2021.11.11]
                 '     Moved Property  collection
                 '     to top of program, along with
@@ -2078,11 +2077,11 @@ Module dvl2
                         gnBomType = BOMStructureEnum.kPurchasedBOMStructure
                     Else
                         'might need to ask User
-                        If InStr(1, invDoc.FullFileName,
+                        If InStr(1, oDoc.FullFileName,
                         "\Doyle_Vault\Designs\purchased\"
                     ) > 0 Then 'it'a LIKELY purchased.
                             'Double check with User.
-                            ck = newFmTest2().AskAbout(invDoc, ,
+                            ck = newFmTest2().AskAbout(oDoc, ,
                             "Is this a Purchased Part?"
                         )
                         Else
@@ -2158,15 +2157,15 @@ Module dvl2
                         '     '
                         '     '
                         '     '
-                        If dcVlPr.Exists(pnMass) Then
-                            If System.Math.Round(cvMassKg2LbM * .Mass, 4) - CDbl(dcVlPr.Item(pnMass)) = 0 Then
+                        If dcVlPr.Exists(PnMass) Then
+                            If System.Math.Round(CvMassKg2LbM * .Mass, 4) - CDbl(dcVlPr.Item(PnMass)) = 0 Then
                             Else
                                 'Stop
-                                dcVlPr.Item(pnMass) = System.Math.Round(cvMassKg2LbM * .Mass, 4)
+                                dcVlPr.Item(PnMass) = System.Math.Round(CvMassKg2LbM * .Mass, 4)
                             End If
                         Else
-                            dcVlPr.Add(pnMass, System.Math.Round(
-                            cvMassKg2LbM * .Mass, 4
+                            dcVlPr.Add(PnMass, System.Math.Round(
+                            CvMassKg2LbM * .Mass, 4
                         ))
                         End If
                         ' UPDATE[2021.11.09]
@@ -2273,30 +2272,30 @@ Module dvl2
                 '     when enabled, offers user/developer
                 '     an opportunity to run it, if desired.
                 Stop 'BKPT-2021-1105-1105
-                        If True Then
-                            dcVlFP = dcFlatPatVals(
-                            .ComponentDefinition
-                        ) 'dcVlAi
-                            With dcVlFP
-                                aiMatlFam = .Item("mtFamily")
-                                .Remove("mtFamily")
-                                For Each ky In .Keys
-                                    If dcVlPr.Exists(ky) Then
-                                        If CStr(dcVlPr.Item(ky)) = CStr(.Item(ky)) Then
-                                        Else
-                                            Stop
-                                            ' need to add value to a new 'change' Dictionary
-                                        End If
-                                    Else
-                                        Stop
-                                        ' need to add value to a new 'change' Dictionary
-                                    End If
-                                Next
-                            End With
-                            Stop
-                        Else
-                            rt = dcFlatPatProps(.ComponentDefinition, rt)
-                        End If
+                If True Then
+                    dcVlFP = dcFlatPatVals(
+                    .ComponentDefinition
+                ) 'dcVlAi
+                    With dcVlFP
+                        aiMatlFam = .Item("mtFamily")
+                        .Remove("mtFamily")
+                        For Each ky In .Keys
+                            If dcVlPr.Exists(ky) Then
+                                If CStr(dcVlPr.Item(ky)) = CStr(.Item(ky)) Then
+                                Else
+                                    Stop
+                                    ' need to add value to a new 'change' Dictionary
+                                End If
+                            Else
+                                Stop
+                                ' need to add value to a new 'change' Dictionary
+                            End If
+                        Next
+                    End With
+                    Stop
+                Else
+                    rt = dcFlatPatProps(.ComponentDefinition, rt)
+                End If
                 ' NOTE[2018-05-30]:
                 '     Raw Material Quantity value
                 '     SHOULD be  upon return
@@ -2343,138 +2342,138 @@ Module dvl2
                 ''  metal parts.
 
                 Stop
-                            ' !!!WARNING!!![2021.11.04]:
-                            ' Following section has been shuffled
-                            ' and should be considered HIGHLY
-                            ' UNSTABLE until verified functional
-                            ' and SAFE! TWO Stop commands are
-                            ' placed to emphasize the need for
-                            ' EXTREME CAUTION at this point
-                            Stop
-                            ' UPDATE[2021.11.04]:
-                            '     This section is being adjusted
-                            '     in an attempt to improve the raw
-                            '     material determination process.
-                            '
-                            '     This particular segment should
-                            '     ONLY be invoked if gnMatlNum is not
-                            '     successfully retrieved from Genius
-                            '
-                            If Len(gnMatlNum) = 0 Then
-                                'no stock retrieved from Genius
-                                'attempt to retrieve from Model
-                                'gnMatlNum = aiMatlNum
+                ' !!!WARNING!!![2021.11.04]:
+                ' Following section has been shuffled
+                ' and should be considered HIGHLY
+                ' UNSTABLE until verified functional
+                ' and SAFE! TWO Stop commands are
+                ' placed to emphasize the need for
+                ' EXTREME CAUTION at this point
+                Stop
+                ' UPDATE[2021.11.04]:
+                '     This section is being adjusted
+                '     in an attempt to improve the raw
+                '     material determination process.
+                '
+                '     This particular segment should
+                '     ONLY be invoked if gnMatlNum is not
+                '     successfully retrieved from Genius
+                '
+                If Len(gnMatlNum) = 0 Then
+                    'no stock retrieved from Genius
+                    'attempt to retrieve from Model
+                    'gnMatlNum = aiMatlNum
 
-                                If Len(aiMatlNum) > 0 Then 'gnMatlNum
-                                    'need to verify it against Genius
-                                    'by retrieving its Family there
-                                    '
-                                    ' This With block copied and modified [2021.03.11]
-                                    ' from elsewhere in this function as a temporary measure
-                                    ' to address a stopping situation later in the function.
-                                    ' See comment below for details.
-                                    '
-                                    ' UPDATE[2021.11.04]:
-                                    '     This section MIGHT be removed in future,
-                                    '
-                                    With CnGnsDoyle().Execute(
-                                "select Family " &
-                                "from vgMfiItems " &
-                                "where Item='" & gnMatlNum & "';"
-                            )
-                                        If .BOF Or .EOF Then
-                                            'Stop 'because Material value likely invalid
-                                            Stop 'because we do NOT want to  gnMatlNum!
-                                            ' want to assign it to a separate RETURN variable
-                                            ' or most likely, the return Dictionary.
-                                            gnMatlNum = ptNumShtMetal(invDoc.ComponentDefinition)
-                                            Debug.Print("") 'Breakpoint Landing
-                                            ''  ACTION TAKEN[2021.03.11]:
-                                            ''  temporary measure to try to ensure
-                                            ''  recovered material Item number is valid,
-                                            ''  and if not, to fix it automatically.
-                                            ''  This seeks to address a stop situation
-                                            ''  later in this function, encountered
-                                            ''  when the Part Number property is neither
-                                            ''  blank NOR valid (typically "0"), likely
-                                            ''  as a result of an uninitialized iPart property.
-                                            ''  (see ACTION ADVISED[2018.09.14] elsewhere)
-                                        Else
-                                            ''  This section retained from source,
-                                            ''  but disabled to avoid potential issues
-                                            ''  with subsequent operations, just in case
-                                            ''  anything depends on gnMatlFam remaining
-                                            ''  uninitialized up to that point.
-                                            ' UPDATE[2021.11.09]
-                                            '     Re-enabling Genius Material
-                                            '     Family assignment, as it SHOULD
-                                            '     be  to match what Genius
-                                            '     returns from this query.
-                                            '     '
-                                            '     Might not be the best place
-                                            '     to do this, though. If ptNumShtMetal
-                                            '     returns a valid Material Item above,
-                                            '     a Family is still needed.
-                                            '     '
-                                            '     NOTE: Fix disabled With block between runs
-                                            ''  With .Fields
-                                            Stop 'because we do not want to  gnMatlFam
-                                            '   for same reasons as above
-                                            gnMatlFam = .Fields.Item("Family").Value
-                                            ''  End With
-                                        End If
-                                    End With
+                    If Len(aiMatlNum) > 0 Then 'gnMatlNum
+                        'need to verify it against Genius
+                        'by retrieving its Family there
+                        '
+                        ' This With block copied and modified [2021.03.11]
+                        ' from elsewhere in this function as a temporary measure
+                        ' to address a stopping situation later in the function.
+                        ' See comment below for details.
+                        '
+                        ' UPDATE[2021.11.04]:
+                        '     This section MIGHT be removed in future,
+                        '
+                        With CnGnsDoyle().Execute(
+                    "select Family " &
+                    "from vgMfiItems " &
+                    "where Item='" & gnMatlNum & "';"
+                )
+                            If .BOF Or .EOF Then
+                                'Stop 'because Material value likely invalid
+                                Stop 'because we do NOT want to  gnMatlNum!
+                                ' want to assign it to a separate RETURN variable
+                                ' or most likely, the return Dictionary.
+                                gnMatlNum = ptNumShtMetal(oDoc.ComponentDefinition)
+                                Debug.Print("") 'Breakpoint Landing
+                                ''  ACTION TAKEN[2021.03.11]:
+                                ''  temporary measure to try to ensure
+                                ''  recovered material Item number is valid,
+                                ''  and if not, to fix it automatically.
+                                ''  This seeks to address a stop situation
+                                ''  later in this function, encountered
+                                ''  when the Part Number property is neither
+                                ''  blank NOR valid (typically "0"), likely
+                                ''  as a result of an uninitialized iPart property.
+                                ''  (see ACTION ADVISED[2018.09.14] elsewhere)
+                            Else
+                                ''  This section retained from source,
+                                ''  but disabled to avoid potential issues
+                                ''  with subsequent operations, just in case
+                                ''  anything depends on gnMatlFam remaining
+                                ''  uninitialized up to that point.
+                                ' UPDATE[2021.11.09]
+                                '     Re-enabling Genius Material
+                                '     Family assignment, as it SHOULD
+                                '     be  to match what Genius
+                                '     returns from this query.
+                                '     '
+                                '     Might not be the best place
+                                '     to do this, though. If ptNumShtMetal
+                                '     returns a valid Material Item above,
+                                '     a Family is still needed.
+                                '     '
+                                '     NOTE: Fix disabled With block between runs
+                                ''  With .Fields
+                                Stop 'because we do not want to  gnMatlFam
+                                '   for same reasons as above
+                                gnMatlFam = .Fields.Item("Family").Value
+                                ''  End With
+                            End If
+                        End With
+                    End If
+                End If
+
+                If Len(gnMatlNum) = 0 Then
+                    ' UPDATE[2018.05.30]:
+                    '     Pulling ALL code/text from this section
+                    '     to get rid of excessive cruft.
+                    '
+                    '     In fact, reversing logic to go directly
+                    '     to User Prompt if no stock identified
+                    '
+                    '     IN DOUBLE FACT, hauling this WHOLE MESS
+                    '     RIGHT UP after initial gnMatlNum assignment
+                    '     to prompt user IMMEDIATELY if no stock found
+                    With newFmTest1()
+                        If Not oDoc.ComponentDefinition.Document Is oDoc Then Stop
+
+                        bd = nuAiBoxData().UsingInches.SortingDims(
+                        oDoc.ComponentDefinition.RangeBox
+                    )
+                        ck = .AskAbout(oDoc,
+                        "No Stock Found! Please Review" _
+                        & vbCrLf & vbCrLf & bd.Dump(0)
+                    )
+
+                        If ck = vbYes Then
+                            ' UPDATE[2018.05.30]:
+                            '     Pulling some extraneous commented code
+                            '     from here and beginning of block
+                            With .ItemData
+                                If .Exists(PnFamily) Then
+                                    gnPartFam = .Item(PnFamily)
+                                    Debug.Print(PnFamily & "=" & gnPartFam)
                                 End If
-                            End If
 
-                            If Len(gnMatlNum) = 0 Then
-                                ' UPDATE[2018.05.30]:
-                                '     Pulling ALL code/text from this section
-                                '     to get rid of excessive cruft.
-                                '
-                                '     In fact, reversing logic to go directly
-                                '     to User Prompt if no stock identified
-                                '
-                                '     IN DOUBLE FACT, hauling this WHOLE MESS
-                                '     RIGHT UP after initial gnMatlNum assignment
-                                '     to prompt user IMMEDIATELY if no stock found
-                                With newFmTest1()
-                                    If Not invDoc.ComponentDefinition.Document Is invDoc Then Stop
-
-                                    bd = nuAiBoxData().UsingInches.SortingDims(
-                                    invDoc.ComponentDefinition.RangeBox
-                                )
-                                    ck = .AskAbout(invDoc,
-                                    "No Stock Found! Please Review" _
-                                    & vbCrLf & vbCrLf & bd.Dump(0)
-                                )
-
-                                    If ck = vbYes Then
-                                        ' UPDATE[2018.05.30]:
-                                        '     Pulling some extraneous commented code
-                                        '     from here and beginning of block
-                                        With .ItemData
-                                            If .Exists(pnFamily) Then
-                                                gnPartFam = .Item(pnFamily)
-                                                Debug.Print(pnFamily & "=" & gnPartFam)
-                                            End If
-
-                                            If .Exists(pnRawMaterial) Then
-                                                gnMatlNum = .Item(pnRawMaterial)
-                                                Debug.Print(pnRawMaterial & "=" & gnMatlNum)
-                                            End If
-                                        End With
-                                        If 0 Then Stop 'Use this for a debugging shim
-                                    End If
-                                End With
-                            ElseIf Left$(gnMatlNum, 2) = "LG" Then 'it's probably lagging
-                                Debug.Print(aiPartNum & ": PROBABLE LAGGING")
-                                Debug.Print("  TRY TO IDENTIFY, AND FILL IN BELOW.")
-                                Debug.Print("  PRESS ENTER ON gnMatlNum LINE WHEN")
-                                Debug.Print("  COMPLETED, THEN F5 TO CONTINUE.")
-                                Debug.Print("  gnMatlNum = """ & gnMatlNum & """")
-                                Stop
-                            End If
+                                If .Exists(PnRawMaterial) Then
+                                    gnMatlNum = .Item(PnRawMaterial)
+                                    Debug.Print(PnRawMaterial & "=" & gnMatlNum)
+                                End If
+                            End With
+                            If 0 Then Stop 'Use this for a debugging shim
+                        End If
+                    End With
+                ElseIf Left$(gnMatlNum, 2) = "LG" Then 'it's probably lagging
+                    Debug.Print(aiPartNum & ": PROBABLE LAGGING")
+                    Debug.Print("  TRY TO IDENTIFY, AND FILL IN BELOW.")
+                    Debug.Print("  PRESS ENTER ON gnMatlNum LINE WHEN")
+                    Debug.Print("  COMPLETED, THEN F5 TO CONTINUE.")
+                    Debug.Print("  gnMatlNum = """ & gnMatlNum & """")
+                    Stop
+                End If
 
                 'If Len(gnMatlNum) > 0 Then 'and ONLY then
                 'do we look for a Raw Material Family!
@@ -2503,213 +2502,213 @@ Module dvl2
                 '     Removed (likely) unneeded fields from query text.
                 '     Will keep a lookout for any resulting errors.
                 If .BOF Or .EOF Then
-                                        Stop 'because Material value likely invalid
-                                        ''  ACTION ADVISED[2018.09.14]:
-                                        ''  Will need to address this situation
-                                        ''  in a more robust manner.
-                                        ''  A more thorough query above
-                                        ''  might also be called for.
-                                    Else
-                                        With .Fields
-                                            If Len(gnMatlFam) > 0 Then
-                                                If gnMatlFam = .Item("Family").Value Then
-                                                Else
-                                                    Stop
-                                                    'as with gnMatlNum, want to be careful
-                                                    'about changing gnMatlFam, although
-                                                    'in this case, it SHOULD be okay
-                                                    'since it should just align with
-                                                    'the selected material's Family
-                                                End If
-                                            Else
-                                                gnMatlFam = .Item("Family").Value
-                                            End If
-                                        End With
-                                        ' NOTE[2021.11.10]
-                                        '     Else branch should PROBABLY end here
-                                        '     to permit Record to be closed,
-                                        '     and probably a new If/Then block
-                                        '     proceed based on results.
-                                        '     '
+                    Stop 'because Material value likely invalid
+                    ''  ACTION ADVISED[2018.09.14]:
+                    ''  Will need to address this situation
+                    ''  in a more robust manner.
+                    ''  A more thorough query above
+                    ''  might also be called for.
+                Else
+                    With .Fields
+                        If Len(gnMatlFam) > 0 Then
+                            If gnMatlFam = .Item("Family").Value Then
+                            Else
+                                Stop
+                                'as with gnMatlNum, want to be careful
+                                'about changing gnMatlFam, although
+                                'in this case, it SHOULD be okay
+                                'since it should just align with
+                                'the selected material's Family
+                            End If
+                        Else
+                            gnMatlFam = .Item("Family").Value
+                        End If
+                    End With
+                    ' NOTE[2021.11.10]
+                    '     Else branch should PROBABLY end here
+                    '     to permit Record to be closed,
+                    '     and probably a new If/Then block
+                    '     proceed based on results.
+                    '     '
 
-                                        ' UPDATE[2021.06.18]:
-                                        '     New pre-check for Material Item
-                                        '     in Purchased Parts Family.
-                                        '     VERY basic handler simply
-                                        '     maps Material Family to D-BAR
-                                        '     to force extra processing below.
-                                        '     Further refinement VERY much needed!
-                                        If gnMatlFam Like "?-MT*" Then
+                    ' UPDATE[2021.06.18]:
+                    '     New pre-check for Material Item
+                    '     in Purchased Parts Family.
+                    '     VERY basic handler simply
+                    '     maps Material Family to D-BAR
+                    '     to force extra processing below.
+                    '     Further refinement VERY much needed!
+                    If gnMatlFam Like "?-MT*" Then
                         'Debug.Print(aiPartNum & " [" & aiMatlNum & "]: " & aiPropsDesign(pnDesc).Text
-                        Debug.Print(aiPartNum & "[" & prRmQty.Text & gnQtyUnit & "*" & gnMatlNum & ": " & aiPropsDesign.item(pnDesc).Text & "]") ' aiMatlNum
+                        Debug.Print(aiPartNum & "[" & prRmQty.Text & gnQtyUnit & "*" & gnMatlNum & ": " & aiPropsDesign.item(PnDesc).Text & "]") ' aiMatlNum
                         Stop 'FULL Stop!
-                                        ElseIf gnMatlFam = "D-PTS" Then
-                                            gnPartFam = "D-RMT"
-                                            Stop 'NOT SO FAST!
-                                            gnMatlFam = "D-BAR"
-                                        ElseIf gnMatlFam = "R-PTS" Then
-                                            gnPartFam = "R-RMT"
-                                            Stop 'NOT SO FAST!
-                                            gnMatlFam = "D-BAR"
-                                        End If
+                    ElseIf gnMatlFam = "D-PTS" Then
+                        gnPartFam = "D-RMT"
+                        Stop 'NOT SO FAST!
+                        gnMatlFam = "D-BAR"
+                    ElseIf gnMatlFam = "R-PTS" Then
+                        gnPartFam = "R-RMT"
+                        Stop 'NOT SO FAST!
+                        gnMatlFam = "D-BAR"
+                    End If
 
-                                        If gnMatlFam = "DSHEET" Then
-                                            'We should be okay. This is sheet metal stock
+                    If gnMatlFam = "DSHEET" Then
+                        'We should be okay. This is sheet metal stock
 
-                                            ' UPDATE[2021.11.04]:
-                                            '     Expanding gnPartFam and gnQtyUnit
-                                            '     assignments to check for pre-
-                                            '     existing values, and validate
-                                            '     them if found.
-                                            If Len(gnPartFam) = 0 Then
-                                                gnPartFam = "D-RMT"
-                                            Else
-                                                If gnPartFam = "D-RMT" Then
-                                                Else
-                                                    Stop 'because we have
-                                                    'an unexpected situation
-                                                End If
-                                            End If
+                        ' UPDATE[2021.11.04]:
+                        '     Expanding gnPartFam and gnQtyUnit
+                        '     assignments to check for pre-
+                        '     existing values, and validate
+                        '     them if found.
+                        If Len(gnPartFam) = 0 Then
+                            gnPartFam = "D-RMT"
+                        Else
+                            If gnPartFam = "D-RMT" Then
+                            Else
+                                Stop 'because we have
+                                'an unexpected situation
+                            End If
+                        End If
 
-                                            If Len(gnQtyUnit) = 0 Then
-                                                gnQtyUnit = "FT2"
-                                            Else
-                                                If gnQtyUnit = "FT2" Then
-                                                Else
-                                                    Stop 'because we have
-                                                    'an unexpected situation
-                                                End If
-                                            End If
+                        If Len(gnQtyUnit) = 0 Then
+                            gnQtyUnit = "FT2"
+                        Else
+                            If gnQtyUnit = "FT2" Then
+                            Else
+                                Stop 'because we have
+                                'an unexpected situation
+                            End If
+                        End If
 
-                                            ' UPDATE[2018.05.30]:
-                                            '     Moving part family assignment
-                                            '     to this section for better mapping
-                                            '     and updating to new Family names
-                                            '     as well as pulling up gnQtyUnit assignment
-                                            Stop 'BKPT-2021-1105-1120
-                                            ' CHANGE NEEDED[2021.11.05]:
-                                            '     probably want to demote this ElseIf
-                                            '     along with the subsequent Else into
-                                            '     a replacement Else clause, and thus
-                                            '     allow for on post-interactive check
-                                            '     following whichever branch is taken.
-                                            '     '
-                                            '     As is, a separate check is required
-                                            '     within but this ElseIf and the Else
-                                            '     '
-                                            ' UPDAGE[SAME_DAY]:
-                                            '     Change completed. All that remains
-                                            '     is to indent the embedded With block
-                                            '     when safe to do so.
-                                        Else
-                                            If gnMatlFam = "D-BAR" Then
-                                                ' UPDATE[2021.06.18]:
-                                                '     Added check for Part Family already 
-                                                '     to more properly handle new situation (above)
-                                                If Len(gnPartFam) = 0 Then
-                                                    gnPartFam = "R-RMT"
-                                                    'mignt not want to use
-                                                    'fixed constant like this
-                                                    'see gnQtyUnit below
-                                                Else
-                                                    If gnPartFam = "R-RMT" Then
-                                                    Else
-                                                        Stop
-                                                    End If
-                                                    Debug.Print("") 'Breakpoint Landing
-                                                    'Stop
-                                                End If
+                        ' UPDATE[2018.05.30]:
+                        '     Moving part family assignment
+                        '     to this section for better mapping
+                        '     and updating to new Family names
+                        '     as well as pulling up gnQtyUnit assignment
+                        Stop 'BKPT-2021-1105-1120
+                        ' CHANGE NEEDED[2021.11.05]:
+                        '     probably want to demote this ElseIf
+                        '     along with the subsequent Else into
+                        '     a replacement Else clause, and thus
+                        '     allow for on post-interactive check
+                        '     following whichever branch is taken.
+                        '     '
+                        '     As is, a separate check is required
+                        '     within but this ElseIf and the Else
+                        '     '
+                        ' UPDAGE[SAME_DAY]:
+                        '     Change completed. All that remains
+                        '     is to indent the embedded With block
+                        '     when safe to do so.
+                    Else
+                        If gnMatlFam = "D-BAR" Then
+                            ' UPDATE[2021.06.18]:
+                            '     Added check for Part Family already 
+                            '     to more properly handle new situation (above)
+                            If Len(gnPartFam) = 0 Then
+                                gnPartFam = "R-RMT"
+                                'mignt not want to use
+                                'fixed constant like this
+                                'see gnQtyUnit below
+                            Else
+                                If gnPartFam = "R-RMT" Then
+                                Else
+                                    Stop
+                                End If
+                                Debug.Print("") 'Breakpoint Landing
+                                'Stop
+                            End If
 
-                                                If Len(gnQtyUnit) = 0 Then
-                                                    gnQtyUnit = "IN" 'prRmUnit.Text '
-                                                Else
-                                                    If gnQtyUnit = "IN" Then 'prRmUnit.Text '
-                                                    Else
-                                                        Stop
-                                                    End If
-                                                    Debug.Print("") 'Breakpoint Landing
-                                                    'Stop
-                                                End If
+                            If Len(gnQtyUnit) = 0 Then
+                                gnQtyUnit = "IN" 'prRmUnit.Text '
+                            Else
+                                If gnQtyUnit = "IN" Then 'prRmUnit.Text '
+                                Else
+                                    Stop
+                                End If
+                                Debug.Print("") 'Breakpoint Landing
+                                'Stop
+                            End If
                             ''may want function here
                             ' UPDATE[2018.05.30]: As noted above
                             '     Will keep Stop for now
                             '     pending further review,
                             '     hopefully soon
-                            Debug.Print(aiPartNum & " [" & gnMatlNum & "]: " & aiPropsDesign.item(pnDesc).Text) 'aiMatlNum
+                            Debug.Print(aiPartNum & " [" & gnMatlNum & "]: " & aiPropsDesign.item(PnDesc).Text) 'aiMatlNum
                             ' UPDATE[2021.03.11]: Replaced
                             ' aiPropsDesign.Item(pnPartNum)
                             ' with prPartNum (and now aiPartNum)
                             ' since it's used in several places
                             Debug.Print("RAW MATERIAL QUANTITY IS NOW ", CStr(prRmQty.Text), gnQtyUnit, ". IF CHANGE NEEDED,")
-                                                Debug.Print("THEN SELECT LENGTH FROM THE FOLLOWING SPANS,")
-                                                Debug.Print("AND ENTER AT END OF prRmQty LINE BELOW.")
-                                                Debug.Print("X SPAN", "Y SPAN", "Z SPAN")
-                                                'Stop 'BKPT-2021-1105-1137
-                                                ' CHANGE NEEDED[2021.11.05]:
-                                                '     indent the following With,
-                                                '     when possible to do so
-                                                '     without reting project
-                                                With invDoc.ComponentDefinition.RangeBox
+                            Debug.Print("THEN SELECT LENGTH FROM THE FOLLOWING SPANS,")
+                            Debug.Print("AND ENTER AT END OF prRmQty LINE BELOW.")
+                            Debug.Print("X SPAN", "Y SPAN", "Z SPAN")
+                            'Stop 'BKPT-2021-1105-1137
+                            ' CHANGE NEEDED[2021.11.05]:
+                            '     indent the following With,
+                            '     when possible to do so
+                            '     without reting project
+                            With oDoc.ComponentDefinition.RangeBox
                                 Debug.Print(
                                                         (.MaxPoint.X - .MinPoint.X) / 2.54,
                                                         (.MaxPoint.Y - .MinPoint.Y) / 2.54,
                                                         (.MaxPoint.Z - .MinPoint.Z) / 2.54
                                                     )
                             End With
-                                                'Debug.Print("CURRENT RAW MATERIAL QUANTITY (";
-                                                'Debug.Print(CStr(prRmQty.Text), ") IS SHOWN BELOW."
-                                                'Debug.Print("IF NOT CORRECT, YOU MAY TYPE A NEW VALUE"
-                                                'Debug.Print("IN ITS PLACE, AND PRESS ENTER TO CHANGE IT."
-                                                'Debug.Print("SOME SUGGESTED VALUES INCLUDE X, Y, AND Z"
-                                                'Debug.Print("EXTENTS (ABOVE) OR YOU MAY SUPPLY YOUR OWN."
-                                                'Debug.Print(""
-                                                'Debug.Print(""
-                                                'Debug.Print("YOU MAY ALSO CHANGE THE UNIT OF MEASURE BELOW,"
-                                                'Debug.Print("IF DESIRED. BE SURE TO PRESS ENTER/RETURN"
-                                                'Debug.Print("AFTER CHANGING EITHER LINE. WHEN FINISHED, "
-                                                'Debug.Print("PRESS [F5] TO CONTINUE."
-                                                Debug.Print("")
-                                                Debug.Print("prRmQty.Text = ", CStr(prRmQty.Text))
-                                                'Debug.Print("gnQtyUnit = """, gnQtyUnit, """"
-                                                Debug.Print("gnQtyUnit = ""IN""")
-                                                'Debug.Print(""
-                                                'Debug.Print(""
-                                                'Debug.Print(""
-                                                Stop 'because we might want a D-BAR handler
-                                                ' Actually, we might NOT need to stop here
-                                                ' if bar stock is already selected,
-                                                ' because quantities would presumably
-                                                ' have been established already.
-                                                ' Any D-BAR handler probably needs
-                                                ' to be implemented in prior section(s)
-                                            Else
-                                                Debug.Print("NON-STANDARD MATERIAL FAMILY (" & gnMatlFam & ")")
-                                                Debug.Print("PLEASE CONFIRM PART FAMILY AND UNIT OF MEASURE BELOW")
-                                                Debug.Print("PRESS [ENTER] ON EACH LINE WHERE VALUE CHANGED")
-                                                Debug.Print("PRESS [F5] WHEN READY TO CONTINUE")
-                                                Debug.Print("")
-                                                Debug.Print("gnPartFam = """ & gnPartFam & """ 'PART FAMILY")
-                                                Debug.Print("gnQtyUnit = """ & gnQtyUnit & """ 'UNIT OF MEASURE")
-                                                Stop 'because we don't know WHAT to do with it
-                                                'but might NOT want to clear variables
-                                                'gnPartFam = ""
-                                                'gnQtyUnit = "" 'may want function here
-                                                ' UPDATE[2018.05.30]: As noted above
-                                                '     However, might need more handling here.
-                                            End If
+                            'Debug.Print("CURRENT RAW MATERIAL QUANTITY (";
+                            'Debug.Print(CStr(prRmQty.Text), ") IS SHOWN BELOW."
+                            'Debug.Print("IF NOT CORRECT, YOU MAY TYPE A NEW VALUE"
+                            'Debug.Print("IN ITS PLACE, AND PRESS ENTER TO CHANGE IT."
+                            'Debug.Print("SOME SUGGESTED VALUES INCLUDE X, Y, AND Z"
+                            'Debug.Print("EXTENTS (ABOVE) OR YOU MAY SUPPLY YOUR OWN."
+                            'Debug.Print(""
+                            'Debug.Print(""
+                            'Debug.Print("YOU MAY ALSO CHANGE THE UNIT OF MEASURE BELOW,"
+                            'Debug.Print("IF DESIRED. BE SURE TO PRESS ENTER/RETURN"
+                            'Debug.Print("AFTER CHANGING EITHER LINE. WHEN FINISHED, "
+                            'Debug.Print("PRESS [F5] TO CONTINUE."
+                            Debug.Print("")
+                            Debug.Print("prRmQty.Text = ", CStr(prRmQty.Text))
+                            'Debug.Print("gnQtyUnit = """, gnQtyUnit, """"
+                            Debug.Print("gnQtyUnit = ""IN""")
+                            'Debug.Print(""
+                            'Debug.Print(""
+                            'Debug.Print(""
+                            Stop 'because we might want a D-BAR handler
+                            ' Actually, we might NOT need to stop here
+                            ' if bar stock is already selected,
+                            ' because quantities would presumably
+                            ' have been established already.
+                            ' Any D-BAR handler probably needs
+                            ' to be implemented in prior section(s)
+                        Else
+                            Debug.Print("NON-STANDARD MATERIAL FAMILY (" & gnMatlFam & ")")
+                            Debug.Print("PLEASE CONFIRM PART FAMILY AND UNIT OF MEASURE BELOW")
+                            Debug.Print("PRESS [ENTER] ON EACH LINE WHERE VALUE CHANGED")
+                            Debug.Print("PRESS [F5] WHEN READY TO CONTINUE")
+                            Debug.Print("")
+                            Debug.Print("gnPartFam = """ & gnPartFam & """ 'PART FAMILY")
+                            Debug.Print("gnQtyUnit = """ & gnQtyUnit & """ 'UNIT OF MEASURE")
+                            Stop 'because we don't know WHAT to do with it
+                            'but might NOT want to clear variables
+                            'gnPartFam = ""
+                            'gnQtyUnit = "" 'may want function here
+                            ' UPDATE[2018.05.30]: As noted above
+                            '     However, might need more handling here.
+                        End If
 
-                                            Debug.Print("RAW MATERIAL QUANTITY IS NOW ", CStr(prRmQty.Text), gnQtyUnit, ". IF OKAY, CONTINUE.")
-                                            Stop
+                        Debug.Print("RAW MATERIAL QUANTITY IS NOW ", CStr(prRmQty.Text), gnQtyUnit, ". IF OKAY, CONTINUE.")
+                        Stop
 
-                                            Stop 'BKPT-2021-1105-1117
-                                            ' CHANGE NEEDED[2021.11.05]:
-                                            '     Property assignment needs moved
-                                            '     to collective assignment sequence
-                                            rt = dcAddProp(prRmQty, rt)
-                                            Debug.Print("") 'Landing line for debugging. Do not disable.
-                                        End If
-                                    End If
-                                End With
+                        Stop 'BKPT-2021-1105-1117
+                        ' CHANGE NEEDED[2021.11.05]:
+                        '     Property assignment needs moved
+                        '     to collective assignment sequence
+                        rt = dcAddProp(prRmQty, rt)
+                        Debug.Print("") 'Landing line for debugging. Do not disable.
+                    End If
+                End If
+            End With
             '    Else
             '        If 0 Then Stop 'and regroup
             '        ' Things are looking a right royal mess
@@ -2736,7 +2735,7 @@ Module dvl2
             ' block of code, and likely
             ' best consolidated.
             With newFmTest1()
-                            If invDoc.ComponentDefinition.Document Is invDoc Then
+                If oDoc.ComponentDefinition.Document Is oDoc Then
                     'following needs indented if not already
 
                     ' [2018.07.31 by AT]
@@ -2747,359 +2746,359 @@ Module dvl2
                     ' Doesn't quite do it.
                     'With New aiBoxData
                     ' bd = nuAiBoxData().UsingInches.UsingBox( _
-                    'invDoc.ComponentDefinition.RangeBox(_
+                    'oDoc.ComponentDefinition.RangeBox(_
                     ')
                     Stop 'BKPT-2021-1105-0955
-                                ' CHANGE NEEDED[2021.11.05]:
-                                '     Probably want to move this
-                                '     outside of this With block,
-                                '     and closer to the beginning
-                                '     of this function, as it could
-                                '     prove helpful at other points.
-                                bd = nuAiBoxData().UsingInches.SortingDims(
-                            invDoc.ComponentDefinition.RangeBox
-                        )
-                                'End With
+                    ' CHANGE NEEDED[2021.11.05]:
+                    '     Probably want to move this
+                    '     outside of this With block,
+                    '     and closer to the beginning
+                    '     of this function, as it could
+                    '     prove helpful at other points.
+                    bd = nuAiBoxData().UsingInches.SortingDims(
+                oDoc.ComponentDefinition.RangeBox
+            )
+                    'End With
 
-                                ck = .AskAbout(invDoc,
-                            "Please Select Stock for Machined Part" _
-                            & vbCrLf & vbCrLf & bd.Dump(0)
-                        )
+                    ck = .AskAbout(oDoc,
+                "Please Select Stock for Machined Part" _
+                & vbCrLf & vbCrLf & bd.Dump(0)
+            )
 
-                                If ck = vbYes Then
-                                    ' UPDATE[2018.05.30]:
-                                    '     Pulling some extraneous commented code
-                                    '     from here and beginning of block
-                                    With .ItemData
-                                        If .Exists(pnFamily) Then
-                                            If Len(gnPartFam) = 0 Then
-                                                gnPartFam = .Item(pnFamily)
-                                            Else
-                                                If gnPartFam = .Item(pnFamily) Then
-                                                Else
-                                                    Debug.Print("=====")
-                                                    Debug.Print("Model Family differs from Genius")
-                                                    Debug.Print("Genius: " & pnFamily)
-                                                    Debug.Print("Model:  " & .Item(pnFamily))
-                                                    Debug.Print("gnPartFam = .Item(pnFamily) 'Press [ENTER] on this line to fix, and/or [F5] to continue'")
-                                                    Stop
-                                                End If
-                                            End If
-                                            Debug.Print(pnFamily & "=" & gnPartFam)
-                                        End If
-
-                                        If .Exists(pnRawMaterial) Then
-                                            If Len(gnMatlNum) = 0 Then
-                                                gnMatlNum = .Item(pnRawMaterial)
-                                            Else
-                                                If gnMatlNum = .Item(pnRawMaterial) Then
-                                                Else
-                                                    Debug.Print("=====")
-                                                    Debug.Print("Model Raw Material differs from Genius")
-                                                    Debug.Print("Genius: " & gnMatlNum)
-                                                    Debug.Print("Model:  " & .Item(pnRawMaterial))
-                                                    Debug.Print("gnMatlNum = .Item(pnRawMaterial) 'Press [ENTER] on this line to fix, and/or [F5] to continue'")
-                                                    Stop
-                                                End If
-                                            End If
-                                            Debug.Print(pnRawMaterial & "=" & gnMatlNum)
-                                        End If
-                                    End With
-                                    If 0 Then Stop 'Use this for a debugging shim
-                                    ''  We're going to need something here
-                                    ''  to make sure raw material gets added
-                                    ''  for non sheet metal parts, as well
-                                    ''  What we're going to need to do
-                                    ''  is refactor this whole bloody thing.
+                    If ck = vbYes Then
+                        ' UPDATE[2018.05.30]:
+                        '     Pulling some extraneous commented code
+                        '     from here and beginning of block
+                        With .ItemData
+                            If .Exists(PnFamily) Then
+                                If Len(gnPartFam) = 0 Then
+                                    gnPartFam = .Item(PnFamily)
                                 Else
-                                    Stop 'shouldn't actually hit this line
-                                    'as the condition checked should always
-                                    'be true, at least for now.
+                                    If gnPartFam = .Item(PnFamily) Then
+                                    Else
+                                        Debug.Print("=====")
+                                        Debug.Print("Model Family differs from Genius")
+                                        Debug.Print("Genius: " & PnFamily)
+                                        Debug.Print("Model:  " & .Item(PnFamily))
+                                        Debug.Print("gnPartFam = .Item(pnFamily) 'Press [ENTER] on this line to fix, and/or [F5] to continue'")
+                                        Stop
+                                    End If
                                 End If
-                            Else
-                                Stop 'because we've got a serious mismatch
+                                Debug.Print(PnFamily & "=" & gnPartFam)
+                            End If
+
+                            If .Exists(PnRawMaterial) Then
+                                If Len(gnMatlNum) = 0 Then
+                                    gnMatlNum = .Item(PnRawMaterial)
+                                Else
+                                    If gnMatlNum = .Item(PnRawMaterial) Then
+                                    Else
+                                        Debug.Print("=====")
+                                        Debug.Print("Model Raw Material differs from Genius")
+                                        Debug.Print("Genius: " & gnMatlNum)
+                                        Debug.Print("Model:  " & .Item(PnRawMaterial))
+                                        Debug.Print("gnMatlNum = .Item(pnRawMaterial) 'Press [ENTER] on this line to fix, and/or [F5] to continue'")
+                                        Stop
+                                    End If
+                                End If
+                                Debug.Print(PnRawMaterial & "=" & gnMatlNum)
                             End If
                         End With
-                        '
-                        '
-                        '
+                        If 0 Then Stop 'Use this for a debugging shim
+                        ''  We're going to need something here
+                        ''  to make sure raw material gets added
+                        ''  for non sheet metal parts, as well
+                        ''  What we're going to need to do
+                        ''  is refactor this whole bloody thing.
+                    Else
+                        Stop 'shouldn't actually hit this line
+                        'as the condition checked should always
+                        'be true, at least for now.
+                    End If
+                Else
+                    Stop 'because we've got a serious mismatch
+                End If
+            End With
+            '
+            '
+            '
 
-                        If Len(gnMatlNum) > 0 Then 'and ONLY then
-                            'do we look for a Raw Material Family!
+            If Len(gnMatlNum) > 0 Then 'and ONLY then
+                'do we look for a Raw Material Family!
 
-                            ' This enclosing With block should NOT be necessary
-                            ' since the newFmTest1 above takes care of collecting
-                            ' the Stock Family along with the Stock itself
-                            With CnGnsDoyle().Execute(
-                            "select Family " &
-                            "from vgMfiItems " &
-                            "where Item='" & gnMatlNum & "';"
-                        )
-                                If .BOF Or .EOF Then
-                                    Stop 'because Material value likely invalid
-                                    ''  ACTION ADVISED[2018.09.14]:
-                                    ''  Will need to address this situation
-                                    ''  in a more robust manner.
-                                    ''  A more thorough query above
-                                    ''  might also be called for.
-                                Else
-                                    With .Fields
-                                        If Len(gnMatlFam) = 0 Then
-                                            gnMatlFam = .Item("Family").Value
-                                        ElseIf gnMatlFam = .Item("Family").Value Then
-                                        Else
-                                            Stop
-                                        End If
-                                    End With
-                                End If
-                            End With
+                ' This enclosing With block should NOT be necessary
+                ' since the newFmTest1 above takes care of collecting
+                ' the Stock Family along with the Stock itself
+                With CnGnsDoyle().Execute(
+                "select Family " &
+                "from vgMfiItems " &
+                "where Item='" & gnMatlNum & "';"
+            )
+                    If .BOF Or .EOF Then
+                        Stop 'because Material value likely invalid
+                        ''  ACTION ADVISED[2018.09.14]:
+                        ''  Will need to address this situation
+                        ''  in a more robust manner.
+                        ''  A more thorough query above
+                        ''  might also be called for.
+                    Else
+                        With .Fields
+                            If Len(gnMatlFam) = 0 Then
+                                gnMatlFam = .Item("Family").Value
+                            ElseIf gnMatlFam = .Item("Family").Value Then
+                            Else
+                                Stop
+                            End If
+                        End With
+                    End If
+                End With
 
-                            If gnMatlFam = "DSHEET" Then
-                                Stop 'because we should NOT be doing Sheet Metal in this section.
-                                ' This might require further investigation and/or development, if encountered.
-                                'We should be okay. This is sheet metal stock
-                                ' UPDATE[2021.11.04]:
-                                '     Expanding gnPartFam and gnQtyUnit
-                                '     assignments to check for pre-
-                                '     existing values, and validate
-                                '     them if found.
-                                If Len(gnPartFam) = 0 Then
-                                    gnPartFam = "D-RMT"
-                                Else
-                                    If gnPartFam = "D-RMT" Then
-                                    Else
-                                        Stop 'because we have
-                                        'an unexpected situation
-                                    End If
-                                End If
+                If gnMatlFam = "DSHEET" Then
+                    Stop 'because we should NOT be doing Sheet Metal in this section.
+                    ' This might require further investigation and/or development, if encountered.
+                    'We should be okay. This is sheet metal stock
+                    ' UPDATE[2021.11.04]:
+                    '     Expanding gnPartFam and gnQtyUnit
+                    '     assignments to check for pre-
+                    '     existing values, and validate
+                    '     them if found.
+                    If Len(gnPartFam) = 0 Then
+                        gnPartFam = "D-RMT"
+                    Else
+                        If gnPartFam = "D-RMT" Then
+                        Else
+                            Stop 'because we have
+                            'an unexpected situation
+                        End If
+                    End If
 
-                                If Len(gnQtyUnit) = 0 Then
-                                    gnQtyUnit = "FT2"
-                                Else
-                                    If gnQtyUnit = "FT2" Then
-                                    Else
-                                        Stop 'because we have
-                                        'an unexpected situation
-                                    End If
-                                End If
-                                ' UPDATE[2018.05.30]:
-                                '     Moving part family assignment
-                                '     to this section for better mapping
-                                '     and updating to new Family names
-                                '     as well as pulling up gnQtyUnit assignment
-                            ElseIf gnMatlFam = "D-BAR" Then
-                                gnPartFam = "R-RMT"
-                                If Len(gnQtyUnit) = 0 Then
-                                    'this might have to change
-                                    'to better handle case
-                                    'of missing prRmUnit
-                                    gnQtyUnit = prRmUnit.Text '"IN"
-                                End If
+                    If Len(gnQtyUnit) = 0 Then
+                        gnQtyUnit = "FT2"
+                    Else
+                        If gnQtyUnit = "FT2" Then
+                        Else
+                            Stop 'because we have
+                            'an unexpected situation
+                        End If
+                    End If
+                    ' UPDATE[2018.05.30]:
+                    '     Moving part family assignment
+                    '     to this section for better mapping
+                    '     and updating to new Family names
+                    '     as well as pulling up gnQtyUnit assignment
+                ElseIf gnMatlFam = "D-BAR" Then
+                    gnPartFam = "R-RMT"
+                    If Len(gnQtyUnit) = 0 Then
+                        'this might have to change
+                        'to better handle case
+                        'of missing prRmUnit
+                        gnQtyUnit = prRmUnit.Text '"IN"
+                    End If
                     ''may want function here
                     ' UPDATE[2018.05.30]: As noted above
                     '     Will keep Stop for now
                     '     pending further review,
                     '     hopefully soon
-                    Debug.Print(aiPartNum & " [" & gnMatlNum & "]: " & CStr(aiPropsDesign.item(pnDesc).Text)) 'prRawMatl.Text
+                    Debug.Print(aiPartNum & " [" & gnMatlNum & "]: " & CStr(aiPropsDesign.item(PnDesc).Text)) 'prRawMatl.Text
                     ' UPDATE[2021.03.11]: Replaced
                     ' aiPropsDesign.Item(pnPartNum)
                     ' as noted above
                     Debug.Print("RAW MATERIAL QUANTITY IS NOW ", CStr(gnMatlQty), gnQtyUnit, ". IF CHANGE NEEDED,") 'prRmQty.Text
-                                Debug.Print("THEN SELECT LENGTH FROM THE FOLLOWING SPANS,")
-                                Debug.Print("AND ENTER AT END OF prRmQty LINE BELOW.")
-                                Debug.Print("X SPAN", "Y SPAN", "Z SPAN")
-                    'Debug.Print(invDoc.ComponentDefinition.RangeBox.MaxPoint.X - invDoc.ComponentDefinition.RangeBox.MinPoint.X) / 2.54, (invDoc.ComponentDefinition.RangeBox.MaxPoint.Y - invDoc.ComponentDefinition.RangeBox.MinPoint.Y) / 2.54, (invDoc.ComponentDefinition.RangeBox.MaxPoint.Z - invDoc.ComponentDefinition.RangeBox.MinPoint.Z) / 2.54
+                    Debug.Print("THEN SELECT LENGTH FROM THE FOLLOWING SPANS,")
+                    Debug.Print("AND ENTER AT END OF prRmQty LINE BELOW.")
+                    Debug.Print("X SPAN", "Y SPAN", "Z SPAN")
+                    'Debug.Print(oDoc.ComponentDefinition.RangeBox.MaxPoint.X - oDoc.ComponentDefinition.RangeBox.MinPoint.X) / 2.54, (oDoc.ComponentDefinition.RangeBox.MaxPoint.Y - oDoc.ComponentDefinition.RangeBox.MinPoint.Y) / 2.54, (oDoc.ComponentDefinition.RangeBox.MaxPoint.Z - oDoc.ComponentDefinition.RangeBox.MinPoint.Z) / 2.54
                     Debug.Print("")
-                                Debug.Print("PLACE CURSOR ON gnQtyUnit LINE. CHANGE UNIT OF MEASURE, IF DESIRED.")
-                                Debug.Print("PRESS ENTER/RETURN TWICE. THEN CONTINUE.")
-                                Debug.Print("")
-                                Debug.Print("gnMatlQty = ", CStr(gnMatlQty)) 'prRmQty.Text
-                                Debug.Print("gnQtyUnit = ""IN""")
-                                Debug.Print("")
-                                Stop 'because we might want a D-BAR handler
-                                ' Actually, we might NOT need to stop here
-                                ' if bar stock is already selected,
-                                ' because quantities would presumably
-                                ' have been established already.
-                                ' Any D-BAR handler probably needs
-                                ' to be implemented in prior section(s)
-                                Debug.Print("RAW MATERIAL QUANTITY IS NOW ", CStr(gnMatlQty), gnQtyUnit, ". IF OKAY, CONTINUE.") 'prRmQty.Text
-                                Stop
-                                Stop 'BKPT-2021-1110-1647
-                                ' CHANGE NEEDED[2021.11.10]
-                                '     This Dictionary Property assignment
-                                '     MUST be moved to the END of the function!
-                                rt = dcWithProp(aiPropsUser, pnRmQty, gnMatlQty, rt) 'dcAddProp(prRmQty, rt)
-                                Debug.Print("") 'Landing line for debugging. Do not disable.
-                            Else
-                                Debug.Print("NON-STANDARD MATERIAL FAMILY (" & gnMatlFam & ")")
-                                Debug.Print("PLEASE CONFIRM PART FAMILY AND UNIT OF MEASURE BELOW")
-                                Debug.Print("PRESS [ENTER] ON EACH LINE WHERE VALUE CHANGED")
-                                Debug.Print("PRESS [F5] WHEN READY TO CONTINUE")
-                                Debug.Print("")
-                                Debug.Print("gnPartFam = """ & gnPartFam & """ 'PART FAMILY")
-                                Debug.Print("gnQtyUnit = """ & gnQtyUnit & """ 'UNIT OF MEASURE")
-                                'gnPartFam = ""
-                                'gnQtyUnit = "" 'may want function here
-                                ' UPDATE[2018.05.30]: As noted above
-                                '     However, might need more handling here.
-                                Stop 'because we don't know WHAT to do with it
-                            End If
-                        Else
-                            If 0 Then Stop 'and regroup
-                            ' Things are looking a right royal mess
-                            ' at the moment I'm writing this comment.
+                    Debug.Print("PLACE CURSOR ON gnQtyUnit LINE. CHANGE UNIT OF MEASURE, IF DESIRED.")
+                    Debug.Print("PRESS ENTER/RETURN TWICE. THEN CONTINUE.")
+                    Debug.Print("")
+                    Debug.Print("gnMatlQty = ", CStr(gnMatlQty)) 'prRmQty.Text
+                    Debug.Print("gnQtyUnit = ""IN""")
+                    Debug.Print("")
+                    Stop 'because we might want a D-BAR handler
+                    ' Actually, we might NOT need to stop here
+                    ' if bar stock is already selected,
+                    ' because quantities would presumably
+                    ' have been established already.
+                    ' Any D-BAR handler probably needs
+                    ' to be implemented in prior section(s)
+                    Debug.Print("RAW MATERIAL QUANTITY IS NOW ", CStr(gnMatlQty), gnQtyUnit, ". IF OKAY, CONTINUE.") 'prRmQty.Text
+                    Stop
+                    Stop 'BKPT-2021-1110-1647
+                    ' CHANGE NEEDED[2021.11.10]
+                    '     This Dictionary Property assignment
+                    '     MUST be moved to the END of the function!
+                    rt = dcWithProp(aiPropsUser, PnRmQty, gnMatlQty, rt) 'dcAddProp(prRmQty, rt)
+                    Debug.Print("") 'Landing line for debugging. Do not disable.
+                Else
+                    Debug.Print("NON-STANDARD MATERIAL FAMILY (" & gnMatlFam & ")")
+                    Debug.Print("PLEASE CONFIRM PART FAMILY AND UNIT OF MEASURE BELOW")
+                    Debug.Print("PRESS [ENTER] ON EACH LINE WHERE VALUE CHANGED")
+                    Debug.Print("PRESS [F5] WHEN READY TO CONTINUE")
+                    Debug.Print("")
+                    Debug.Print("gnPartFam = """ & gnPartFam & """ 'PART FAMILY")
+                    Debug.Print("gnQtyUnit = """ & gnQtyUnit & """ 'UNIT OF MEASURE")
+                    'gnPartFam = ""
+                    'gnQtyUnit = "" 'may want function here
+                    ' UPDATE[2018.05.30]: As noted above
+                    '     However, might need more handling here.
+                    Stop 'because we don't know WHAT to do with it
+                End If
+            Else
+                If 0 Then Stop 'and regroup
+                ' Things are looking a right royal mess
+                ' at the moment I'm writing this comment.
+            End If
+        End If 'Sheetmetal vs Part
+
+        'Stop 'BKPT-2021-1105-1011
+        ' UPDATE[2021.11.10]
+        '     Disabled this prRawMatl assignment pending removal.
+        '     Counterpart moved below from sheet metal branch
+        '     should serve in place of both branch instances.
+        '     '
+        '     Extraneous commentary removed.
+        '     '
+        'With prRawMatl
+        '    If Len(Trim$(.Text)) > 0 Then
+        '        If gnMatlNum <> .Text Then
+        '            'Debug.Print("Raw Stock Selection"
+        '            'Debug.Print("  Current : " & prRawMatl.Text
+        '            'Debug.Print("  Proposed: " & gnMatlNum
+        '            'Stop 'because we might not want to change existing stock ting
+        '            'if
+        '            ck = MsgBox( _
+        '                Join({ _
+        '                    "Raw Stock Change Suggested", _
+        '                    "  for Item " & aiPartNum, _
+        '                    "", _
+        '                    "  Current : " & prRawMatl.Text, _
+        '                    "  Proposed: " & gnMatlNum, _
+        '                    "", "Change It?", "" _
+        '                }, vbCrLf), _
+        '                vbYesNo, aiPartNum & " Stock" _
+        '            )
+        '            '"Change Raw Material?"
+        '            '"Suggested Sheet Metal"
+        '            If ck = vbYes Then .Text = gnMatlNum
+        '        End If
+        '    Else
+        '        .Text = gnMatlNum
+        '    End If
+        'End With
+        ' rt = dcAddProp(prRawMatl, rt)
+
+        'Stop 'BKPT-2021-1110-1130
+        ' UPDATE[2021.11.10]
+        '     Disabled this prRmUnit assignment pending removal.
+        '     Duplicate moved below from sheet metal branch
+        '     should serve in place of both branch instances.
+        '     '
+        '     Also moved End If AHEAD of this block to minimize
+        '     comment clutter WITHIN branches.
+        'With prRmUnit
+        '    If Len(.Text) > 0 Then
+        '        If Len(gnQtyUnit) > 0 Then
+        '            If .Text <> gnQtyUnit Then
+        '                Stop 'and check both so we DON'T
+        '                'automatically "fix" the RMUNIT value
+        '
+        '                .Text = gnQtyUnit
+        '
+        '                If 0 Then Stop 'Ctrl-9 here to skip changing
+        '            End If
+        '        End If
+        '    Else 'we're ting a new quantity unit
+        '        .Text = gnQtyUnit
+        '    End If
+        'End With
+        ' rt = dcAddProp(prRmUnit, rt)
+
+        Stop 'BKPT-2021-1109-1610
+        ' UPDATE[2021.11.10]
+        '     Transported this prRawMatl assignment
+        '     from sheet metal branch to consolidate
+        '     both instances of duplicated process
+        '     into one following both branches.
+        '     '
+        '     Extraneous commentary also removed.
+        '     '
+        If prRawMatl Is Nothing Then
+            rt = dcWithProp(aiPropsUser, PnRawMaterial, gnMatlNum, rt)
+            Debug.Print("") 'Breakpoint Landing
+        Else
+            With prRawMatl
+                If Len(Trim$(.Text)) > 0 Then
+                    If gnMatlNum <> .Text Then
+                        'Debug.Print("Raw Stock Selection"
+                        'Debug.Print("  Current : " & prRawMatl.Text
+                        'Debug.Print("  Proposed: " & gnMatlNum
+                        'Stop 'because we might not want to change existing stock ting
+                        'if
+                        ck = MsgBox(
+                    Join({
+                        "Raw Stock Change Suggested",
+                        "  for Item " & aiPartNum,
+                        "",
+                        "  Current : " & prRawMatl.Text,
+                        "  Proposed: " & gnMatlNum,
+                        "", "Change It?", ""
+                    }, vbCrLf),
+                    vbYesNo, aiPartNum & " Stock"
+                )
+                        '"Change Raw Material?"
+                        '"Suggested Sheet Metal"
+                        If ck = vbYes Then .Text = gnMatlNum
+                    End If
+                Else
+                    .Text = gnMatlNum
+                End If
+            End With
+            rt = dcAddProp(prRawMatl, rt)
+        End If
+
+        'Stop 'BKPT-2021-1110-1133
+        ' UPDATE[2021.11.10]
+        '     Transported this prRmUnit assignment
+        '     from sheet metal branch to consolidate
+        '     both instances of duplicated process
+        '     into one following both sheet metal
+        '     and structural branches
+        If prRmUnit Is Nothing Then
+            rt = dcWithProp(aiPropsUser, PnRmUnit, gnQtyUnit, rt)
+            Debug.Print("") 'Breakpoint Landing
+        Else
+            With prRmUnit
+                If Len(.Text) > 0 Then
+                    If Len(gnQtyUnit) > 0 Then
+                        If .Text <> gnQtyUnit Then
+                            Stop 'and check both so we DON'T
+                            'automatically "fix" the RMUNIT value
+
+                            .Text = gnQtyUnit
+
+                            If 0 Then Stop 'Ctrl-9 here to skip changing
                         End If
-                    End If 'Sheetmetal vs Part
-
-                    'Stop 'BKPT-2021-1105-1011
-                    ' UPDATE[2021.11.10]
-                    '     Disabled this prRawMatl assignment pending removal.
-                    '     Counterpart moved below from sheet metal branch
-                    '     should serve in place of both branch instances.
-                    '     '
-                    '     Extraneous commentary removed.
-                    '     '
-                    'With prRawMatl
-                    '    If Len(Trim$(.Text)) > 0 Then
-                    '        If gnMatlNum <> .Text Then
-                    '            'Debug.Print("Raw Stock Selection"
-                    '            'Debug.Print("  Current : " & prRawMatl.Text
-                    '            'Debug.Print("  Proposed: " & gnMatlNum
-                    '            'Stop 'because we might not want to change existing stock ting
-                    '            'if
-                    '            ck = MsgBox( _
-                    '                Join({ _
-                    '                    "Raw Stock Change Suggested", _
-                    '                    "  for Item " & aiPartNum, _
-                    '                    "", _
-                    '                    "  Current : " & prRawMatl.Text, _
-                    '                    "  Proposed: " & gnMatlNum, _
-                    '                    "", "Change It?", "" _
-                    '                }, vbCrLf), _
-                    '                vbYesNo, aiPartNum & " Stock" _
-                    '            )
-                    '            '"Change Raw Material?"
-                    '            '"Suggested Sheet Metal"
-                    '            If ck = vbYes Then .Text = gnMatlNum
-                    '        End If
-                    '    Else
-                    '        .Text = gnMatlNum
-                    '    End If
-                    'End With
-                    ' rt = dcAddProp(prRawMatl, rt)
-
-                    'Stop 'BKPT-2021-1110-1130
-                    ' UPDATE[2021.11.10]
-                    '     Disabled this prRmUnit assignment pending removal.
-                    '     Duplicate moved below from sheet metal branch
-                    '     should serve in place of both branch instances.
-                    '     '
-                    '     Also moved End If AHEAD of this block to minimize
-                    '     comment clutter WITHIN branches.
-                    'With prRmUnit
-                    '    If Len(.Text) > 0 Then
-                    '        If Len(gnQtyUnit) > 0 Then
-                    '            If .Text <> gnQtyUnit Then
-                    '                Stop 'and check both so we DON'T
-                    '                'automatically "fix" the RMUNIT value
-                    '
-                    '                .Text = gnQtyUnit
-                    '
-                    '                If 0 Then Stop 'Ctrl-9 here to skip changing
-                    '            End If
-                    '        End If
-                    '    Else 'we're ting a new quantity unit
-                    '        .Text = gnQtyUnit
-                    '    End If
-                    'End With
-                    ' rt = dcAddProp(prRmUnit, rt)
-
-                    Stop 'BKPT-2021-1109-1610
-                    ' UPDATE[2021.11.10]
-                    '     Transported this prRawMatl assignment
-                    '     from sheet metal branch to consolidate
-                    '     both instances of duplicated process
-                    '     into one following both branches.
-                    '     '
-                    '     Extraneous commentary also removed.
-                    '     '
-                    If prRawMatl Is Nothing Then
-                        rt = dcWithProp(aiPropsUser, pnRawMaterial, gnMatlNum, rt)
-                        Debug.Print("") 'Breakpoint Landing
-                    Else
-                        With prRawMatl
-                            If Len(Trim$(.Text)) > 0 Then
-                                If gnMatlNum <> .Text Then
-                                    'Debug.Print("Raw Stock Selection"
-                                    'Debug.Print("  Current : " & prRawMatl.Text
-                                    'Debug.Print("  Proposed: " & gnMatlNum
-                                    'Stop 'because we might not want to change existing stock ting
-                                    'if
-                                    ck = MsgBox(
-                                Join({
-                                    "Raw Stock Change Suggested",
-                                    "  for Item " & aiPartNum,
-                                    "",
-                                    "  Current : " & prRawMatl.Text,
-                                    "  Proposed: " & gnMatlNum,
-                                    "", "Change It?", ""
-                                }, vbCrLf),
-                                vbYesNo, aiPartNum & " Stock"
-                            )
-                                    '"Change Raw Material?"
-                                    '"Suggested Sheet Metal"
-                                    If ck = vbYes Then .Text = gnMatlNum
-                                End If
-                            Else
-                                .Text = gnMatlNum
-                            End If
-                        End With
-                        rt = dcAddProp(prRawMatl, rt)
                     End If
-
-                    'Stop 'BKPT-2021-1110-1133
-                    ' UPDATE[2021.11.10]
-                    '     Transported this prRmUnit assignment
-                    '     from sheet metal branch to consolidate
-                    '     both instances of duplicated process
-                    '     into one following both sheet metal
-                    '     and structural branches
-                    If prRmUnit Is Nothing Then
-                        rt = dcWithProp(aiPropsUser, pnRmUnit, gnQtyUnit, rt)
-                        Debug.Print("") 'Breakpoint Landing
-                    Else
-                        With prRmUnit
-                            If Len(.Text) > 0 Then
-                                If Len(gnQtyUnit) > 0 Then
-                                    If .Text <> gnQtyUnit Then
-                                        Stop 'and check both so we DON'T
-                                        'automatically "fix" the RMUNIT value
-
-                                        .Text = gnQtyUnit
-
-                                        If 0 Then Stop 'Ctrl-9 here to skip changing
-                                    End If
-                                End If
-                            Else 'we're ting a new quantity unit
-                                .Text = gnQtyUnit
-                            End If
-                        End With
-                        rt = dcAddProp(prRmUnit, rt)
-                    End If
-                    ' rt = dcWithProp(aiPropsUser, pnRmUnit, gnQtyUnit, rt) 'gnQtyUnit WAS "FT2"
-                    ' Plan to remove commented line above,
-                    ' superceded by the one above that
-                    Debug.Print("") 'Breakpoint Landing
+                Else 'we're ting a new quantity unit
+                    .Text = gnQtyUnit
+                End If
+            End With
+            rt = dcAddProp(prRmUnit, rt)
+        End If
+        ' rt = dcWithProp(aiPropsUser, pnRmUnit, gnQtyUnit, rt) 'gnQtyUnit WAS "FT2"
+        ' Plan to remove commented line above,
+        ' superceded by the one above that
+        Debug.Print("") 'Breakpoint Landing
 
 
-                    'Stop 'BKPT-2021-1110-1133
-                    ' UPDATE[2021.11.09]
-                    '     This is a VERY crude implementation
-                    '     of the closing BOM Structure assignment.
-                    '     Plan on revision and cleanup in future.
-                    If gnBomType = aiBomType Then
-            With invDoc.ComponentDefinition
+        'Stop 'BKPT-2021-1110-1133
+        ' UPDATE[2021.11.09]
+        '     This is a VERY crude implementation
+        '     of the closing BOM Structure assignment.
+        '     Plan on revision and cleanup in future.
+        If gnBomType = aiBomType Then
+            With oDoc.ComponentDefinition
                 If .BOMStructure <> gnBomType Then
                     On Error Resume Next
                     .BOMStructure = gnBomType
@@ -3120,9 +3119,9 @@ Module dvl2
                 Debug.Print("") 'Breakpoint Landing
             End With
         Else
-                        Stop
-                        Debug.Print("") 'Breakpoint Landing
-                    End If
+            Stop
+            Debug.Print("") 'Breakpoint Landing
+        End If
         'this With block was pulled down
         'from the BOMStructure section above.
         'It MIGHT want to be moved ahead
@@ -3188,38 +3187,38 @@ Module dvl2
         '     '
         ' Get the design tracking property ,
         ' and update the Cost Center Property
-        If invDoc.ComponentDefinition.IsContentMember Then
-                    ' Don't muck around with the Family!
+        If oDoc.ComponentDefinition.IsContentMember Then
+            ' Don't muck around with the Family!
+        Else
+            If Len(gnPartFam) > 0 Then
+                dcVlGn.Item("Family") = gnPartFam
+                If aiPartFam = gnPartFam Then
                 Else
-                    If Len(gnPartFam) > 0 Then
-                        dcVlGn.Item("Family") = gnPartFam
-                        If aiPartFam = gnPartFam Then
-                        Else
-                            On Error Resume Next
-                            prFamily.Text = gnPartFam
-                            If Err.Number Then
-                                Debug.Print("CHGFAIL[FAMILY]{'" _
-                                & prFamily.Text & "' -> '" & gnPartFam & "'}: " _
-                                & invDoc.DisplayName & " (" & invDoc.FullDocumentName & ")")
-                                If MsgBox(
-                                "Couldn't Change Family" & vbCrLf _
-                                & "for Item " & invDoc.DisplayName & vbCrLf _
-                                & vbCrLf & "(" & invDoc.FullDocumentName & ")" _
-                                & vbCrLf & vbCrLf & "Stop to Review?",
-                                vbYesNo Or vbDefaultButton2,
-                                invDoc.DisplayName
-                            ) = vbYes Then
-                                    Stop
-                                End If
-                            Else
-                            End If
-                            On Error GoTo 0
+                    On Error Resume Next
+                    prFamily.Text = gnPartFam
+                    If Err.Number Then
+                        Debug.Print("CHGFAIL[FAMILY]{'" _
+                        & prFamily.Text & "' -> '" & gnPartFam & "'}: " _
+                        & oDoc.DisplayName & " (" & oDoc.FullDocumentName & ")")
+                        If MsgBox(
+                        "Couldn't Change Family" & vbCrLf _
+                        & "for Item " & oDoc.DisplayName & vbCrLf _
+                        & vbCrLf & "(" & oDoc.FullDocumentName & ")" _
+                        & vbCrLf & vbCrLf & "Stop to Review?",
+                        vbYesNo Or vbDefaultButton2,
+                        oDoc.DisplayName
+                    ) = vbYes Then
+                            Stop
                         End If
-                        rt = dcAddProp(prFamily, rt)
-                        Debug.Print("") 'Breakpoint Landing
-                        ' rt = dcWithProp(aiPropsDesign, pnFamily, gnPartFam, rt)
+                    Else
                     End If
+                    On Error GoTo 0
                 End If
+                rt = dcAddProp(prFamily, rt)
+                Debug.Print("") 'Breakpoint Landing
+                ' rt = dcWithProp(aiPropsDesign, pnFamily, gnPartFam, rt)
+            End If
+        End If
         'End With
         ' UPDATE[2021.11.09]
         '     Moved Part Mass Property assignment
@@ -3231,13 +3230,13 @@ Module dvl2
         '    dcVlPr.Item(pnMass), rt
         ') 'System.Math.Round(cvMassKg2LbM * .Mass, 4)
 
-        '    Call iSyncPartFactory(invDoc) 'Backport Properties to iPart Factory
+        '    Call iSyncPartFactory(oDoc) 'Backport Properties to iPart Factory
         '    dcGeniusPropsPartRev20180530_broken2 = rt
         'End If
     End Function
 
     Public Function dcGeniusPropsPartRev20180530_broken(
-    invDoc As Inventor.PartDocument,
+    oDoc As Inventor.PartDocument,
     Optional dc As Scripting.Dictionary = Nothing
 ) As Scripting.Dictionary
         Dim rt As Scripting.Dictionary
@@ -3277,38 +3276,38 @@ Module dvl2
         If dc Is Nothing Then
             dcGeniusPropsPartRev20180530_broken =
         dcGeniusPropsPartRev20180530_broken(
-            invDoc, New Scripting.Dictionary
+            oDoc, New Scripting.Dictionary
         )
         Else
             rt = dc
             dcChg = New Scripting.Dictionary
 
-            With invDoc
+            With oDoc
                 txFilePath = .FullFileName
 
                 ' Get Property s
                 With .Propertys
-                    aiPropsUser = .Item(gnCustom)
-                    aiPropsDesign = .Item(gnDesign)
+                    aiPropsUser = .Item(GnCustom)
+                    aiPropsDesign = .Item(GnDesign)
                 End With
 
                 ' Get Custom Properties
-                prRawMatl = aiGetProp(aiPropsUser, pnRawMaterial, 1)
-                prRmUnit = aiGetProp(aiPropsUser, pnRmUnit, 1)
-                prRmQty = aiGetProp(aiPropsUser, pnRmQty, 1)
+                prRawMatl = aiGetProp(aiPropsUser, PnRawMaterial, 1)
+                prRmUnit = aiGetProp(aiPropsUser, PnRmUnit, 1)
+                prRmQty = aiGetProp(aiPropsUser, PnRmQty, 1)
 
                 ' Part Number and Family properties
-                prPartNum = aiGetProp(aiPropsDesign, pnPartNum) 'ADDED 2021.03.11
+                prPartNum = aiGetProp(aiPropsDesign, PnPartNum) 'ADDED 2021.03.11
                 pnModel = prPartNum.Text
-                prFamily = aiGetProp(aiPropsDesign, pnFamily)
+                prFamily = aiGetProp(aiPropsDesign, PnFamily)
 
                 ' UPDATE[2018.02.06]: Using new UserForm, see below
                 With .ComponentDefinition
                     ' Request #1: Get the Mass in Pounds
                     With .MassProperties
                         rt = dcWithProp(
-                        aiPropsUser, pnMass,
-                        System.Math.Round(cvMassKg2LbM * .Mass, 4), rt
+                        aiPropsUser, PnMass,
+                        System.Math.Round(CvMassKg2LbM * .Mass, 4), rt
                     )
                     End With
 
@@ -3320,7 +3319,7 @@ Module dvl2
                 'Request #4: Change Cost Center iProperty.
                 If bomStruct = BOMStructureEnum.kNormalBOMStructure Then
                     '----------------------------------------------------'
-                    If .SubType = guidSheetMetal Then 'for SheetMetal ---'
+                    If .SubType = GuidSheetMetal Then 'for SheetMetal ---'
                         '----------------------------------------------------'
                         ' NOTE[2018-05-31]: At this point, we MAY wish
                         'Request #3: Get sheet metal extent area
@@ -3354,7 +3353,7 @@ Module dvl2
                             )
                                     If .BOF Or .EOF Then
                                         'Stop 'because Material value likely invalid
-                                        pnStock = ptNumShtMetal(invDoc.ComponentDefinition)
+                                        pnStock = ptNumShtMetal(oDoc.ComponentDefinition)
                                         Debug.Print("") 'Breakpoint Landing
                                         ''  ACTION TAKEN[2021.03.11]: temporary measure to try to ensure
                                     Else
@@ -3374,12 +3373,12 @@ Module dvl2
                             If Len(pnStock) = 0 Then
                                 ' UPDATE[2018.05.30]: Pulling ALL code/text from this section
                                 With newFmTest1()
-                                    If Not invDoc.ComponentDefinition.Document Is invDoc Then Stop
+                                    If Not oDoc.ComponentDefinition.Document Is oDoc Then Stop
 
                                     bd = nuAiBoxData().UsingInches.SortingDims(
-                                    invDoc.ComponentDefinition.RangeBox
+                                    oDoc.ComponentDefinition.RangeBox
                                 )
-                                    ck = .AskAbout(invDoc,
+                                    ck = .AskAbout(oDoc,
                                     "No Stock Found! Please Review" _
                                     & vbCrLf & vbCrLf & bd.Dump(0)
                                 )
@@ -3387,14 +3386,14 @@ Module dvl2
                                     If ck = vbYes Then
                                         ' UPDATE[2018.05.30]: Pulling some extraneous commented code
                                         With .ItemData
-                                            If .Exists(pnFamily) Then
-                                                nmFamily = .Item(pnFamily)
-                                                Debug.Print(pnFamily & "=" & nmFamily)
+                                            If .Exists(PnFamily) Then
+                                                nmFamily = .Item(PnFamily)
+                                                Debug.Print(PnFamily & "=" & nmFamily)
                                             End If
 
-                                            If .Exists(pnRawMaterial) Then
-                                                pnStock = .Item(pnRawMaterial)
-                                                Debug.Print(pnRawMaterial & "=" & pnStock)
+                                            If .Exists(PnRawMaterial) Then
+                                                pnStock = .Item(PnRawMaterial)
+                                                Debug.Print(PnRawMaterial & "=" & pnStock)
                                             End If
                                         End With
                                         If 0 Then Stop 'Use this for a debugging shim
@@ -3426,7 +3425,7 @@ Module dvl2
 
                                         ' UPDATE[2021.06.18]: New pre-check for Material Item
                                         If mtFamily Like "?-MT*" Then
-                                            Debug.Print(pnModel & "[" & prRmQty.Text & qtUnit & "*" & pnStock & ": " & aiPropsDesign.item(pnDesc).Text & "]") ' prRawMatl.Text
+                                            Debug.Print(pnModel & "[" & prRmQty.Text & qtUnit & "*" & pnStock & ": " & aiPropsDesign.item(PnDesc).Text & "]") ' prRawMatl.Text
                                             Stop 'FULL Stop!
                                         ElseIf mtFamily = "D-PTS" Then
                                             nmFamily = "D-RMT"
@@ -3455,13 +3454,13 @@ Module dvl2
                                             qtUnit = prRmUnit.Text '"IN"
                                             ''may want function here
                                             ' UPDATE[2018.05.30]: As noted above
-                                            Debug.Print(pnModel & " [" & prRawMatl.Text & "]: " & aiPropsDesign.item(pnDesc).Text)
+                                            Debug.Print(pnModel & " [" & prRawMatl.Text & "]: " & aiPropsDesign.item(PnDesc).Text)
                                             ' UPDATE[2021.03.11]: Replaced aiPropsDesign.Item(pnPartNum)
                                             Debug.Print("RAW MATERIAL QUANTITY IS NOW ", CStr(prRmQty.Text), qtUnit, ". IF CHANGE NEEDED,")
                                             Debug.Print("THEN SELECT LENGTH FROM THE FOLLOWING SPANS,")
                                             Debug.Print("AND ENTER AT END OF prRmQty LINE BELOW.")
                                             Debug.Print("X SPAN", "Y SPAN", "Z SPAN")
-                                            With invDoc.ComponentDefinition.RangeBox
+                                            With oDoc.ComponentDefinition.RangeBox
                                                 '    Debug.Print("")
                                                 '(.MaxPoint.X - .MinPoint.X) / 2.54, _
                                                 '(.MaxPoint.Y - .MinPoint.Y) / 2.54, _
@@ -3541,14 +3540,14 @@ Module dvl2
                         '--------------------------------------------'
                         ' [2018.07.31 by AT] Duped following block from above
                         With newFmTest1()
-                            If Not invDoc.ComponentDefinition.Document Is invDoc Then Stop
+                            If Not oDoc.ComponentDefinition.Document Is oDoc Then Stop
 
                             ' [2018.07.31 by AT] Added the following to try to
                             bd = nuAiBoxData().UsingInches.SortingDims(
-                                    invDoc.ComponentDefinition.RangeBox
+                                    oDoc.ComponentDefinition.RangeBox
                                 )
 
-                            ck = .AskAbout(invDoc,
+                            ck = .AskAbout(oDoc,
                                     "Please Select Stock for Machined Part" _
                                     & vbCrLf & vbCrLf & bd.Dump(0)
                                 )
@@ -3556,14 +3555,14 @@ Module dvl2
                             If ck = vbYes Then
                                 ' UPDATE[2018.05.30]: Pulling some extraneous commented code
                                 With .ItemData
-                                    If .Exists(pnFamily) Then
-                                        nmFamily = .Item(pnFamily)
-                                        Debug.Print(pnFamily & "=" & nmFamily)
+                                    If .Exists(PnFamily) Then
+                                        nmFamily = .Item(PnFamily)
+                                        Debug.Print(PnFamily & "=" & nmFamily)
                                     End If
 
-                                    If .Exists(pnRawMaterial) Then
-                                        pnStock = .Item(pnRawMaterial)
-                                        Debug.Print(pnRawMaterial & "=" & pnStock)
+                                    If .Exists(PnRawMaterial) Then
+                                        pnStock = .Item(PnRawMaterial)
+                                        Debug.Print(PnRawMaterial & "=" & pnStock)
                                     End If
                                 End With
                                 If 0 Then Stop 'Use this for a debugging shim
@@ -3608,13 +3607,13 @@ Module dvl2
                                 qtUnit = prRmUnit.Text '"IN"
                                 ''may want function here
                                 ' UPDATE[2018.05.30]: As noted above Will keep Stop for now
-                                Debug.Print(pnModel, " [", prRawMatl.Text, "]: ", aiPropsDesign.item(pnDesc).Text)
+                                Debug.Print(pnModel, " [", prRawMatl.Text, "]: ", aiPropsDesign.item(PnDesc).Text)
                                 ' UPDATE[2021.03.11]: Replaced aiPropsDesign.Item(pnPartNum)
                                 Debug.Print("RAW MATERIAL QUANTITY IS NOW ", CStr(prRmQty.Text), qtUnit, ". IF CHANGE NEEDED,")
                                 Debug.Print("THEN SELECT LENGTH FROM THE FOLLOWING SPANS,")
                                 Debug.Print("AND ENTER AT END OF prRmQty LINE BELOW.")
                                 Debug.Print("X SPAN", "Y SPAN", "Z SPAN")
-                                '   Debug.Print(invDoc.ComponentDefinition.RangeBox.MaxPoint.X - invDoc.ComponentDefinition.RangeBox.MinPoint.X) / 2.54, (invDoc.ComponentDefinition.RangeBox.MaxPoint.Y - invDoc.ComponentDefinition.RangeBox.MinPoint.Y) / 2.54, (invDoc.ComponentDefinition.RangeBox.MaxPoint.Z - invDoc.ComponentDefinition.RangeBox.MinPoint.Z) / 2.54
+                                '   Debug.Print(oDoc.ComponentDefinition.RangeBox.MaxPoint.X - oDoc.ComponentDefinition.RangeBox.MinPoint.X) / 2.54, (oDoc.ComponentDefinition.RangeBox.MaxPoint.Y - oDoc.ComponentDefinition.RangeBox.MinPoint.Y) / 2.54, (oDoc.ComponentDefinition.RangeBox.MaxPoint.Z - oDoc.ComponentDefinition.RangeBox.MinPoint.Z) / 2.54
                                 Debug.Print("")
                                 Debug.Print("PLACE CURSOR ON qtUnit LINE. CHANGE UNIT OF MEASURE, IF DESIRED.")
                                 Debug.Print("PRESS ENTER/RETURN TWICE. THEN CONTINUE.")
@@ -3689,7 +3688,7 @@ Module dvl2
                 End If
 
                 ' Get the design tracking property ,
-                If invDoc.ComponentDefinition.IsContentMember Then
+                If oDoc.ComponentDefinition.IsContentMember Then
                     ' Don't muck around with the Family!
                 Else
                     If Len(nmFamily) > 0 Then
@@ -3698,14 +3697,14 @@ Module dvl2
                         If Err.Number Then
                             Debug.Print("CHGFAIL[FAMILY]{'" _
                             & prFamily.Text & "' -> '" & nmFamily & "'}: " _
-                            & invDoc.DisplayName & " (" & invDoc.FullDocumentName & ")")
+                            & oDoc.DisplayName & " (" & oDoc.FullDocumentName & ")")
                             If MsgBox(
                             "Couldn't Change Family" & vbCrLf _
-                            & "for Item " & invDoc.DisplayName & vbCrLf _
-                            & vbCrLf & "(" & invDoc.FullDocumentName & ")" _
+                            & "for Item " & oDoc.DisplayName & vbCrLf _
+                            & vbCrLf & "(" & oDoc.FullDocumentName & ")" _
                             & vbCrLf & vbCrLf & "Stop to Review?",
                             vbYesNo Or vbDefaultButton2,
-                            invDoc.DisplayName
+                            oDoc.DisplayName
                         ) = vbYes Then
                                 Stop
                             End If
@@ -3718,13 +3717,13 @@ Module dvl2
                 End If
             End With
 
-            Call iSyncPartFactory(invDoc) 'Backport Properties to iPart Factory
+            Call iSyncPartFactory(oDoc) 'Backport Properties to iPart Factory
             dcGeniusPropsPartRev20180530_broken = rt
         End If
     End Function
 
     Public Function dcGeniusPropsPartDvl20210929(
-    invDoc As Inventor.PartDocument,
+    oDoc As Inventor.PartDocument,
     Optional dc As Scripting.Dictionary = Nothing
 ) As Scripting.Dictionary
         Dim rt As Scripting.Dictionary
@@ -3761,31 +3760,31 @@ Module dvl2
         If dc Is Nothing Then
             dcGeniusPropsPartDvl20210929 =
         dcGeniusPropsPartDvl20210929(
-            invDoc, New Scripting.Dictionary
+            oDoc, New Scripting.Dictionary
         )
         Else
             rt = dc
 
-            With invDoc
+            With oDoc
                 ' Get Property s
                 With .Propertys
-                    aiPropsUser = .Item(gnCustom)
-                    aiPropsDesign = .Item(gnDesign)
+                    aiPropsUser = .Item(GnCustom)
+                    aiPropsDesign = .Item(GnDesign)
                 End With
 
                 ' Get Custom Properties
-                prRawMatl = aiGetProp(aiPropsUser, pnRawMaterial, 1)
-                prRmUnit = aiGetProp(aiPropsUser, pnRmUnit, 1)
-                prRmQty = aiGetProp(aiPropsUser, pnRmQty, 1)
+                prRawMatl = aiGetProp(aiPropsUser, PnRawMaterial, 1)
+                prRmUnit = aiGetProp(aiPropsUser, PnRmUnit, 1)
+                prRmQty = aiGetProp(aiPropsUser, PnRmQty, 1)
 
                 ' Part Number and Family properties
-                prPartNum = aiGetProp(aiPropsDesign, pnPartNum) 'ADDED 2021.03.11
+                prPartNum = aiGetProp(aiPropsDesign, PnPartNum) 'ADDED 2021.03.11
                 pnModel = prPartNum.Text
-                prFamily = aiGetProp(aiPropsDesign, pnFamily)
+                prFamily = aiGetProp(aiPropsDesign, PnFamily)
 
                 ' Request #1: Get the Mass in Pounds
                 With .ComponentDefinition.MassProperties
-                    rt = dcWithProp(aiPropsUser, pnMass, System.Math.Round(cvMassKg2LbM * .Mass, 4), rt)
+                    rt = dcWithProp(aiPropsUser, PnMass, System.Math.Round(CvMassKg2LbM * .Mass, 4), rt)
                 End With
 
                 ' NOTE[2021.10.01]: This block is for Purchased Part Determination! (see below)
@@ -3808,7 +3807,7 @@ Module dvl2
                 End If
 
                 ' Get the design tracking property ,
-                If invDoc.ComponentDefinition.IsContentMember Then
+                If oDoc.ComponentDefinition.IsContentMember Then
                     ' look at N++ tab "new 7" for content here
                 Else
                     ' look at N++ tab "new 7" for content here
@@ -3818,7 +3817,7 @@ Module dvl2
     End Function
 
     Public Function d2g2f1(
-    invDoc As Inventor.PartDocument,
+    oDoc As Inventor.PartDocument,
     Optional dc As Scripting.Dictionary = Nothing
 ) As Scripting.Dictionary 'Inventor.BOMStructureEnum
         '
@@ -3843,14 +3842,14 @@ Module dvl2
 
         rt = New Scripting.Dictionary
 
-        With invDoc.ComponentDefinition
-            If .Document Is invDoc Then
+        With oDoc.ComponentDefinition
+            If .Document Is oDoc Then
                 bd = nuAiBoxData(
             ).UsingInches.SortingDims(
                 .RangeBox
             )
                 With newFmTest1() '== Original Line 1056 ==
-                    'If Not (invDoc.ComponentDefinition.Document Is invDoc) Then Stop
+                    'If Not (oDoc.ComponentDefinition.Document Is oDoc) Then Stop
                     'moved this check outside this form block (see above)
 
                     ' [2018.07.31 by AT]
@@ -3860,7 +3859,7 @@ Module dvl2
                     '.LbxFamily.Text = "D-BAR"
                     ' Doesn't quite do it.
 
-                    ck = .AskAbout(invDoc,
+                    ck = .AskAbout(oDoc,
                     "Please Select Stock for Machined Part" _
                     & vbCrLf & vbCrLf & bd.Dump(0)
                 )
@@ -3870,16 +3869,16 @@ Module dvl2
                         '     Pulling some extraneous commented code
                         '     from here and beginning of block
                         With .ItemData()
-                            If .Exists(pnFamily) Then
-                                nmFamily = .Item(pnFamily)
-                                rt.Add(pnFamily, nmFamily)
-                                Debug.Print(pnFamily & "=" & nmFamily)
+                            If .Exists(PnFamily) Then
+                                nmFamily = .Item(PnFamily)
+                                rt.Add(PnFamily, nmFamily)
+                                Debug.Print(PnFamily & "=" & nmFamily)
                             End If
 
-                            If .Exists(pnRawMaterial) Then
-                                pnStock = .Item(pnRawMaterial)
-                                rt.Add(pnRawMaterial, pnStock)
-                                Debug.Print(pnRawMaterial & "=" & pnStock)
+                            If .Exists(PnRawMaterial) Then
+                                pnStock = .Item(PnRawMaterial)
+                                rt.Add(PnRawMaterial, pnStock)
+                                Debug.Print(PnRawMaterial & "=" & pnStock)
                             End If
                         End With
                         If 0 Then Stop 'Use this for a debugging shim
@@ -3950,7 +3949,7 @@ Module dvl2
                 Debug.Print("THEN SELECT LENGTH FROM THE FOLLOWING SPANS,")
                 Debug.Print("AND ENTER AT END OF prRmQty LINE BELOW.")
                 Debug.Print("X SPAN", "Y SPAN", "Z SPAN")
-                '  Debug.Print(invDoc.ComponentDefinition.RangeBox.MaxPoint.X - invDoc.ComponentDefinition.RangeBox.MinPoint.X) / 2.54, (invDoc.ComponentDefinition.RangeBox.MaxPoint.Y - invDoc.ComponentDefinition.RangeBox.MinPoint.Y) / 2.54, (invDoc.ComponentDefinition.RangeBox.MaxPoint.Z - invDoc.ComponentDefinition.RangeBox.MinPoint.Z) / 2.54
+                '  Debug.Print(oDoc.ComponentDefinition.RangeBox.MaxPoint.X - oDoc.ComponentDefinition.RangeBox.MinPoint.X) / 2.54, (oDoc.ComponentDefinition.RangeBox.MaxPoint.Y - oDoc.ComponentDefinition.RangeBox.MinPoint.Y) / 2.54, (oDoc.ComponentDefinition.RangeBox.MaxPoint.Z - oDoc.ComponentDefinition.RangeBox.MinPoint.Z) / 2.54
                 Debug.Print("")
                 Debug.Print("PLACE CURSOR ON qtUnit LINE. CHANGE UNIT OF MEASURE, IF DESIRED.")
                 Debug.Print("PRESS ENTER/RETURN TWICE. THEN CONTINUE.")
@@ -3988,7 +3987,7 @@ Module dvl2
         End If
 
         d2g2f1 = rt
-        ''Debug.Print(ConvertToJson(d2g2f1(aiDocPart(aiDocAssy(InventorApp.ActiveDocument).ComponentDefinition.Occurrences.ItemByName("04-18-102-1006:1").Definition.Document)), "  ")
+        ''Debug.Print(ConvertToJson(d2g2f1(aiDocPart(aiDocAssy(ThisApplication.ActiveDocument).ComponentDefinition.Occurrences.ItemByName("04-18-102-1006:1").Definition.Document)), "  ")
     End Function
 
     Public Function d2g1f1(
@@ -3996,7 +3995,7 @@ Module dvl2
     Optional dc As Scripting.Dictionary = Nothing
 ) As Scripting.Dictionary 'Inventor.BOMStructureEnum
         Dim rt As Scripting.Dictionary
-        'Dim invDoc As Inventor.PartDocument
+        'Dim oDoc As Inventor.PartDocument
         Dim ck As VbMsgBoxResult
         Dim txFilePath As String
         Dim isNow As Inventor.BOMStructureEnum
@@ -4017,7 +4016,7 @@ Module dvl2
 
                 With .Parent 'Property 
                     ' Get Part Number from Model
-                    ptNum = .Item(pnPartNum).Text
+                    ptNum = .Item(PnPartNum).Text
 
                     ' Then try to get Family from Genius
                     With CnGnsDoyle()
@@ -4181,7 +4180,7 @@ Module dvl2
         End If
     End Function
 
-    Public Function dcGnsMatlOps(
+    Public Function dcGnsMatlOps(ThisApplication As Inventor.Application,
     DimCt As Scripting.Dictionary,
     Optional MtSpec As String = ""
 ) As Scripting.Dictionary 'defaulted to SS, but maybe not such a great idea
@@ -4199,7 +4198,7 @@ Module dvl2
 
             Err.Clear()
             rs = .Execute(
-        sqlOf_GnsMatlOptions(
+        SqlOf_GnsMatlOptions(ThisApplication,
             MtSpec, DimCt.Keys
         ))
 
@@ -4214,10 +4213,10 @@ Module dvl2
                         End If
                     Next : End With
 
-                rs.Close
+                rs.Close()
             Else
                 Stop
-                Err.Clear
+                Err.Clear()
             End If
 
             On Error GoTo 0

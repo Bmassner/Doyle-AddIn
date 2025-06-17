@@ -1,5 +1,3 @@
-Imports System.Windows
-
 Class FmIfcTest04A
 
     Private Fm As FmTest04
@@ -23,12 +21,12 @@ Class FmIfcTest04A
     '
     '
 
-    Private Sub Class_Initialize()
+    Private Sub Class_Initialize(ThisApplication As Inventor.Application)
         Fm = New FmTest04
         LbxSpecOps = Fm.LbxSpecOps
         LbxSpec = Fm.LbxSpecSel
 
-        dcSpecPairs = dcGnsMatlSpecPairings()
+        dcSpecPairs = dcGnsMatlSpecPairings(ThisApplication)
         ' probably want to make this controllable
         ' from client processes to support more
         ' general usage. this will do for now.

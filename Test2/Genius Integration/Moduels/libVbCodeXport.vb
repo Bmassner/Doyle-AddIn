@@ -1,15 +1,15 @@
 Module libVbCodeXport
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Public Function xprtModText() As Long
-        Dim vp As VBIDE.VBProject
-        Dim vc As VBIDE.VBComponent
+        '  Dim vp As VBIDE.VBProject
+        ' Dim vc As VBIDE.VBComponent
         Dim dc As Scripting.Dictionary
         Dim d1 As Scripting.Dictionary
         Dim d2 As Scripting.Dictionary
         Dim n1 As String
         Dim n2 As String
 
-        dc = dcOfVbProjects(inventorApp.VBAProjects) 'ThisWorkbook.Application.VBE.VBProjects
+        dc = dcOfVbProjects(ThisApplication.VBAProjects) 'ThisWorkbook.Application.VBE.VBProjects
 
         n1 = "C:\Users\athompson\Documents\dvl\libExt.xlsm"
         d1 = dc(n1)
@@ -1099,7 +1099,7 @@ Module libVbCodeXport
             vbTextOfProcInDict = "" ' _
             vbTextOfProcInDict(
             nm, dcOfVbProcsFlat(
-            inventorApp.ThisWorkbook.VBProject
+            ThisApplication.ThisWorkbook.VBProject
         ))
         Else
             vbTextOfProcInDict = CStr(

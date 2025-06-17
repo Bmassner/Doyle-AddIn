@@ -6,10 +6,11 @@ Namespace DoyleAddin
     GuidAttribute("513b9d7e-103e-4569-8eb5-ab3929cd33ad")>
     Public Class StandardAddInServer
         Implements Inventor.ApplicationAddInServer
-
+        Private ThisApplication As Inventor.Application
         Private WithEvents UiEvents As UserInterfaceEvents
         Private WithEvents DXFUpdate As ButtonDefinition
         Private WithEvents PrintUpdate As ButtonDefinition
+        Private WithEvents GeniusUpdate As ButtonDefinition
 
 #Region "ApplicationAddInServer Members"
 
@@ -36,7 +37,7 @@ Namespace DoyleAddin
             Dim DXFUpdateIconLarge As stdole.IPictureDisp = PictureConverter.ImageToPictureDisp(My.Resources.DXFUpdateIconLarge)
             DXFUpdate = controlDefs.AddButtonDefinition("DXF Update", "dxfUpdate", CommandTypesEnum.kShapeEditCmdType, AddInClientID, , , DXFUpdateIconSmall, DXFUpdateIconLarge)
             PrintUpdate = controlDefs.AddButtonDefinition("Print Update", "printUpdate", CommandTypesEnum.kShapeEditCmdType, AddInClientID, , , PrintUpdateIconSmall, PrintUpdateIconLarge)
-
+            GeniusUpdate = controlDefs.AddButtonDefinition("Genius Update", "GeniusUpdate", CommandTypesEnum.kShapeEditCmdType, AddInClientID, , , PrintUpdateIconSmall, PrintUpdateIconLarge)
             ' Add to the user interface, if it's the first time.
             If firstTime Then
                 AddToUserInterface()
@@ -81,22 +82,73 @@ Namespace DoyleAddin
         ' Sub where the user-interface creation is done.  This is called when
         ' the add-in loaded and also if the user interface is reset.
         Private Sub AddToUserInterface()
-            ' Add DXF Update to Sheet Metal Tools tab
-            Dim partRibbon As Ribbon = ThisApplication.UserInterfaceManager.Ribbons.Item("Part")
-            Dim toolsTab As RibbonTab = partRibbon.RibbonTabs.Item("id_TabSheetMetal")
-            Dim customPanel As RibbonPanel = toolsTab.RibbonPanels.Add("Add-Ins", "dxfUpdate", AddInClientID)
-            customPanel.CommandControls.AddButton(DXFUpdate, True) ' True = Large icon
+            ' Cache frequently used objects
+            Dim uiManager = ThisApplication.UserInterfaceManager
+            Dim partRibbon = uiManager.Ribbons.Item("Part")
+            Dim drawingRibbon = uiManager.Ribbons.Item("Drawing")
+
+            ' Add DXF Update to the existing Flat Pattern panel on the Sheet Metal Tools tab
+            Try
+                Dim flatPatternPanel = partRibbon.RibbonTabs.Item("id_TabSheetMetal").RibbonPanels.Item("id_PanelP_SheetMetalManageUnfold")
+                flatPatternPanel.CommandControls.AddButton(DXFUpdate, True)
+            Catch ex As Exception
+                ' Panel or tab may not exist, handle gracefully
+            End Try
+
+            ' Add Genius to Part tab
+            Try
+                Dim sheetMetalTab = partRibbon.RibbonTabs.Item("id_TabSheetMetal")
+                Dim geniusPanel As RibbonPanel = Nothing
+                ' Check if panel already exists to avoid duplicates
+                For Each panel As RibbonPanel In sheetMetalTab.RibbonPanels
+                    If panel.InternalName = "GeniusUpdate" Then
+                        geniusPanel = panel
+                        Exit For
+                    End If
+                Next
+                If geniusPanel Is Nothing Then
+                    geniusPanel = sheetMetalTab.RibbonPanels.Add("Genius", "GeniusUpdate", AddInClientID())
+                End If
+                geniusPanel.CommandControls.AddButton(GeniusUpdate, True)
+            Catch ex As Exception
+                ' Handle missing tab or other errors
+            End Try
 
             ' Add Print Update to Drawing Place Views tab
-            partRibbon = ThisApplication.UserInterfaceManager.Ribbons.Item("Drawing")
-            toolsTab = partRibbon.RibbonTabs.Item("id_TabPlaceViews")
-            customPanel = toolsTab.RibbonPanels.Add("Add-Ins", "printUpdate", AddInClientID)
-            customPanel.CommandControls.AddButton(PrintUpdate, True) ' True = Large icon
+            Try
+                Dim placeViewsTab = drawingRibbon.RibbonTabs.Item("id_TabPlaceViews")
+                Dim placeViewsPanel As RibbonPanel = Nothing
+                For Each panel As RibbonPanel In placeViewsTab.RibbonPanels
+                    If panel.InternalName = "printUpdate" Then
+                        placeViewsPanel = panel
+                        Exit For
+                    End If
+                Next
+                If placeViewsPanel Is Nothing Then
+                    placeViewsPanel = placeViewsTab.RibbonPanels.Add("Add-Ins", "printUpdate", AddInClientID())
+                End If
+                placeViewsPanel.CommandControls.AddButton(PrintUpdate, True)
+            Catch ex As Exception
+                ' Handle missing tab or other errors
+            End Try
 
             ' Add Print Update to Drawing Annotate tab
-            Dim annotateTab As RibbonTab = partRibbon.RibbonTabs.Item("id_TabAnnotate")
-            Dim annotatePanel As RibbonPanel = annotateTab.RibbonPanels.Add("Add-Ins", "printUpdateAnnotate", AddInClientID)
-            annotatePanel.CommandControls.AddButton(PrintUpdate, True) ' True = Large icon
+            Try
+                Dim annotateTab = drawingRibbon.RibbonTabs.Item("id_TabAnnotate")
+                Dim annotatePanel As RibbonPanel = Nothing
+                For Each panel As RibbonPanel In annotateTab.RibbonPanels
+                    If panel.InternalName = "printUpdateAnnotate" Then
+                        annotatePanel = panel
+                        Exit For
+                    End If
+                Next
+                If annotatePanel Is Nothing Then
+                    annotatePanel = annotateTab.RibbonPanels.Add("Add-Ins", "printUpdateAnnotate", AddInClientID())
+                End If
+                annotatePanel.CommandControls.AddButton(PrintUpdate, True)
+            Catch ex As Exception
+                ' Handle missing tab or other errors
+            End Try
         End Sub
 
         Private Sub UiEvents_OnResetRibbonInterface(Context As NameValueMap) Handles UiEvents.OnResetRibbonInterface
@@ -105,14 +157,19 @@ Namespace DoyleAddin
         End Sub
 
         ' Sample handler for the button.
-        Private Shared Sub DXFUpdate_OnExecute(Context As NameValueMap) Handles DXFUpdate.OnExecute
-            Call Sub() runDxfUpdate()
-            'Call Sub() userName()
+        Private Sub DXFUpdate_OnExecute(Context As NameValueMap) Handles DXFUpdate.OnExecute
+            Call Sub() runDxfUpdate(ThisApplication)
         End Sub
 
-        Private Shared Sub PrintUpdate_OnExecute(Context As NameValueMap) Handles PrintUpdate.OnExecute
-            Call Sub() RunPrintUpdate()
+        Private Sub PrintUpdate_OnExecute(Context As NameValueMap) Handles PrintUpdate.OnExecute
+            Call Sub() RunPrintUpdate(ThisApplication)
         End Sub
+
+        Private Sub GeniusUpdate_OnExecute(Context As NameValueMap) Handles GeniusUpdate.OnExecute
+            Call Sub() Update_Genius_Properties(ThisApplication)
+
+        End Sub
+
 #End Region
 
     End Class

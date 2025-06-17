@@ -1,7 +1,6 @@
 ﻿Imports System.Drawing
 Imports System.Drawing.Imaging
 Imports System.Runtime.InteropServices
-Imports Docnet.Core
 Imports Docnet.Core.Models
 
 Public Module PDFToImage
@@ -22,7 +21,7 @@ Public Module PDFToImage
 
                 ' Create a bitmap from the raw BGRA bytes
                 Using bmp As New Bitmap(width, height, PixelFormat.Format32bppArgb)
-                    Dim bmpData = bmp.LockBits(New Rectangle(0, 0, width , height ), Imaging.ImageLockMode.WriteOnly, bmp.PixelFormat)
+                    Dim bmpData = bmp.LockBits(New Rectangle(0, 0, width, height), Imaging.ImageLockMode.WriteOnly, bmp.PixelFormat)
                     Marshal.Copy(rawBytes, 0, bmpData.Scan0, rawBytes.Length)
                     bmp.UnlockBits(bmpData)
 

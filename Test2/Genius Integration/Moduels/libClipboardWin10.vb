@@ -3,7 +3,7 @@ Imports System.Runtime.InteropServices
 Module libClipboardWin10
 
     Public Sub Clipboard(ByVal sUniText As String)
-        Dim i As Long
+        '  Dim i As Long
         Dim iLen As Long
 #If VBA7 Then
     Dim iStrPtr As Long
@@ -15,7 +15,7 @@ Module libClipboardWin10
 
         OpenClipboard(0&)
         EmptyClipboard
-        iLen = sUniText.Length * 2 + 2&
+        iLen = (sUniText.Length * 2) + 2&
         iStrPtr = GlobalAlloc(GMEM_MOVEABLE Or GMEM_ZEROINIT, iLen)
         iLock = GlobalLock(iStrPtr)
         lstrcpy(iLock, Marshal.StringToHGlobalUni(sUniText))

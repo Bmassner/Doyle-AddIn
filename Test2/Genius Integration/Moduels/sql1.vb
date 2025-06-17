@@ -1,5 +1,5 @@
 Module sql1
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Public Function sqlListValues(
     dc As Scripting.Dictionary,
     Optional sep As String = "', '",
@@ -169,7 +169,7 @@ Module sql1
 
         'send2clipBd ConvertToJson(dcRecSetDcDx4json( _
         DcFromAdoRS(CnGnsDoyle().Execute(
-        q1g1x2(InventorApp.ActiveDocument)), vbTab)
+        q1g1x2(ThisApplication.ActiveDocument)), vbTab)
     End Function
 
     Public Function q1g1x2v2(
@@ -241,7 +241,7 @@ Module sql1
         '
         ''send2clipBd ConvertToJson(dcRecSetDcDx4json( _
         '    DcFromAdoRS(CnGnsDoyle().Execute(
-        '        q1g2x2(InventorApp.ActiveDocument)
+        '        q1g2x2(ThisApplication.ActiveDocument)
         '    )) _
         '), vbTab)
     End Function

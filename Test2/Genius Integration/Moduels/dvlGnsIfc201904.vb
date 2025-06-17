@@ -1,5 +1,5 @@
 Module dvlGnsIfc201904
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Public Function dgiG0t0() As Scripting.Dictionary
         Dim dcTree As Scripting.Dictionary
         Dim dcFlat As Scripting.Dictionary
@@ -8,7 +8,7 @@ Module dvlGnsIfc201904
 
         nm = nuSelAiDoc().GetReply()
         If Len(Trim(nm)) > 0 Then
-            With InventorApp.Documents
+            With ThisApplication.Documents
                 dcTree = dgiAiDocClassified(.ItemByName(nm))
                 dt = dgiG2f2(dgiG2f1(dcTree))
                 If MsgBox(
@@ -167,7 +167,7 @@ Module dvlGnsIfc201904
             AskUser4aiDoc = AskUser4aiDoc(defaultDoc, dcAiDocsVisible())
         Else
             If defaultDoc Is Nothing Then
-                AskUser4aiDoc = AskUser4aiDoc(InventorApp.ActiveDocument, dc)
+                AskUser4aiDoc = AskUser4aiDoc(ThisApplication.ActiveDocument, dc)
             Else
                 nm = d0g6f0(defaultDoc)
                 With dc
@@ -390,8 +390,8 @@ Module dvlGnsIfc201904
         End With
         dgiG2f2 = Join(rt.Keys, brk)
     End Function
-    'Debug.Print(dgiG2f2(dgiG2f1(dgiAiDocClassified(InventorApp.Documents.VisibleDocuments(3))))
-    'send2clipBd dgiG2f2(dgiG2f1(dgiAiDocClassified(InventorApp.Documents.VisibleDocuments(3))))
-    'send2clipBd dgiG2f2(dgiG2f1(dgiAiDocClassified(InventorApp.Documents.ItemByName(nuSelAiDoc().getReply()))))
+    'Debug.Print(dgiG2f2(dgiG2f1(dgiAiDocClassified(ThisApplication.Documents.VisibleDocuments(3))))
+    'send2clipBd dgiG2f2(dgiG2f1(dgiAiDocClassified(ThisApplication.Documents.VisibleDocuments(3))))
+    'send2clipBd dgiG2f2(dgiG2f1(dgiAiDocClassified(ThisApplication.Documents.ItemByName(nuSelAiDoc().getReply()))))
 
 End Module

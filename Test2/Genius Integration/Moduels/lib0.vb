@@ -1,238 +1,242 @@
+Option Explicit On
+
 Module lib0
 
     ' Measurement Unit Conversion Factors
-    Public Const cvArSqCm2SqFt As Double = 0.00107639
-    ' 0.00107639 = (1ft / 12in/ft / 2.54 cm/in)^2
-    '
-    ' /  1ft | 1in    \2     2                2
-    '( ------+-------- ) * cm  = 0.00107639 ft
-    ' \ 12in | 2.54cm /
-    Public Const cvMassKg2LbM As Double = 2.20462
-    Public Const cvLenIn2cm As Double = 2.54
+    Public Const CvArSqCm2SqFt As Double = 0.00107639
+    Public Const CvMassKg2LbM As Double = 2.20462
+    Public Const CvLenIn2cm As Double = 2.54
 
-    '
-    Public Const guidRegPart As String = "{4D29B490-49B2-11D0-93C3-7E0706000000}"
-    Public Const guidSheetMetal As String = "{9C464203-9BAE-11D3-8BAD-0060B0CE6BB4}"
-    Public Const guidDesignAccl As String = "{BB8FE430-83BF-418D-8DF9-9B323D3DB9B9}"
-    Public Const guidPipingSgmt As String = "{4D39D5F1-0985-4783-AA5A-FC16C288418C}"
-    Public Const guidILogicAdIn As String = "{3BDD8D79-2179-4B11-8A5A-257B1C0263AC}"
-    '
-    Public Const guidRegAssy As String = "{E60F81E1-49B3-11D0-93C3-7E0706000000}"
-    Public Const guidWeldment As String = "{28EC8354-9024-440F-A8A2-0E0E55D635B0}"
+    ' GUIDs for Inventor object types
+    Public Const GuidRegPart As String = "{4D29B490-49B2-11D0-93C3-7E0706000000}"
+    Public Const GuidSheetMetal As String = "{9C464203-9BAE-11D3-8BAD-0060B0CE6BB4}"
+    Public Const GuidDesignAccl As String = "{BB8FE430-83BF-418D-8DF9-9B323D3DB9B9}"
+    Public Const GuidPipingSgmt As String = "{4D39D5F1-0985-4783-AA5A-FC16C288418C}"
+    Public Const GuidILogicAdIn As String = "{3BDD8D79-2179-4B11-8A5A-257B1C0263AC}"
+    Public Const GuidRegAssy As String = "{E60F81E1-49B3-11D0-93C3-7E0706000000}"
+    Public Const GuidWeldment As String = "{28EC8354-9024-440F-A8A2-0E0E55D635B0}"
 
-    '
-    Public Const guidPrSumm As String = "{F29F85E0-4FF9-1068-AB91-08002B27B3D9}" 'Summary Information (Inventor Summary Information)
-    Public Const guidPrDocu As String = "{D5CDD502-2E9C-101B-9397-08002B2CF9AE}" 'Document Summary Information (Inventor Document Summary Information)
-    Public Const guidPrTrkg As String = "{32853F0F-3444-11D1-9E93-0060B03C1CA6}" 'Design Tracking Properties (Design Tracking Properties)
-    Public Const guidPrUser As String = "{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" 'User Defined Properties (Inventor User Defined Properties)
-    Public Const guidPrCLib As String = "{B9600981-DEE8-4547-8D7C-E525B3A1727A}" 'Content Library Component Properties (Content Library Component Properties)
-    Public Const guidPrCCtr As String = "{CEAAEE65-91D8-444E-ACBA-BE54A5FB9D4D}" 'ContentCenter (ContentCenter)
-    'Public Const guidPr____  As String = "{00000000-0000-0000-0000-000000000000}" 'Display Name (Name)
-    '
+    ' GUIDs for Inventor property sets
+    Public Const GuidPrSumm As String = "{F29F85E0-4FF9-1068-AB91-08002B27B3D9}" ' Summary Information
+    Public Const GuidPrDocu As String = "{D5CDD502-2E9C-101B-9397-08002B2CF9AE}" ' Document Summary Information
+    Public Const GuidPrTrkg As String = "{32853F0F-3444-11D1-9E93-0060B03C1CA6}" ' Design Tracking Properties
+    Public Const GuidPrUser As String = "{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" ' User Defined Properties
+    Public Const GuidPrCLib As String = "{B9600981-DEE8-4547-8D7C-E525B3A1727A}" ' Content Library Component Properties
+    Public Const GuidPrCCtr As String = "{CEAAEE65-91D8-444E-ACBA-BE54A5FB9D4D}" ' ContentCenter
 
-    Public Const gnDesign As String = "Design Tracking Properties"
-    Public Const pnMaterial As String = "Material"          '
-    Public Const pnPartNum As String = "Part Number"       '
-    Public Const pnStockNum As String = "Stock Number"      '
-    Public Const pnFamily As String = "Cost Center"       '
-    Public Const pnDesc As String = "Description"       '
-    Public Const pnCatWebLink As String = "Catalog Web Link"  '
+    ' Property Names
+    Public Const GnDesign As String = "Design Tracking Properties"
+    Public Const PnMaterial As String = "Material"
+    Public Const PnPartNum As String = "Part Number"
+    Public Const PnStockNum As String = "Stock Number"
+    Public Const PnFamily As String = "Cost Center"
+    Public Const PnDesc As String = "Description"
+    Public Const PnCatWebLink As String = "Catalog Web Link"
 
-    Public Const gnCustom As String = "Inventor User Defined Properties"
-    Public Const pnMass As String = "GeniusMass"    '
-    Public Const pnRawMaterial As String = "RM"            '
-    Public Const pnRmQty As String = "RMQTY"         '
-    Public Const pnRmUnit As String = "RMUNIT"        '(replaces "RMUOM")
-    '                                                       '
-    Public Const pnArea As String = "Extent_Area"   '
-    Public Const pnLength As String = "Extent_Length" '
-    Public Const pnWidth As String = "Extent_Width"  '
-    '
-    Public Const pnThickness As String = "Thickness"     '
-    '
+    Public Const GnCustom As String = "Inventor User Defined Properties"
+    Public Const PnMass As String = "GeniusMass"
+    Public Const PnRawMaterial As String = "RM"
+    Public Const PnRmQty As String = "RMQTY"
+    Public Const PnRmUnit As String = "RMUNIT"
+    Public Const PnArea As String = "Extent_Area"
+    Public Const PnLength As String = "Extent_Length"
+    Public Const PnWidth As String = "Extent_Width"
+    Public Const PnThickness As String = "Thickness"
 
-    Public Function VbProjectLocal() As VBIDE.VBProject
-        Dim Doc As Inventor.Document
-        VbProjectLocal = Doc.VBAProject.VBProject
+    ''' <summary>
+    ''' Returns the local VBA project for the given Inventor document.
+    ''' </summary>
+    Public Function VbProjectLocal(doc As Inventor.Document) As Object
+        If doc Is Nothing Then Return Nothing
+        Return doc.VBAProject.VBProject
     End Function
 
-    Public Function CnGnsDoyle() As ADODB.Connection
-        Dim rt As ADODB.Connection
-        ' NOTE[2021.12.08]:
-        '     Might consider make rt a Static Object.
-        '     If it can be created and opened just once
-        '     during a run, this could potentially save
-        '     a LOT of overhead from repeated open/close
-        '     operations, and might save a little load
-        '     on the server, as well.
-
-        rt = New ADODB.Connection
-        With rt
-            .Provider = "SQLOLEDB" '"SQLNCLI11"
-            .CursorLocation = CursorLocationEnum.adUseClient
+    ''' <summary>
+    ''' Returns a new, open ADODB connection to the Genius Doyle database.
+    ''' </summary>
+    Public Function CnGnsDoyle() As Object
+        Dim conn As Object
+        conn = CreateObject("ADODB.Connection")
+        With conn
+            .Provider = "SQLOLEDB"
+            .CursorLocation = 3 ' adUseClient
             .Open("Data Source=DOYLE-ERP02", "GeniusReporting", "geniusreporting")
             .DefaultDatabase = "DoyleDB"
-            '.Close
         End With
-        CnGnsDoyle = rt
+        Return conn
     End Function
 
-    Public Function DcIvObjTypeEnum() As Scripting.Dictionary
-        Dim dc As Scripting.Dictionary
-        Dim en As Inventor.ObjectTypeEnum
-
-        dc = New Scripting.Dictionary
-
-        With dc
-            en = ObjectTypeEnum.k3dAViewObject
-            en = ObjectTypeEnum.kAliasFreeformFeatureObject
-            en = ObjectTypeEnum.kAliasFreeformFeatureProxyObject
-            en = ObjectTypeEnum.kAliasFreeformFeaturesObject
-            en = ObjectTypeEnum.kAnalysisManagerObject
-            en = ObjectTypeEnum.kAnalyticEdgeWorkAxisDefObject
-            en = ObjectTypeEnum.kAngleConstraintObject
-            en = ObjectTypeEnum.kAngleConstraintProxyObject
-            en = ObjectTypeEnum.kAngleExtentObject
-            en = ObjectTypeEnum.kAngleiMateDefinitionObject
-            '.Add(kUnknownDocumentObject, "kUnknownDocumentObject"
-            '.Add(kSATFileDocumentObject, "kSATFileDocumentObject"
-            '.Add(kPresentationDocumentObject, "kPresentationDocumentObject"
-            '.Add(kPartDocumentObject, "kPartDocumentObject"
-            '.Add(kNoDocument, "kNoDocument"
-            '.Add(kForeignModelDocumentObject, "kForeignModelDocumentObject"
-            '.Add(kDrawingDocumentObject, "kDrawingDocumentObject"
-            '.Add(kDesignElementDocumentObject, "kDesignElementDocumentObject"
-            '.Add(kAssemblyDocumentObject, "kAssemblyDocumentObject"
-        End With
-
-        DcIvObjTypeEnum = dc
+    ''' <summary>
+    ''' Returns a dictionary mapping Inventor DocumentTypeEnum values to their names.
+    ''' </summary>
+    Public Function DcIvDocTypeEnum() As Object
+        Dim dc As Object
+        dc = CreateObject("Scripting.Dictionary")
+        dc.Add(12289, "kUnknownDocumentObject")
+        dc.Add(12290, "kSATFileDocumentObject")
+        dc.Add(12291, "kPresentationDocumentObject")
+        dc.Add(12292, "kPartDocumentObject")
+        dc.Add(12293, "kNoDocument")
+        dc.Add(12294, "kForeignModelDocumentObject")
+        dc.Add(12295, "kDrawingDocumentObject")
+        dc.Add(12296, "kDesignElementDocumentObject")
+        dc.Add(12297, "kAssemblyDocumentObject")
+        Return dc
     End Function
-    '
-    '=====
 
-    Public Function DcIvDocTypeEnum() As Scripting.Dictionary
-        Dim dc As Scripting.Dictionary
-        Dim en As Inventor.DocumentTypeEnum
-
-        dc = New Scripting.Dictionary
-
-        With dc
-            .Add(DocumentTypeEnum.kUnknownDocumentObject, "kUnknownDocumentObject")
-            .Add(DocumentTypeEnum.kSATFileDocumentObject, "kSATFileDocumentObject")
-            .Add(DocumentTypeEnum.kPresentationDocumentObject, "kPresentationDocumentObject")
-            .Add(DocumentTypeEnum.kPartDocumentObject, "kPartDocumentObject")
-            .Add(DocumentTypeEnum.kNoDocument, "kNoDocument")
-            .Add(DocumentTypeEnum.kForeignModelDocumentObject, "kForeignModelDocumentObject")
-            .Add(DocumentTypeEnum.kDrawingDocumentObject, "kDrawingDocumentObject")
-            .Add(DocumentTypeEnum.kDesignElementDocumentObject, "kDesignElementDocumentObject")
-            .Add(DocumentTypeEnum.kAssemblyDocumentObject, "kAssemblyDocumentObject")
-        End With
-
-        DcIvDocTypeEnum = dc
-    End Function
-    '
-    '=====
-
-    Public Function TxDumpLs(ls As Object,
-    Optional bk As String = vbCrLf
-    ) As String
-        Dim rt() As String
-        Dim mx As Long
-        Dim bs As Long
-        Dim dx As Long
-
+    ''' <summary>
+    ''' Dumps the contents of a list or dictionary as a string.
+    ''' </summary>
+    Public Function TxDumpLs(ls As Object, Optional bk As String = vbCrLf) As String
         If IsArray(ls) Then
+            Dim bs As Long, mx As Long, dx As Long
             bs = LBound(ls)
             mx = UBound(ls)
-            If bs > mx Then
-                TxDumpLs = ""
-                Exit Function
-            Else
-                ReDim rt(0 To mx - bs)
-                For dx = bs To mx
-                    rt(dx - bs) = TxDumpLs(ls(dx))
-                Next
-                TxDumpLs = Join(rt, bk)
-                Exit Function
-            End If
-        ElseIf TypeOf ls Is Object Then
-            If TypeOf ls Is Scripting.Dictionary Then
-                TxDumpLs = TxDumpLs(ls.Keys)
-                Exit Function
-            End If
+            If bs > mx Then Return ""
+            Dim rt() As String
+            ReDim rt(mx - bs)
+            For dx = bs To mx
+                rt(dx - bs) = TxDumpLs(ls(dx))
+            Next
+            Return Join(rt, bk)
+        ElseIf TypeName(ls) = "Dictionary" Then
+            Return TxDumpLs(ls.Keys)
+        Else
+            Return CStr(ls)
         End If
-        TxDumpLs = CStr(ls)
     End Function
 
-    Public Sub LsDump(ls As Object,
-    Optional bk As String = vbCrLf
-)
+    ''' <summary>
+    ''' Prints the contents of a list or dictionary to the debug window.
+    ''' </summary>
+    Public Sub LsDump(ls As Object, Optional bk As String = vbCrLf)
         Debug.Print(TxDumpLs(ls, bk))
     End Sub
 
-    '
-    ' The following is copied over from the Excel project file libExt.xlsm
-    ' to provide a means of dumping Key-Value pairs from a Dictionary.
-    '
-
-    Public Function DumpLsKeyVal(dc As Scripting.Dictionary _
-    , Optional dlmField As String = "," _
-    , Optional dlmLine As String = vbCrLf _
-    , Optional nullTxt As String = "<null>" _
-    , Optional emptyTx As String = "<empty>"
-) As String
-        Dim d2 As Scripting.Dictionary
+    ''' <summary>
+    ''' Dumps key-value pairs from a dictionary as a delimited string.
+    ''' </summary>
+    Public Function DumpLsKeyVal(dc As Object,
+                                Optional dlmField As String = ",",
+                                Optional dlmLine As String = vbCrLf,
+                                Optional nullTxt As String = "<null>",
+                                Optional emptyTx As String = "<empty>") As String
+        If dc Is Nothing Then Return ""
+        Dim d2 As Object
+        d2 = CreateObject("Scripting.Dictionary")
         Dim ky As Object
-        Dim vl As Object
-        'Dim rt As String
+        For Each ky In dc.Keys
+            Dim vl As Object
+            vl = dc.Item(ky)
+            Dim valStr As String
+            If vl Is Nothing Then
+                valStr = nullTxt
+            ElseIf TypeName(vl) = "String" And vl = "" Then
+                valStr = emptyTx
+            ElseIf TypeOf vl Is Object Then
+                valStr = "<ob:" & TypeName(vl) & ">"
+            Else
+                valStr = CStr(vl)
+            End If
+            d2.Add(CStr(ky) & dlmField & valStr, ky)
+        Next
+        DumpLsKeyVal = Join(d2.Keys, dlmLine)
+    End Function
 
-        'rt = ""
-        If dc Is Nothing Then
-            DumpLsKeyVal = ""
+    ''' <summary>
+    ''' Returns a string consisting of a repeated pattern.
+    ''' </summary>
+    Public Function Repeat(Count As Long, Text As String) As String
+        If Count <= 0 Or Len(Text) = 0 Then Return ""
+        Repeat = New String(CChar(Left(Text, 1)), Count)
+        If Len(Text) > 1 Then Repeat = Replace(Repeat, Left(Text, 1), Text)
+    End Function
+
+    ''' <summary>
+    ''' Returns a block of text with repeated lines and characters.
+    ''' </summary>
+    Public Function TxBlk(Lines As Long, Chars As Long, Optional Use As String = "+") As String
+        If Lines <= 0 Or Chars <= 0 Then Return ""
+        Dim lineStr As String
+        lineStr = New String(CChar(Use), Chars)
+        Dim arr() As String
+        ReDim arr(Lines - 1)
+        Dim i As Long
+        For i = 0 To Lines - 1
+            arr(i) = lineStr
+        Next
+        TxBlk = Join(arr, vbCrLf)
+    End Function
+
+    ''' <summary>
+    ''' Sets a document's BOM structure to Purchased, based on type.
+    ''' </summary>
+    Public Function MkAiDocPurchased(AiDoc As Object) As VbMsgBoxResult
+        If TypeName(AiDoc) = "PartDocument" Then
+            MkAiDocPurchased = MkAiPartPurchased(AiDoc)
+        ElseIf TypeName(AiDoc) = "AssemblyDocument" Then
+            MkAiDocPurchased = MkAiAssyPurchased(AiDoc)
         Else
-            d2 = New Scripting.Dictionary
-            With dc
-                For Each ky In .Keys
-                    'rt = rt & ky & "," & .Item(ky) & vbCrLf
-
-                    vl = { .Item(ky)}
-                    ''  Any values which have
-                    ''  no direct String conversion
-                    ''  are replaced with String defaults
-                    ''  (   user supplied, or see
-                    ''      Function declaration above )
-                    If (vl(0)) Is Nothing Then vl = nullTxt
-                    If (vl(0)) Is Nothing Then vl = emptyTx
-                    'If IsMissing(vl) Then vl = ""
-                    'If IsError(vl) Then vl = ""
-                    If TypeOf (vl(0)) Is Object Then
-                        If vl(0) Is Nothing Then
-                            vl = "<ob:Nothing>"
-                        Else
-                            vl = "<ob:" & TypeName(vl(0)) & ">"
-                        End If
-                    End If
-                    If TypeOf vl Is Array Then
-                        If TypeOf {vl(0)} Is Array Then
-                            vl = "<array>"
-                        Else
-                            vl = vl(0)
-                        End If
-                    End If
-
-                    d2.Add(Join({ky, vl}, dlmField), ky)
-                    ''  Note that Key value might also
-                    ''  require String default replacement,
-                    ''  as well. Won't address this unless
-                    ''  and until it becomes an issue.
-                    ''
-                    ''  If it DOES, the defaulting process
-                    ''  will probably be broken out
-                    ''  into its own function
-                Next
-            End With
-            DumpLsKeyVal = Join(d2.Keys, dlmLine)
+            MkAiDocPurchased = vbNo
         End If
+    End Function
+
+    ''' <summary>
+    ''' Sets a PartDocument's BOM structure to Purchased.
+    ''' </summary>
+    Public Function MkAiPartPurchased(AiDoc As Object) As VbMsgBoxResult
+        If AiDoc Is Nothing Then
+            MkAiPartPurchased = vbNo
+            Exit Function
+        End If
+        On Error Resume Next
+        AiDoc.ComponentDefinition.BOMStructure = 51970 ' BOMStructureEnum.kPurchasedBOMStructure
+        If Err.Number = 0 Then
+            MkAiPartPurchased = vbOK
+        Else
+            MkAiPartPurchased = vbAbort
+        End If
+        On Error GoTo 0
+    End Function
+
+    ''' <summary>
+    ''' Sets an AssemblyDocument's BOM structure to Purchased.
+    ''' </summary>
+    Public Function MkAiAssyPurchased(AiDoc As Object) As VbMsgBoxResult
+        If AiDoc Is Nothing Then
+            MkAiAssyPurchased = vbNo
+            Exit Function
+        End If
+        On Error Resume Next
+        AiDoc.ComponentDefinition.BOMStructure = 51970 ' BOMStructureEnum.kPurchasedBOMStructure
+        If Err.Number = 0 Then
+            MkAiAssyPurchased = vbOK
+        Else
+            MkAiAssyPurchased = vbAbort
+        End If
+        On Error GoTo 0
+    End Function
+
+    ''' <summary>
+    ''' Returns a Scripting.Dictionary, optionally using an existing one.
+    ''' </summary>
+    Public Function DcTemplate0A(Optional dc As Object = Nothing) As Object
+        If dc Is Nothing Then
+            DcTemplate0A = CreateObject("Scripting.Dictionary")
+        Else
+            DcTemplate0A = dc
+        End If
+    End Function
+
+    ''' <summary>
+    ''' Copies text to clipboard (OBSOLETE).
+    ''' </summary>
+    Public Function Send2ClipBd_OBSOLETE(src As Object) As Object
+        With CreateObject("MSForms.DataObject")
+            .SetText(
+            .PutInClipboard)
+        End With
+        Send2ClipBd_OBSOLETE = src
     End Function
 
 End Module

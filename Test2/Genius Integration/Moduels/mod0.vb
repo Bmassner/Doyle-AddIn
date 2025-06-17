@@ -1,5 +1,5 @@
 Module mod0
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Public Function m0g3f1(rs As ADODB.Record) As Object
         Dim rt As Object
         Dim ar As Object
@@ -57,7 +57,7 @@ Module mod0
     End Function
 
     Public Function m0g2f2() As Long
-        m0g2f2 = m0g2f1(InventorApp.ActiveDocument)
+        m0g2f2 = m0g2f1(ThisApplication.ActiveDocument)
     End Function
 
     Public Function m0g2f3() As Long
@@ -67,7 +67,7 @@ Module mod0
 
         ' dc = New Scripting.Dictionary
         With New Scripting.Dictionary 'fmTest0
-            For Each AiDoc In InventorApp.Documents
+            For Each AiDoc In ThisApplication.Documents
                 On Error Resume Next
                 '.ft0g0f0 aiDoc.Thumbnail
                 If .Exists(AiDoc.FullFileName) Then
@@ -121,7 +121,7 @@ Module mod0
 
         m0g1f0 = rt
     End Function
-    ' dc = m0g1f0(InventorApp.ActiveDocument): For Each ky In dc.Keys: Debug.Print(aiDocument(dc.Item(ky)).Propertys(gnDesign).Item(pnPartNum).Text, aiDocument(dc.Item(ky)).Propertys(gnDesign).Item(pnMaterial).Text: Next
+    ' dc = m0g1f0(ThisApplication.ActiveDocument): For Each ky In dc.Keys: Debug.Print(aiDocument(dc.Item(ky)).Propertys(gnDesign).Item(pnPartNum).Text, aiDocument(dc.Item(ky)).Propertys(gnDesign).Item(pnMaterial).Text: Next
 
     Public Function m0g1f0part(
     AiDoc As Inventor.PartDocument,
@@ -455,7 +455,7 @@ Module mod0
         End With
         m0g4f1 = rt
     End Function
-    'Debug.Print(Join(m0g4f1(m0g4f0(dcAssyDocComponents(InventorApp.ActiveDocument))).Item("fam").Keys, vbCrLf)
+    'Debug.Print(Join(m0g4f1(m0g4f0(dcAssyDocComponents(ThisApplication.ActiveDocument))).Item("fam").Keys, vbCrLf)
 
     Public Function m0g4f1fixBom(
     dcIn As Scripting.Dictionary,

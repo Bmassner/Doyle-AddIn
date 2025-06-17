@@ -1,11 +1,11 @@
 Module modDcFilters
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Public Function dcAiDocsVisible() As Scripting.Dictionary
         Dim rt As Scripting.Dictionary
         Dim AiDoc As Inventor.Document
 
         rt = New Scripting.Dictionary
-        For Each AiDoc In InventorApp.Documents.VisibleDocuments
+        For Each AiDoc In ThisApplication.Documents.VisibleDocuments
             'rt.Add(aiDoc.FullDocumentName, aiDoc
             rt.Add(d0g6f0(AiDoc), AiDoc)
         Next
@@ -58,7 +58,7 @@ Module modDcFilters
         End With
         dcAiDocsByType = rt
     End Function
-    'Debug.Print(Join(dcAiDocsByType(dcAssyCompAndSub(aiDocAssy(InventorApp.ActiveDocument).ComponentDefinition.Occurrences)).Keys, ", ")
+    'Debug.Print(Join(dcAiDocsByType(dcAssyCompAndSub(aiDocAssy(ThisApplication.ActiveDocument).ComponentDefinition.Occurrences)).Keys, ", ")
 
     Public Function dcAiDocsOfType(
     tp As Inventor.DocumentTypeEnum,
@@ -82,7 +82,7 @@ Module modDcFilters
 ) As Scripting.Dictionary
         dcAiPartDocs = dcAiDocsOfType(DocumentTypeEnum.kPartDocumentObject, dc)
     End Function
-    'Debug.Print(Join(dcAiPartDocs(dcAiDocsByType(dcAssyCompAndSub(aiDocAssy(InventorApp.ActiveDocument).ComponentDefinition.Occurrences))).Keys, vbCrLf)
+    'Debug.Print(Join(dcAiPartDocs(dcAiDocsByType(dcAssyCompAndSub(aiDocAssy(ThisApplication.ActiveDocument).ComponentDefinition.Occurrences))).Keys, vbCrLf)
 
     Public Function dcAiAssyDocs(
     dc As Scripting.Dictionary
@@ -190,10 +190,10 @@ Module modDcFilters
         End With
         dcAiSheetMetal = rt
     End Function
-    'Debug.Print(Join(dcAiSheetMetal(dcAiDocsByType(dcAssyCompAndSub(aiDocAssy(InventorApp.ActiveDocument).ComponentDefinition.Occurrences))).Keys, vbCrLf)
+    'Debug.Print(Join(dcAiSheetMetal(dcAiDocsByType(dcAssyCompAndSub(aiDocAssy(ThisApplication.ActiveDocument).ComponentDefinition.Occurrences))).Keys, vbCrLf)
     '
-    'Debug.Print(dcAiPartDocs(dcAiDocsByType(dcAssyDocComponents(InventorApp.ActiveDocument))).Count
-    'Debug.Print(dcAiSheetMetal(dcAiDocsByType(dcAssyDocComponents(InventorApp.ActiveDocument))).Count
+    'Debug.Print(dcAiPartDocs(dcAiDocsByType(dcAssyDocComponents(ThisApplication.ActiveDocument))).Count
+    'Debug.Print(dcAiSheetMetal(dcAiDocsByType(dcAssyDocComponents(ThisApplication.ActiveDocument))).Count
 
     Public Function dcAssyPartsPrimary(
     aiAssy As Inventor.AssemblyDocument
@@ -238,8 +238,8 @@ Module modDcFilters
         End With
         dcAiDocsByPtNum = rt
     End Function
-    ' dc = dcAiDocsByPtNum(dcAssyPartsPrimary(InventorApp.ActiveDocument)): For Each ky In dc: Debug.Print(txDumpLs(dcAiDocsByPtNum(dcAssyPartsPrimary(aiDocument(dc.Item(ky)))).Keys, vbCrLf & vbTab): Next
-    'tx = "":  dc = dcAiDocsByPtNum(dcAssyPartsPrimary(InventorApp.ActiveDocument)): For Each ky In dc: tx = tx & vbCrLf & ky & vbCrLf & vbTab & txDumpLs(dcAiDocsByPtNum(dcAssyPartsPrimary(aiDocument(dc.Item(ky)))).Keys, vbCrLf & vbTab): Next: send2clipBd tx:  dc = Nothing
+    ' dc = dcAiDocsByPtNum(dcAssyPartsPrimary(ThisApplication.ActiveDocument)): For Each ky In dc: Debug.Print(txDumpLs(dcAiDocsByPtNum(dcAssyPartsPrimary(aiDocument(dc.Item(ky)))).Keys, vbCrLf & vbTab): Next
+    'tx = "":  dc = dcAiDocsByPtNum(dcAssyPartsPrimary(ThisApplication.ActiveDocument)): For Each ky In dc: tx = tx & vbCrLf & ky & vbCrLf & vbTab & txDumpLs(dcAiDocsByPtNum(dcAssyPartsPrimary(aiDocument(dc.Item(ky)))).Keys, vbCrLf & vbTab): Next: send2clipBd tx:  dc = Nothing
 
     Public Function dcItemsNotInGenius(
     dcPts As Scripting.Dictionary
@@ -314,6 +314,6 @@ Module modDcFilters
         End With
         mdf0g0f0 = rt
     End Function
-    'send2clipBd txDumpLs(mdf0g0f0(InventorApp.ActiveDocument))
+    'send2clipBd txDumpLs(mdf0g0f0(ThisApplication.ActiveDocument))
 
 End Module

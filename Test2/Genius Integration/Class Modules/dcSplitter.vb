@@ -4,8 +4,8 @@ Class DcSplitter
     Private dcPicker As KyPick
 
     ' Sample Usage:
-    'Debug.Print(txDumpLs(nuSplitter().WithSel(New kyPickAiPartVsAssy).Scanning(dcAiDocComponents(aiDocActive())).OutGroup().Keys)
-    'Debug.Print(txDumpLs(nuSplitter().WithSel(New kyPickAiPartVsAssy).Scanning(dcAiDocComponents(aiDocActive())).WithSel(New kyPickAiDocWithRM, 1).SubScanning().OutGroup().Keys)
+    'Debug.Print(txDumpLs(nuSplitter().WithSel(New KyPickAiPartVsAssy).Scanning(dcAiDocComponents(aiDocActive())).OutGroup().Keys)
+    'Debug.Print(txDumpLs(nuSplitter().WithSel(New KyPickAiPartVsAssy).Scanning(dcAiDocComponents(aiDocActive())).WithSel(New KyPickAiDocWithRM, 1).SubScanning().OutGroup().Keys)
 
     Private Sub Class_Initialize()
         ' dcGrpIn = New Scripting.Dictionary

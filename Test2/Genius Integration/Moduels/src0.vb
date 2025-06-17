@@ -1,5 +1,5 @@
 Module src0
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Public Sub GeniusPropertiesUpdater()
 
         Dim answer As Integer
@@ -10,13 +10,13 @@ Module src0
 
 
             Dim ActiveDoc As Document
-            ActiveDoc = InventorApp.ActiveDocument
+            ActiveDoc = ThisApplication.ActiveDocument
 
             If ActiveDoc.DocumentType = DocumentTypeEnum.kAssemblyDocumentObject Then
 
                 ' Get the active assembly.
                 Dim invAsmDoc As AssemblyDocument
-                invAsmDoc = InventorApp.ActiveDocument
+                invAsmDoc = ThisApplication.ActiveDocument
                 'MsgBox(("Assembly Name: " & invAsmDoc.DisplayName)
 
                 'Call IterateAssy(invAsmDoc.ComponentDefinition.Occurrences, 1)
@@ -26,7 +26,7 @@ Module src0
             Else
 
                 Dim invPartDoc As PartDocument
-                invPartDoc = InventorApp.ActiveDocument
+                invPartDoc = ThisApplication.ActiveDocument
 
                 'Call IteratePart(invPartDoc)
 
@@ -51,7 +51,7 @@ Module src0
         Dim TotalStepCount As Long
         Dim CurrentStepCount As Long
         Dim invProgressBar As ProgressBar
-        Dim invDoc As PartDocument
+        Dim oDoc As PartDocument
         Dim invSheetMetalComp As SheetMetalComponentDefinition
         Dim invCustomProperty As Inventor.Property
         Dim invSheetMetalMass As Double
@@ -101,24 +101,24 @@ Module src0
                     CurrentStepCount = CurrentStepCount + 1
 
                     'Create a new ProgressBar object.
-                    invProgressBar = InventorApp.CreateProgressBar(True, TotalStepCount, "Progressing: ")
+                    invProgressBar = ThisApplication.CreateProgressBar(True, TotalStepCount, "Progressing: ")
 
                     '  the message for the progress bar
                     invProgressBar.Message = "Processing - " & invOcc.Name & " - " & CurrentStepCount & "/" & TotalStepCount
                     invProgressBar.UpdateProgress()
 
                     ' Get the active part document.
-                    invDoc = invOcc.Definition.Document
+                    oDoc = invOcc.Definition.Document
 
                     '-------------------'
                     'Check if SheetMetal'
                     '-------------------'
-                    If False And invDoc.SubType = guidSheetMetal Then
-                        invSheetMetalComp = invDoc.ComponentDefinition
+                    If False And oDoc.SubType = guidSheetMetal Then
+                        invSheetMetalComp = oDoc.ComponentDefinition
 
                         ' Get the custom property .
                         invCustomProperty =
-                        invDoc.Propertys.Item("Inventor User Defined Properties")
+                        oDoc.Propertys.Item("Inventor User Defined Properties")
 
                         'Request #1: Get the Mass in Pounds and add to Custom Property GeniusMass
                         invSheetMetalMass = System.Math.Round(invSheetMetalComp.MassProperties.Mass * cvMassKg2LbM, 4)
@@ -234,7 +234,7 @@ Module src0
                             ' Convert these values into the document units.
                             ' This will result in strings that are identical
                             ' to the strings shown in the Extent dialog.
-                            oUOM = invDoc.UnitsOfMeasure
+                            oUOM = oDoc.UnitsOfMeasure
                             strWidth = oUOM.GetStringFromValue(dWidth, oUOM.GetStringFromType(oUOM.LengthUnits))
                             strLength = oUOM.GetStringFromValue(dLength, oUOM.GetStringFromType(oUOM.LengthUnits))
                             strArea = oUOM.GetStringFromValue(dArea, oUOM.GetStringFromType(oUOM.LengthUnits) & "^2")
@@ -298,7 +298,7 @@ Module src0
 
                         ' Get the design tracking property .
                         invDesignInfo =
-                    invDoc.Propertys.Item("Design Tracking Properties")
+                    oDoc.Propertys.Item("Design Tracking Properties")
 
                         ' Update the Cost Center Property
                         invCostCenterProperty = invDesignInfo.Item(pnFamily)
@@ -312,14 +312,14 @@ Module src0
 
                     Else
                         'Get the Parts Component Definition
-                        invPartDocComp = invDoc.ComponentDefinition
+                        invPartDocComp = oDoc.ComponentDefinition
 
                         'Request #1: Get the Mass in Pounds and add to Custom Property GeniusMass
                         invPartMass = System.Math.Round(invPartDocComp.MassProperties.Mass * cvMassKg2LbM, 4)
 
                         ' Get the custom property .
                         invCustomPartProperty =
-                        invDoc.Propertys.Item("Inventor User Defined Properties")
+                        oDoc.Propertys.Item("Inventor User Defined Properties")
 
                         ' Attempt to get an existing custom property named "GeniusMass".
                         On Error Resume Next
@@ -344,7 +344,7 @@ Module src0
                         ' Get the design tracking property .
                         'Dim invDesignInfo As Property
                         invDesignInfo =
-                        invDoc.Propertys.Item("Design Tracking Properties")
+                        oDoc.Propertys.Item("Design Tracking Properties")
 
                         ' Update the Cost Center Property
                         'Dim invCostCenterProperty As Property
@@ -364,6 +364,6 @@ Module src0
 
 
     End Function
-    'Debug.Print(IterateAssyRevA0(aiDocAssy(InventorApp.ActiveDocument).ComponentDefinition.Occurrences, 1)
+    'Debug.Print(IterateAssyRevA0(aiDocAssy(ThisApplication.ActiveDocument).ComponentDefinition.Occurrences, 1)
 
 End Module

@@ -1,5 +1,5 @@
 Module dvlDict0
-    Dim inventorApp As Inventor.Application
+    Dim ThisApplication As Inventor.Application
     Public Function aiDocPartNum(
     AiDoc As Inventor.Document,
     Optional ifNone As String = ""
@@ -93,7 +93,7 @@ Module dvlDict0
 
         If AiDoc Is Nothing Then
             dc0g2f0 = dc0g2f0(
-            InventorApp.ActiveDocument
+            ThisApplication.ActiveDocument
         )
         Else
             wk = dc0g2f0.dcAiDocsByPtNum(
@@ -256,9 +256,9 @@ Module dvlDict0
         End With
         dc0g4f0 = rt
     End Function
-    'Debug.Print(txDumpLs(dcAssyComponentsImmediate(InventorApp.ActiveDocument).Keys)
-    'Debug.Print(txDumpLs(dc0g4f0(InventorApp.ActiveDocument).Keys)
-    'Debug.Print(txDumpLs(dcAiDocPartNumbers(dc0g4f0(InventorApp.ActiveDocument)).Keys)
+    'Debug.Print(txDumpLs(dcAssyComponentsImmediate(ThisApplication.ActiveDocument).Keys)
+    'Debug.Print(txDumpLs(dc0g4f0(ThisApplication.ActiveDocument).Keys)
+    'Debug.Print(txDumpLs(dcAiDocPartNumbers(dc0g4f0(ThisApplication.ActiveDocument)).Keys)
 
     Public Function dc0g4f1(
     adIn As Inventor.AssemblyDocument,
@@ -269,7 +269,7 @@ Module dvlDict0
         Dim oc As Inventor.ComponentOccurrence
         Dim PropertySet As Inventor.Matrix
 
-        PropertySet = InventorApp.TransientGeometry.CreateMatrix()
+        PropertySet = ThisApplication.TransientGeometry.CreateMatrix()
 
         tg = adOut.ComponentDefinition.Occurrences
         With dc0g4f0(adIn)
@@ -331,7 +331,7 @@ Module dvlDict0
         'Next
         dcAiPropsIn = rt
     End Function
-    'Debug.Print(Join(Filter(dcAiPropsIn(InventorApp.ActiveDocument.Propertys(gnDesign)).Keys, "web", , vbTextCompare), vbCrLf)
+    'Debug.Print(Join(Filter(dcAiPropsIn(ThisApplication.ActiveDocument.Propertys(gnDesign)).Keys, "web", , vbTextCompare), vbCrLf)
 
     Public Function dcAiDocParVals(
     AiDoc As Inventor.Document
@@ -371,7 +371,7 @@ Module dvlDict0
     = dcCompDefParams(
     compDefOf(AiDoc))
     End Function
-    'Debug.Print(Join(Filter(dcAiDocParams(InventorApp.ActiveDocument.Propertys(gnDesign)).Keys, "web", , vbTextCompare), vbCrLf)
+    'Debug.Print(Join(Filter(dcAiDocParams(ThisApplication.ActiveDocument.Propertys(gnDesign)).Keys, "web", , vbTextCompare), vbCrLf)
 
     Public Function dcCompDefParams(
     CpDef As Inventor.ComponentDefinition,
@@ -575,10 +575,10 @@ Module dvlDict0
         Dim mp As Inventor.NameValueMap
         Dim md As Inventor.Document
 
-        ad = InventorApp.ApplicationAddIns.ItemById(guidILogicAdIn)
+        ad = ThisApplication.ApplicationAddIns.ItemById(guidILogicAdIn)
         If Not ad.Activated Then ad.Activate()
         il = ad.Automation
-        md = InventorApp.Documents.ItemByName("C:\Doyle_Vault\Designs\Misc\andrewT\dvl\iLogVltSrch_2022-0622_01.ipt")
+        md = ThisApplication.Documents.ItemByName("C:\Doyle_Vault\Designs\Misc\andrewT\dvl\iLogVltSrch_2022-0622_01.ipt")
         mp = dc2aiNameValMap(
         NuDcPopulator().Setting(
         "PartNumber", "60-"

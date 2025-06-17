@@ -1,38 +1,38 @@
-Class kyPickAiDocPurchased
+Class KyPickAiDocPurchased
 
     Inherits KyPick
 
     Private pk As KyPick
     '
     '
-    ' kyPick Implementation code follows
+    ' KyPick Implementation code follows
     '
 
-    Private Function kyPick_Itself() As KyPick
-        kyPick_Itself = Me.Itself
+    Private Function KyPick_Itself() As KyPick
+        KyPick_Itself = Me.Itself
     End Function
 
 
-    Private Function kyPick_WithInDc(
+    Private Function KyPick_WithInDc(
     Dict As Scripting.IDictionary
 ) As KyPick
-        kyPick_WithInDc = WithInDc(Dict)
+        KyPick_WithInDc = WithInDc(Dict)
     End Function
 
-    Private Function kyPick_WithOutDc(
+    Private Function KyPick_WithOutDc(
     Dict As Scripting.IDictionary
 ) As KyPick
-        kyPick_WithOutDc = WithOutDc(Dict)
+        KyPick_WithOutDc = WithOutDc(Dict)
     End Function
 
 
-    Private Function kyPick_AfterScanning(
+    Private Function KyPick_AfterScanning(
     dSrc As Scripting.IDictionary
 ) As KyPick
         Dim ky As Object
 
         With dSrc : For Each ky In .Keys
-                With dcFor(.Item(ky))
+                With DcFor(.Item(ky))
                     If .Exists(ky) Then
                         Stop
                     Else
@@ -40,23 +40,23 @@ Class kyPickAiDocPurchased
                     End If : End With
             Next : End With
 
-        kyPick_AfterScanning = Me
+        KyPick_AfterScanning = Me
     End Function
 
 
-    Private Function kyPick_DcIn() As Scripting.IDictionary
-        kyPick_DcIn = dcIn()
+    Private Function KyPick_DcIn() As Scripting.IDictionary
+        KyPick_DcIn = DcIn()
     End Function
 
-    Private Function kyPick_DcOut() As Scripting.IDictionary
-        kyPick_DcOut = dcOut()
+    Private Function KyPick_DcOut() As Scripting.IDictionary
+        KyPick_DcOut = DcOut()
     End Function
 
 
-    Private Function kyPick_DcFor(
+    Private Function KyPick_DcFor(
     Item As Object
 ) As Scripting.IDictionary
-        kyPick_DcFor = dcFor(Item)
+        KyPick_DcFor = DcFor(Item)
     End Function
     '
     '
@@ -68,47 +68,47 @@ Class kyPickAiDocPurchased
     End Sub
     '
     '
-    ' kyPickAiDocPurchased Class
+    ' KyPickAiDocPurchased Class
     ' implementation code follows
     '
 
-    Public Function Itself() As KyPick
+    Public Overloads Function Itself() As KyPick
         Itself = Me
     End Function
 
 
-    Public Function WithInDc(
+    Public Overloads Function WithInDc(
     Dict As Scripting.Dictionary
-) As KyPick
+    ) As KyPick
         pk = pk.WithInDc(Dict)
         WithInDc = Me
     End Function
 
-    Public Function WithOutDc(
+    Public Overloads Function WithOutDc(
     Dict As Scripting.Dictionary
-) As KyPick
+    ) As KyPick
         pk = pk.WithOutDc(Dict)
         WithOutDc = Me
     End Function
 
 
-    Public Function AfterScanning(
+    Public Overloads Function AfterScanning(
     dSrc As Scripting.Dictionary
-) As KyPick
-        AfterScanning = kyPick_AfterScanning(dSrc)
+    ) As KyPick
+        AfterScanning = KyPick_AfterScanning(dSrc)
     End Function
 
 
-    Public Function dcIn() As Scripting.Dictionary
-        dcIn = pk.DcIn
+    Public Overloads Function DcIn() As Scripting.Dictionary
+        DcIn = pk.DcIn
     End Function
 
-    Public Function dcOut() As Scripting.Dictionary
-        dcOut = pk.DcOut
+    Public Overloads Function DcOut() As Scripting.Dictionary
+        DcOut = pk.DcOut
     End Function
 
 
-    Public Function dcFor(Item As Object) As Scripting.IDictionary
+    Public Overloads Function DcFor(Item As Object) As Scripting.IDictionary
         Dim ck As Inventor.BOMStructureEnum
         Dim ob As Inventor.Document
         Dim InvProperty As Inventor.Property
@@ -132,7 +132,7 @@ Class kyPickAiDocPurchased
         End If
 
         If ck = BOMStructureEnum.kPurchasedBOMStructure Then
-            dcFor = pk.DcFor(ob)
+            DcFor = pk.DcFor(ob)
         Else
             ' REV[2022.03.08.1038]
             '     Additional checks on Item
@@ -144,16 +144,16 @@ Class kyPickAiDocPurchased
             '     appropriate to apply.
             With ob
                 InvProperty = .Propertys.Item(
-                gnDesign).Item(pnFamily
+                GnDesign).Item(PnFamily
             )
                 If InStr(1, ob.FullFileName,
                 "\Doyle_Vault\Designs\purchased\"
             ) + InStr(1, "|D-HDWR|D-PTO|D-PTS|R-PTO|R-PTS|",
                 "|" & InvProperty.Text & "|"
             ) > 0 Then
-                    dcFor = pk.DcFor(ob)
+                    DcFor = pk.DcFor(ob)
                 Else
-                    dcFor = pk.DcFor(0)
+                    DcFor = pk.DcFor(0)
                 End If
             End With
         End If
