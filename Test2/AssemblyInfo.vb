@@ -11,7 +11,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("Doyle Addin")>
 <Assembly: AssemblyCompany("Autodesk, Inc.")>
 <Assembly: AssemblyProduct("Autodesk Inventor")>
-<Assembly: AssemblyCopyright("Copyright ©2024 Autodesk, Inc.")>
+<Assembly: AssemblyCopyright("Copyright ï¿½2024 Autodesk, Inc.")>
 <Assembly: AssemblyTrademark("")>
 
 'The following GUID is for the ID of the typelib if this project is exposed to COM
